@@ -16,7 +16,7 @@ async function showMenu( data ) {
 	$.print( "Images: " + data.images.length );
 	$.print( "Rooms: " + data.rooms.length );
 	$.print( "" );
-	$.print( "1. Edit images" );
+	$.print( "1. Edit Images" );
 	$.print( "2. Edit Tiles" );
 	$.print( "3. Edit Character" );
 	$.print( "4. Edit Monsters" );
@@ -31,11 +31,13 @@ async function showMenu( data ) {
 	}
 
 	if( choice === 1 ) {
-		editImages( data, 0, true );
+		data.selectedImage = 0;
+		data.selectedColor = 0;
+		editImages( data, true );
 	}
 }
 
-function editImages( data, selection, isFirst ) {
+function editImages( data, isFirst ) {
 	$.cls();
 	$.setColor( "white" );
 	$.print( "Editing Images" );
@@ -47,7 +49,7 @@ function editImages( data, selection, isFirst ) {
 	for( let i = 0; i < data.images.length; i++ ) {
 		let image = Util.ConvertPutStringToData( data.images[ i ] );
 		$.setPosPx( x, y + 4 );
-		if( selection === i ) {
+		if( data.selectedImage === i ) {
 			$.setColor( "white" );
 		} else {
 			$.setColor( "gray" );
@@ -60,15 +62,16 @@ function editImages( data, selection, isFirst ) {
 			"height": 15
 		};
 		$.put( image, hitBox.x, hitBox.y );
-		if( i === selection ) {
+		if( i === data.selectedImage ) {
 			$.setColor( "white" );
 			$.rect( hitBox );
 			$.setColor( "gray" );
 			$.rect( hitBox.x - 1, hitBox.y - 1, hitBox.width + 2, hitBox.height + 2 );
 		}
 		if( isFirst ) {
-			$.onclick( function ( mouse, selectedTile ) {
-				editImages( data, selectedTile, false );
+			$.onclick( function ( mouse, selectedImage ) {
+				data.selectedImage = selectedImage;
+				editImages( data, false );
 			}, false, hitBox, i );
 		}
 		x += 45;
@@ -78,16 +81,66 @@ function editImages( data, selection, isFirst ) {
 		}
 	}
 
-	let image = Util.ConvertPutStringToData( data.images[ selection ] );
-	let width = 11;
-	let height = 11;
+	let image = Util.ConvertPutStringToData( data.images[ data.selectedImage ] );
+	let width = 12;
+	let height = 12;
 	for( let i = 0; i < image.length - 1; i++ ) {
 		for( let j = 0; j < image[ i ].length - 1; j++ ) {
 			x = j * width + 8;
 			y = i * height + 216;
 			let c = image[ i ][ j ];
-			$.setColor( "#333333" );
-			$.rect( x, y, width, height, c );
+			if( c === 0 ) {
+				$.setColor( "#333333" );
+				$.line( x, y, x + width, y + height );
+				$.line( x + width, y, x, y + height );
+			} else {
+				$.setColor( c );
+				$.rect( x, y, width, height, c );
+			}
+
+			if( isFirst ) {
+				let hitBox = {
+					"x": x,
+					"y": y,
+					"width": width,
+					"height": height
+				};
+				$.onclick( function ( mouse, pos ) {
+					//data.images[ data.selectedImage ][ pos.i ][ pos.j ] = data.selectedColor;
+					let line = data.images[ data.selectedImage ][ pos.i ];
+					data.images[ data.selectedImage ][ pos.i ] = line.substring( 0, pos.j ) +
+						data.selectedColor.toString( 32 ) + line.substring( pos.j + 1 );
+					editImages( data, false );
+				}, false, hitBox, { "i": i, "j": j } );
+			}
+		}
+	}
+
+	for( let i = 0; i < data.colors.length; i++ ) {
+		x = i * width + 8;
+		y = 200;
+		if( i === data.selectedColor ) {
+			$.setColor( "#acacac" );
+		} else {
+			$.setColor( data.colors[ i ] );
+		}
+		$.rect( x, y, width, height, data.colors[ i ] );
+		if( i === data.selectedColor ) {
+			$.setColor( "#535353" );
+			$.rect( x + 1, y + 1, width - 2, height - 2 );
+		}
+
+		if( isFirst ) {
+			let hitBox = {
+				"x": x,
+				"y": y,
+				"width": width,
+				"height": height
+			};
+			$.onclick( function ( mouse, selectedColor ) {
+				data.selectedColor = selectedColor;
+				editImages( data, false );
+			}, false, hitBox, i );
 		}
 	}
 }
