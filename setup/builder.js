@@ -40,6 +40,9 @@ async function showMenu( data ) {
 		data.selectedImage = 0;
 		data.selectedTile = 0;
 		editTiles( data, true );
+	} else if( choice === 3 ) {
+		data.selectedImage = 0;
+		editCharacter( data, true );
 	}
 }
 
@@ -329,6 +332,10 @@ function editTiles( data, isFirst ) {
 			$.print( "Add", true );
 			$.rect( hitBox2 );
 			$.clearEvents();
+			data.tiles.push( {
+				"imageId": 0,
+				"description": ""
+			} );
 			setTimeout( function () {
 				editTiles( data, true );
 			}, 100 );
@@ -373,3 +380,98 @@ function editTiles( data, isFirst ) {
 	$.print( "Description: " + data.tiles[ data.selectedTile ].description );
 }
 
+async function editCharacter( data, isFirst ) {
+	$.cls();
+	if( isFirst ) {
+		$.clearEvents();
+	} else {
+		data.character.imageId = data.selectedImage;
+	}
+
+	$.print( "Edit Character" );
+	$.print( "1. Name: " + data.character.name );
+	$.print( "2. Gold: " + data.character.gold );
+	$.print( "3. Hits: " + data.character.hits );
+	$.print( "4. Level: " + data.character.level );
+	$.print( "5. Potion: " + data.character.potion );
+	$.print( "6. Keys: " + data.character.keys );
+	$.print( "7. Weapon: " + data.weapons[ data.character.weaponId ].name );
+	$.print( "8. Armor: " + data.armors[ data.character.armorId ].name );
+	$.print( "9. Image: " );
+	$.print( "\n" );
+	$.print( "10. Go back to menu" );
+
+	let image = Util.ConvertPutStringToData( data.images[ data.character.imageId ] );
+	$.put( image, 55, 78 );
+
+	let choice = -1;
+	while( choice < 1 || choice > 9 ) {
+		choice = await $.input( "Enter selection: ", null, true, true, false );
+		if( choice < 1 || choice > 9 ) {
+			$.print( "Invalid selection" );
+		}
+	}
+
+	if( choice === 1 ) {
+		data.character.name = await $.input( "Enter name: ", null );
+	} else if( choice === 2 ) {
+		data.character.gold = await $.input( "Enter gold: ", null, true, true, false );
+	} else if( choice === 3 ) {
+		data.character.hits = await $.input( "Enter hits: ", null, true, true, false );
+	} else if( choice === 4 ) {
+		data.character.level = await $.input( "Enter level: ", null, true, true, false );
+	} else if( choice === 5 ) {
+		data.character.potion = await $.input( "Enter potion: ", null, true, true, false );
+	} else if( choice === 6 ) {
+		data.character.keys = await $.input( "Enter keys: ", null, true, true, false );
+	} else if( choice === 7 ) {
+		$.print( "\nWeapons:" );
+		for( let i = 0; i < data.weapons.length; i++ ) {
+			$.print(
+				( i + 1 ) + ". " +
+				data.weapons[ i ].name + " " +
+				data.weapons[ i ].damage + " " +
+				data.weapons[ i ].hit
+			);
+		}
+		let weaponChoice = -1;
+		while( weaponChoice < 1 || weaponChoice > data.weapons.length ) {
+			weaponChoice = await $.input( "Enter selection: ", null, true, true, false );
+			if( weaponChoice < 1 || weaponChoice > data.weapons.length ) {
+				$.print( "Invalid selection" );
+			}
+		}
+		data.character.weaponId = weaponChoice - 1;
+	} else if( choice === 8 ) {
+		$.print( "\nArmors:" );
+		for( let i = 0; i < data.armors.length; i++ ) {
+			$.print(
+				( i + 1 ) + ". " +
+				data.armors[ i ].name + " " +
+				data.armors[ i ].protection + " " +
+				data.armors[ i ].dodge
+			);
+		}
+		let armorChoice = -1;
+		while( armorChoice < 1 || armorChoice > data.armors.length ) {
+			armorChoice = await $.input( "Enter selection: ", null, true, true, false );
+			if( armorChoice < 1 || armorChoice > data.armors.length ) {
+				$.print( "Invalid selection" );
+			}
+		}
+		data.character.armorId = armorChoice - 1;
+	} else if( choice === 9 ) {
+		data.selectedImage = data.character.imageId;
+		$.cls();
+		drawImages( data, isFirst, editCharacter );
+		$.setPos( 2, 23 );
+		$.setColor( "white" );
+		$.print( "Use the mouse to select an image from up above." );
+		return;
+	} else if( choice === 10 ) {
+		showMenu( data );
+		return;
+	}
+
+	editCharacter( data, false );
+}

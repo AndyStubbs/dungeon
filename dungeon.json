@@ -140,6 +140,39 @@
 		"rgba(0,170,170,1)",
 		"rgba(255,85,255,1)"
 	],
+	"character": {
+		"name": "ROCON",
+		"gold": 200,
+		"hits": 300,
+		"level": 1,
+		"potion": 0,
+		"keys": 0,
+		"weaponId": 0,
+		"armorId": 0,
+		"imageId": 23
+	},
+	"weapons": [
+		{
+			"name": "Hands",
+			"damage": 1,
+			"hit": 0.9
+		}, {
+			"name": "Dagger",
+			"damage": 2,
+			"hit": 0.8
+		}
+	],
+	"armors": [
+		{
+			"name": "Skin",
+			"protection": 0,
+			"dodge": 1
+		}, {
+			"name": "Cloth",
+			"protection": 1,
+			"dodge": 0.9
+		}
+	],
 	"rooms": [],
 	"images": [
 		[
