@@ -11,7 +11,8 @@
 		"SaveAsText": SaveAsText,
 		"ConvertImagesToPutString32": ConvertImagesToPutString32,
 		"ConvertPutStringToData": ConvertPutStringToData,
-		"GetImageData": GetImageData
+		"GetImageData": GetImageData,
+		"GetTileId": GetTileId
 	};
 
 	m_delayTimeouts = {};
@@ -149,6 +150,11 @@
 		}
 
 		return data;
+	}
+
+	function GetTileId( index ) {
+		let values = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+";
+		return values.charAt( index );
 	}
 
 } )();
