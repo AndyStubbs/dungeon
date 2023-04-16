@@ -173,6 +173,17 @@
 			"dodge": 0.9
 		}
 	],
+	"objects": [
+		{
+			"name": "Orc Raider",
+			"hits": 8,
+			"level": 1,
+			"exp": 2,
+			"imageId": 112,
+			"isMonster": true,
+			"isRanged": true
+		}
+	],
 	"rooms": [],
 	"images": [
 		[

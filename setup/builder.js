@@ -21,13 +21,14 @@ async function showMenu( data ) {
 	$.print( "1. Edit Images" );
 	$.print( "2. Edit Tiles" );
 	$.print( "3. Edit Character" );
-	$.print( "4. Edit Monsters" );
+	$.print( "4. Edit Objects/Monsters" );
 	$.print( "5. Edit Rooms" );
+	$.print( "6. Reset Dungeon" );
 
 	let choice = -1;
-	while( choice < 1 || choice > 5 ) {
+	while( choice < 1 || choice > 6 ) {
 		choice = await $.input( "Enter selection: ", null, true, true, false );
-		if( choice < 1 || choice > 5 ) {
+		if( choice < 1 || choice > 6 ) {
 			$.print( "Invalid selection" );
 		}
 	}
@@ -41,9 +42,104 @@ async function showMenu( data ) {
 		data.selectedTile = 0;
 		editTiles( data, true );
 	} else if( choice === 3 ) {
-		data.selectedImage = 0;
+		data.selectedImage = data.character.imageId;
 		editCharacter( data, true );
+	} else if( choice === 4 ) {
+		data.selectedObject = 0;
+		data.selectedImage = data.objects[ data.selectedObject ].imageId;
+		editObjects( data, true );
+	} else if( choice === 5 ) {
+
+	} else if( choice === 6 ) {
+		resetData( data );
+		showMenu( data );
 	}
+}
+
+function resetData( data ) {
+	data.name = "Dungeon";
+	data.rooms = [];
+	data.tiles =  [
+		{
+			"imageId":  0,
+			"description": "the floor"
+		}
+	];
+	data.colors = [
+		"rgba(0,0,0,0)",
+		"rgba(85,85,85,1)",
+		"rgba(170,170,170,1)",
+		"rgba(0,170,0,1)",
+		"rgba(0,0,0,1)",
+		"rgba(170,0,0,1)",
+		"rgba(255,255,85,1)",
+		"rgba(170,85,0,1)",
+		"rgba(85,255,85,1)",
+		"rgba(0,0,170,1)",
+		"rgba(85,85,255,1)",
+		"rgba(255,85,85,1)",
+		"rgba(255,255,255,1)",
+		"rgba(85,255,255,1)",
+		"rgba(170,0,170,1)",
+		"rgba(0,170,170,1)",
+		"rgba(255,85,255,1)"
+	];
+	data.character = {
+		"name": "ROCON",
+		"gold": 200,
+		"hits": 300,
+		"level": 1,
+		"potion": 0,
+		"keys": 0,
+		"weaponId": 0,
+		"armorId": 0,
+		"imageId": 0
+	};
+	data.weapons = [
+		{
+			"name": "Hands",
+			"damage": 1,
+			"hit": 0.9
+		}
+	];
+	data.armors = [
+		{
+			"name": "Skin",
+			"protection": 0,
+			"dodge": 1
+		}
+	];
+	data.objects = [
+		{
+			"name": "Orc Raider",
+			"hits": 8,
+			"level": 1,
+			"exp": 2,
+			"imageId": 0,
+			"isMonster": true,
+			"isRanged": true
+		}
+	];
+	data.rooms = [];
+	data.images =  [
+		[
+			"000000000000000",
+			"000000000000000",
+			"000000000000000",
+			"000000000000000",
+			"000000000000000",
+			"000000000000000",
+			"000000000000000",
+			"000000000000000",
+			"000000000000000",
+			"000000000000000",
+			"000000000000000",
+			"000000000000000",
+			"000000000000000",
+			"000000000000000",
+			"000000000000000"
+		]
+	];
 }
 
 function editImages( data, isFirst ) {
@@ -124,8 +220,8 @@ function editImages( data, isFirst ) {
 
 	// Add New Button
 	let hitBox2 = {
-		"x": 198,
-		"y": 252,
+		"x": 265,
+		"y": 232,
 		"width": 64,
 		"height": 16
 	};
@@ -316,8 +412,8 @@ function editTiles( data, isFirst ) {
 
 	// Add Button
 	let hitBox2 = {
-		"x": 2,
-		"y": y + 50,
+		"x": 70,
+		"y": y + 31,
 		"width": 64,
 		"height": 16
 	};
@@ -344,8 +440,8 @@ function editTiles( data, isFirst ) {
 
 	// Edit Button
 	let hitBox3 = {
-		"x": 2,
-		"y": y + 68,
+		"x": 138,
+		"y": y + 31,
 		"width": 64,
 		"height": 16
 	};
@@ -362,8 +458,11 @@ function editTiles( data, isFirst ) {
 			$.clearEvents();
 			setTimeout( function () {
 				//showMenu( data );
-				$.setPosPx( 6, hitBox3.y + 50 );
-				$.input( "Description: ", function ( txt ) {
+				$.cls( 0, hitBox3.y + 40, 500, 30 );
+				$.setPosPx( 0, hitBox3.y + 50 );
+				let pos = $.getPos();
+				$.setPos( pos );
+				$.input( " Description: ", function ( txt ) {
 					data.tiles[ data.selectedTile ].description = txt;
 					editTiles( data, true );
 				} );
@@ -372,12 +471,14 @@ function editTiles( data, isFirst ) {
 	}
 
 	$.setColor( "white" );
-	$.setPosPx( 2, hitBox3.y + 18 );
-	$.print( "Tile: " + Util.GetTileId( data.selectedTile ) );
-	$.setPosPx( 2, hitBox3.y + 29 );
-	$.print( "Image Id: " + data.tiles[ data.selectedTile ].imageId );
-	$.setPosPx( 2, hitBox3.y + 40 );
-	$.print( "Description: " + data.tiles[ data.selectedTile ].description );
+	$.setPosPx( 0, hitBox3.y + 18 );
+	$.print( " Tile: " + Util.GetTileId( data.selectedTile ) );
+	$.setPosPx( 0, hitBox3.y + 29 );
+	$.print( " Image Id: " + data.tiles[ data.selectedTile ].imageId );
+	$.setPosPx( 0, hitBox3.y + 50 );
+	let pos = $.getPos();
+	$.setPos( pos );
+	$.print( " Description: " + data.tiles[ data.selectedTile ].description );
 }
 
 async function editCharacter( data, isFirst ) {
@@ -405,9 +506,9 @@ async function editCharacter( data, isFirst ) {
 	$.put( image, 55, 78 );
 
 	let choice = -1;
-	while( choice < 1 || choice > 9 ) {
+	while( choice < 1 || choice > 10 ) {
 		choice = await $.input( "Enter selection: ", null, true, true, false );
-		if( choice < 1 || choice > 9 ) {
+		if( choice < 1 || choice > 10 ) {
 			$.print( "Invalid selection" );
 		}
 	}
@@ -463,8 +564,9 @@ async function editCharacter( data, isFirst ) {
 	} else if( choice === 9 ) {
 		data.selectedImage = data.character.imageId;
 		$.cls();
-		drawImages( data, isFirst, editCharacter );
-		$.setPos( 2, 23 );
+		$.clearEvents();
+		drawImages( data, true, editCharacter );
+		$.setPos( 2, 25 );
 		$.setColor( "white" );
 		$.print( "Use the mouse to select an image from up above." );
 		return;
@@ -474,4 +576,178 @@ async function editCharacter( data, isFirst ) {
 	}
 
 	editCharacter( data, false );
+}
+
+function editObjects( data, isFirst ) {
+	$.cls();
+	if( isFirst ) {
+		$.clearEvents();
+	} else {
+		data.objects[ data.selectedObject ].imageId = data.selectedImage;
+	}
+	drawImages( data, isFirst, editObjects );
+	let x = 2;
+	let y = 200;
+	for( let i = 0; i < data.objects.length; i++ ) {
+		let image = Util.ConvertPutStringToData( data.images[ data.objects[ i ].imageId ] );
+		let hitBox = {
+			"x": x,
+			"y": y,
+			"width": 15,
+			"height": 15
+		};
+		$.put( image, x, y );
+		if( i === data.selectedObject ) {
+			$.setColor( "white" );
+			$.rect( x + 1, y + 1, 13, 13 );
+		}
+		$.setColor( "gray" );
+		$.rect( hitBox );
+		if( isFirst ) {
+			$.onclick( function ( mouse, selectedObject ) {
+				data.selectedObject = selectedObject;
+				data.selectedImage = data.objects[ data.selectedObject ].imageId;
+				editObjects( data, false );
+			}, false, hitBox, i );
+		}
+		x += 18
+		if( x > 628 ) {
+			x = 2;
+			y += 18;
+		}
+	}
+
+	$.setPosPx( 2, y + 20 );
+	$.setColor( "white" );
+	$.print( "Editing Objects/Monsters" );
+
+	// Menu Button
+	hitBox = {
+		"x": 2,
+		"y": y + 31,
+		"width": 64,
+		"height": 16
+	};
+	$.setColor( "#838383" );
+	$.setPosPx( hitBox.x + 22, hitBox.y + 4 );
+	$.print( "Menu", true );
+	$.rect( hitBox );
+	if( isFirst ) {
+		$.onclick( function () {
+			$.setColor( "white" );
+			$.setPosPx( hitBox.x + 22, hitBox.y + 4 );
+			$.print( "Menu", true );
+			$.rect( hitBox );
+			$.clearEvents();
+			setTimeout( function () {
+				showMenu( data );
+			}, 100 );
+		}, false, hitBox );
+	}
+
+	// Add Button
+	let hitBox2 = {
+		"x": 70,
+		"y": y + 31,
+		"width": 64,
+		"height": 16
+	};
+	$.setColor( "#838383" );
+	$.setPosPx( hitBox2.x + 22, hitBox2.y + 4 );
+	$.print( "Add", true );
+	$.rect( hitBox2 );
+	if( isFirst ) {
+		$.onclick( function () {
+			$.setColor( "white" );
+			$.setPosPx( hitBox2.x + 22, hitBox2.y + 4 );
+			$.print( "Add", true );
+			$.rect( hitBox2 );
+			$.clearEvents();
+			data.objects.push( {
+				"name": "Orc Raider",
+				"hits": 8,
+				"level": 1,
+				"exp": 2,
+				"imageId": 112,
+				"isMonster": true
+			} );
+			setTimeout( function () {
+				editObjects( data, true );
+			}, 100 );
+		}, false, hitBox2 );
+	}
+
+	// Edit Button
+	let hitBox3 = {
+		"x": 138,
+		"y": y + 31,
+		"width": 64,
+		"height": 16
+	};
+	$.setColor( "#838383" );
+	$.setPosPx( hitBox3.x + 22, hitBox3.y + 4 );
+	$.print( "Edit", true );
+	$.rect( hitBox3 );
+	if( isFirst ) {
+		$.onclick( function () {
+			$.setColor( "white" );
+			$.setPosPx( hitBox3.x + 22, hitBox3.y + 4 );
+			$.print( "Edit", true );
+			$.rect( hitBox3 );
+			$.clearEvents();
+			setTimeout( function () { editObject( data ); }, 100 );
+		}, false, hitBox3 );
+	}
+
+	$.setColor( "white" );
+	$.setPosPx( 0, hitBox3.y + 28 );
+	let pos = $.getPos();
+	$.setPos( pos );
+	$.print( " Object: " + Util.GetTileId( data.selectedObject ) );
+	$.print( " Image Id: " + data.objects[ data.selectedObject ].imageId );
+	$.print( " Name: " + data.objects[ data.selectedObject ].name );
+	$.print( " Hits: " + data.objects[ data.selectedObject ].hits );
+	$.print( " Level: " + data.objects[ data.selectedObject ].level );
+	$.print( " Exp: " + data.objects[ data.selectedObject ].exp );
+	$.print( " Is Monster: " + data.objects[ data.selectedObject ].isMonster );
+}
+
+async function editObject( data ) {
+	$.cls();
+	let obj = data.objects[ data.selectedObject ];
+
+	let image = Util.ConvertPutStringToData( data.images[ obj.imageId ] );
+	$.put( image, 2, 2 );
+	$.print( "\n\n" );
+	$.print( " 1. Name: " + obj.name );
+	$.print( " 2. Hits: " + obj.hits );
+	$.print( " 3. Level: " + obj.level );
+	$.print( " 4. Exp: " + obj.exp );
+	$.print( " 5. Is Monster: " + obj.isMonster );
+	$.print( " 6. Done" );
+	let choice = -1;
+	while( choice < 1 || choice > 6 ) {
+		choice = await $.input( "Enter selection: ", null, true, true, false );
+		if( choice < 1 || choice > 6 ) {
+			$.print( "Invalid selection" );
+		}
+	}
+	if( choice === 1 ) {
+		obj.name = await $.input( "Enter name: ", null );
+	} else if( choice === 2 ) {
+		obj.hits = await $.input( "Enter hits: ", null, true, true, false );
+	} else if( choice === 3 ) {
+		obj.level = await $.input( "Enter level: ", null, true, true, false );
+	} else if( choice === 4 ) {
+		obj.exp = await $.input( "Enter exp: ", null, true, true, false );
+	} else if( choice === 5 ) {
+		obj.isMonster = (
+			await $.input( "Is Monster (y/n): ", null)
+		).toLowerCase().charAt( 0 ) === "y";
+	} else if( choice === 6 ) {
+		editObjects( data, true );
+		return;
+	}
+
+	editObject( data );
 }
