@@ -12,7 +12,8 @@
 		"ConvertImagesToPutString32": ConvertImagesToPutString32,
 		"ConvertPutStringToData": ConvertPutStringToData,
 		"GetImageData": GetImageData,
-		"GetTileId": GetTileId
+		"GetTileId": GetTileId,
+		"GetTileIndex": GetTileIndex
 	};
 
 	m_delayTimeouts = {};
@@ -155,6 +156,11 @@
 	function GetTileId( index ) {
 		let values = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+";
 		return values.charAt( index );
+	}
+
+	function GetTileIndex( id ) {
+		let values = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+";
+		return values.indexOf( id );
 	}
 
 } )();

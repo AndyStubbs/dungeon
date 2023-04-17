@@ -49,7 +49,10 @@ async function showMenu( data ) {
 		data.selectedImage = data.objects[ data.selectedObject ].imageId;
 		editObjects( data, true );
 	} else if( choice === 5 ) {
-
+		data.selectedTile = 0;
+		data.selectedObject = -1;
+		data.selectedRoom = 0;
+		editRooms( data, true );
 	} else if( choice === 6 ) {
 		resetData( data );
 		showMenu( data );
@@ -109,18 +112,8 @@ function resetData( data ) {
 			"dodge": 1
 		}
 	];
-	data.objects = [
-		{
-			"name": "Orc Raider",
-			"hits": 8,
-			"level": 1,
-			"exp": 2,
-			"imageId": 0,
-			"isMonster": true,
-			"isRanged": true
-		}
-	];
-	data.rooms = [];
+	data.objects = [ createObject() ];
+	data.rooms = [ createRoom() ];
 	data.images =  [
 		[
 			"000000000000000",
@@ -140,6 +133,36 @@ function resetData( data ) {
 			"000000000000000"
 		]
 	];
+}
+
+function createRoom() {
+	return {
+		"name": "Grassy Canyon",
+		"objects": [],
+		"traps": [],
+		"data": [
+			"00000000000000000000",
+			"00000000000000000000",
+			"00000000000000000000",
+			"00000000000000000000",
+			"00000000000000000000",
+			"00000000000000000000",
+			"00000000000000000000",
+			"00000000000000000000"
+		]
+	};
+}
+
+function createObject() {
+	return {
+		"name": "Orc Raider",
+		"hits": 8,
+		"level": 1,
+		"exp": 2,
+		"imageId": 0,
+		"isMonster": true,
+		"isRanged": true
+	};
 }
 
 function editImages( data, isFirst ) {
@@ -663,14 +686,7 @@ function editObjects( data, isFirst ) {
 			$.print( "Add", true );
 			$.rect( hitBox2 );
 			$.clearEvents();
-			data.objects.push( {
-				"name": "Orc Raider",
-				"hits": 8,
-				"level": 1,
-				"exp": 2,
-				"imageId": 112,
-				"isMonster": true
-			} );
+			data.objects.push( createObject() );
 			setTimeout( function () {
 				editObjects( data, true );
 			}, 100 );
@@ -751,3 +767,280 @@ async function editObject( data ) {
 
 	editObject( data );
 }
+
+function editRooms( data, isFirst ) {
+	$.cls();
+	let x = 2;
+	let y = 2;
+
+	// Draw Tiles
+	for( let i = 0; i < data.tiles.length; i++ ) {
+		let image = Util.ConvertPutStringToData( data.images[ data.tiles[ i ].imageId ] );
+		let hitBox = {
+			"x": x,
+			"y": y,
+			"width": 15,
+			"height": 15
+		};
+		$.put( image, x, y );
+		if( i === data.selectedTile ) {
+			$.setColor( "white" );
+			$.rect( x + 1, y + 1, 13, 13 );
+		}
+		$.setColor( "gray" );
+		$.rect( hitBox );
+		if( isFirst ) {
+			$.onclick( function ( mouse, selectedTile ) {
+				data.selectedTile = selectedTile;
+				data.selectedObject = -1;
+				editRooms( data, false );
+			}, false, hitBox, i );
+		}
+		x += 18
+		if( x > 628 ) {
+			x = 2;
+			y += 18;
+		}
+	}
+
+	// Draw Objects
+	x = 2;
+	y = 60;
+	for( let i = 0; i < data.objects.length; i++ ) {
+		let image = Util.ConvertPutStringToData( data.images[ data.objects[ i ].imageId ] );
+		let hitBox = {
+			"x": x,
+			"y": y,
+			"width": 15,
+			"height": 15
+		};
+		$.put( image, x, y );
+		if( i === data.selectedObject ) {
+			$.setColor( "white" );
+			$.rect( x + 1, y + 1, 13, 13 );
+		}
+		$.setColor( "gray" );
+		$.rect( hitBox );
+		if( isFirst ) {
+			$.onclick( function ( mouse, selectedObject ) {
+				data.selectedObject = selectedObject;
+				data.selectedTile = -1;
+				editRooms( data, false );
+			}, false, hitBox, i );
+		}
+		x += 18
+		if( x > 628 ) {
+			x = 2;
+			y += 18;
+		}
+	}
+
+	// Draw Room Selectors
+	x = 2;
+	y = 80;
+	for( let i = 0; i < data.rooms.length; i++ ) {
+		$.setPosPx( x + 2, y + 2 );
+		if( i === data.selectedRoom ) {
+			$.setColor( "white" );
+		} else {
+			$.setColor( "gray" );
+		}
+		$.print( Util.GetTileId( i ), true );
+		let hitBox = {
+			"x": x,
+			"y": y,
+			"width": 15,
+			"height": 15
+		};
+		$.rect( hitBox );
+		if( isFirst ) {
+			$.onclick( function ( mouse, selectedRoom ) {
+				data.selectedRoom = selectedRoom;
+				editRooms( data, false );
+			}, false, hitBox, i );
+		}
+		x += 18;
+		if( x > 628 ) {
+			x = 2;
+			y += 18;
+		}
+	}
+
+	$.setPosPx( 2, y + 20 );
+	$.setColor( "white" );
+	$.print( "Editing Rooms" );
+
+	// Menu Button
+	hitBox = {
+		"x": 2,
+		"y": y + 31,
+		"width": 64,
+		"height": 16
+	};
+	$.setColor( "#838383" );
+	$.setPosPx( hitBox.x + 22, hitBox.y + 4 );
+	$.print( "Menu", true );
+	$.rect( hitBox );
+	if( isFirst ) {
+		$.onclick( function () {
+			$.setColor( "white" );
+			$.setPosPx( hitBox.x + 22, hitBox.y + 4 );
+			$.print( "Menu", true );
+			$.rect( hitBox );
+			$.clearEvents();
+			setTimeout( function () {
+				showMenu( data );
+			}, 100 );
+		}, false, hitBox );
+	}
+
+	// Add Button
+	let hitBox2 = {
+		"x": 70,
+		"y": y + 31,
+		"width": 64,
+		"height": 16
+	};
+	$.setColor( "#838383" );
+	$.setPosPx( hitBox2.x + 22, hitBox2.y + 4 );
+	$.print( "Add", true );
+	$.rect( hitBox2 );
+	if( isFirst ) {
+		$.onclick( function () {
+			$.setColor( "white" );
+			$.setPosPx( hitBox2.x + 22, hitBox2.y + 4 );
+			$.print( "Add", true );
+			$.rect( hitBox2 );
+			$.clearEvents();
+			data.rooms.push( createRoom() );
+			setTimeout( function () {
+				editRooms( data, true );
+			}, 100 );
+		}, false, hitBox2 );
+	}
+
+	// Edit Button
+	let hitBox3 = {
+		"x": 138,
+		"y": y + 31,
+		"width": 64,
+		"height": 16
+	};
+	$.setColor( "#838383" );
+	$.setPosPx( hitBox3.x + 4, hitBox3.y + 4 );
+	$.print( "Edit Name", true );
+	$.rect( hitBox3 );
+	if( isFirst ) {
+		$.onclick( function () {
+			$.setColor( "white" );
+			$.setPosPx( hitBox3.x + 4, hitBox3.y + 4 );
+			$.print( "Edit Name", true );
+			$.rect( hitBox3 );
+			$.clearEvents();
+			setTimeout( async function () {
+				$.cls();
+				$.setColor( "white" );
+				$.print( "Old name: " + data.rooms[ data.selectedRoom ].name );
+				room.name = await $.input( "Enter name: ", null );
+				editRooms( data, true );
+			}, 100 );
+		}, false, hitBox3 );
+	}
+
+	// Set Trap Button
+	let hitBox4 = {
+		"x": 206,
+		"y": y + 31,
+		"width": 64,
+		"height": 16
+	};
+	$.setColor( "#838383" );
+	$.setPosPx( hitBox4.x + 4, hitBox4.y + 4 );
+	$.print( "Set Trap", true );
+	$.rect( hitBox4 );
+	if( isFirst ) {
+		$.onclick( function () {
+			$.setColor( "white" );
+			$.setPosPx( hitBox4.x + 4, hitBox4.y + 4 );
+			$.print( "Set Trap", true );
+			$.rect( hitBox4 );
+			$.clearEvents();
+			data.setTrapStep = 0;
+			setTimeout( async function () {
+				editRooms( data, true );
+			}, 100 );
+		}, false, hitBox4 );
+	}
+
+	// Replace All Button
+	let hitBox5 = {
+		"x": 274,
+		"y": y + 31,
+		"width": 72,
+		"height": 16
+	};
+	$.setColor( "#838383" );
+	$.setPosPx( hitBox5.x + 4, hitBox5.y + 4 );
+	$.print( "Replace All", true );
+	$.rect( hitBox5 );
+	if( isFirst ) {
+		$.onclick( function () {
+			$.setColor( "white" );
+			$.setPosPx( hitBox5.x + 4, hitBox5.y + 4 );
+			$.print( "Replace All", true );
+			$.rect( hitBox5 );
+			$.clearEvents();
+			setTimeout( function () {
+				if( data.selectedTile > -1 ) {
+					let room = data.rooms[ data.selectedRoom ];
+					let tileId = Util.GetTileId( data.selectedTile );
+					for( let col = 0; col < room.data.length; col++ ) {
+						room.data[ col ] = tileId.padStart( room.data[ col ].length, tileId );
+					}
+				}
+				editRooms( data, true );
+			}, 100 );
+		}, false, hitBox5 );
+	}
+
+	$.setColor( "white" );
+	$.setPosPx( 0, hitBox5.y + 28 );
+	let pos = $.getPos();
+	$.setPos( pos );
+	$.print( " Room: " + Util.GetTileId( data.selectedRoom ) );
+	$.print( " Name: " + data.rooms[ data.selectedRoom ].name );
+	$.print( " Objects: " + data.rooms[ data.selectedRoom ].objects.length );
+	$.print( " Traps: " + data.rooms[ data.selectedRoom ].traps.length );
+
+	x = 6;
+	y = $.getPosPx().y + 6;
+	let room = data.rooms[ data.selectedRoom ];
+	for( let col = 0; col < room.data.length; col++ ) {
+		for( let row = 0; row < room.data[ col ].length; row += 1 ) {
+			let tile = data.tiles[ Util.GetTileIndex( room.data[ col ].charAt( row ) ) ];
+			let image = Util.ConvertPutStringToData( data.images[ tile.imageId ] );
+			$.put( image, x, y );
+			if( isFirst ) {
+				let hitBoxRoom = {
+					"x": x,
+					"y": y,
+					"width": 15,
+					"height": 15
+				};
+				$.onclick( function () {
+					if( data.selectedTile !== -1 ) {
+						let line = room.data[ col ];
+						room.data[ col ] = line.substring( 0, row ) +
+							Util.GetTileId( data.selectedTile ) +
+							line.substring( row + 1 );
+					}
+					editRooms( data, false );
+				}, false, hitBoxRoom );
+			}
+			x += 15;
+		}
+		x = 6;
+		y += 15;
+	}
+}
+
