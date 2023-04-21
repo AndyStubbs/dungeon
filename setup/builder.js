@@ -1061,6 +1061,16 @@ function setTrap( data ) {
 	let x = 2;
 	let y = 2;
 
+	if( ! data.setTrapStep ) {
+		data.setTrapStep = 0;
+	}
+
+	let trap = room.traps[ data.selectedTrap ];
+
+	if( trap ) {
+		data.selectedImage = trap.imageId;
+	}
+
 	// Draw Images
 	for( let i = 0; i < data.images.length; i++ ) {
 		let image = Util.ConvertPutStringToData( data.images[ i ] );
@@ -1104,7 +1114,7 @@ function setTrap( data ) {
 	$.print( "Editing traps" );
 
 	// Back Button
-	hitBox = {
+	let hitBox = {
 		"x": 2,
 		"y": y + 5,
 		"width": 64,
@@ -1126,21 +1136,21 @@ function setTrap( data ) {
 	}, false, hitBox );
 
 	// Add Button
-	hitBox = {
+	let hitBox2 = {
 		"x": 70,
 		"y": y + 5,
 		"width": 64,
 		"height": 16
 	};
 	$.setColor( "#838383" );
-	$.setPosPx( hitBox.x + 22, hitBox.y + 4 );
+	$.setPosPx( hitBox2.x + 22, hitBox2.y + 4 );
 	$.print( "Add", true );
-	$.rect( hitBox );
+	$.rect( hitBox2 );
 	$.onclick( function () {
 		$.setColor( "white" );
-		$.setPosPx( hitBox.x + 22, hitBox.y + 4 );
+		$.setPosPx( hitBox2.x + 22, hitBox2.y + 4 );
 		$.print( "Add", true );
-		$.rect( hitBox );
+		$.rect( hitBox2 );
 		$.clearEvents();
 		setTimeout( function () {
 			room.traps.push( {
@@ -1153,7 +1163,87 @@ function setTrap( data ) {
 			data.selectedTrap = room.traps.length - 1;
 			setTrap( data );
 		}, 100 );
-	}, false, hitBox );
+	}, false, hitBox2 );
+
+	// Set Pos Button
+	let hitBox3 = {
+		"x": 138,
+		"y": y + 5,
+		"width": 64,
+		"height": 16
+	};
+	$.setColor( "#838383" );
+	if( data.setTrapStep === 0 ) {
+		$.setColor( "#33aa33" );
+	}
+	$.setPosPx( hitBox3.x + 10, hitBox3.y + 4 );
+	$.print( "Set Pos", true );
+	$.rect( hitBox3 );
+	$.onclick( function () {
+		$.setColor( "white" );
+		$.setPosPx( hitBox3.x + 10, hitBox3.y + 4 );
+		$.print( "Set Pos", true );
+		$.rect( hitBox3 );
+		$.clearEvents();
+		setTimeout( function () {
+			data.setTrapStep = 0;
+			data.selectedTrap = room.traps.length - 1;
+			setTrap( data );
+		}, 100 );
+	}, false, hitBox3 );
+
+	// Set Spawn Button
+	let hitBox4 = {
+		"x": 206,
+		"y": y + 5,
+		"width": 64,
+		"height": 16
+	};
+	$.setColor( "#838383" );
+	if( data.setTrapStep === 1 ) {
+		$.setColor( "#33aa33" );
+	}
+	$.setPosPx( hitBox4.x + 6, hitBox4.y + 4 );
+	$.print( "Set Spawn", true );
+	$.rect( hitBox4 );
+	$.onclick( function () {
+		$.setColor( "white" );
+		$.setPosPx( hitBox4.x + 6, hitBox4.y + 4 );
+		$.print( "Set Spawn", true );
+		$.rect( hitBox4 );
+		$.clearEvents();
+		setTimeout( function () {
+			data.setTrapStep = 1;
+			data.selectedTrap = room.traps.length - 1;
+			setTrap( data );
+		}, 100 );
+	}, false, hitBox4 );
+
+	// Set Direction Button
+	let hitBox5 = {
+		"x": 275,
+		"y": y + 5,
+		"width": 64,
+		"height": 16
+	};
+	$.setColor( "#838383" );
+	if( data.setTrapStep === 2 ) {
+		$.setColor( "#33aa33" );
+	}
+	$.setPosPx( hitBox5.x + 6, hitBox5.y + 4 );
+	$.print( "Direction", true );
+	$.rect( hitBox5 );
+	$.onclick( function () {
+		$.setColor( "white" );
+		$.setPosPx( hitBox5.x + 6, hitBox5.y + 4 );
+		$.print( "Direction", true );
+		$.rect( hitBox5 );
+		$.clearEvents();
+		setTimeout( function () {
+			data.setTrapStep = 2;
+			setTrap( data );
+		}, 100 );
+	}, false, hitBox5 );
 
 	x = 2;
 	y += 25;
@@ -1208,9 +1298,17 @@ function setTrap( data ) {
 			};
 			$.onclick( function () {
 				let trap = room.traps[ data.selectedTrap ];
-				if( trap ) {
+				if( trap && data.setTrapStep === 0 ) {
 					trap.pos.x = row;
 					trap.pos.y = col;
+				}
+				if( trap && data.setTrapStep === 1 ) {
+					trap.spawn.x = row;
+					trap.spawn.y = col;
+				}
+				if( trap && data.setTrapStep === 2 ) {
+					trap.dir.x = row;
+					trap.dir.y = col;
 				}
 				setTrap( data );
 			}, false, hitBoxRoom, { "col": col, "row": row } );
@@ -1222,11 +1320,25 @@ function setTrap( data ) {
 	}
 
 	// Draw Trap
-	let trap = room.traps[ data.selectedTrap ];
 	if( trap ) {
 		let image = Util.ConvertPutStringToData( data.images[ trap.imageId ] );
 		$.put( image, ( trap.pos.x * 15 ) + startX, ( trap.pos.y * 15 ) + startY );
+
+		// Draw Spawn Point
+		$.setColor( "black" );
+		$.rect( ( trap.spawn.x * 15 ) + startX + 3, ( trap.spawn.y * 15 ) + startY + 2, 10, 10, "black" );
+		$.setColor( "white" );
+		$.setPosPx( ( trap.spawn.x * 15 ) + startX + 5, ( trap.spawn.y * 15 ) + startY + 4 );
+		$.print( "S", true );
+
+		// Draw Direction Point
+		$.setColor( "black" );
+		$.rect( ( trap.dir.x * 15 ) + startX + 3, ( trap.dir.y * 15 ) + startY + 2, 10, 10, "black" );
+		$.setColor( "white" );
+		$.setPosPx( ( trap.dir.x * 15 ) + startX + 5, ( trap.dir.y * 15 ) + startY + 4 );
+		$.print( "D", true );
 	}
+
 	// $.setColor( "gray" );
 	// if( data.setTrapStep === 0 ) {
 	// 	$.setColor( "white" );
