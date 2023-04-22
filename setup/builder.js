@@ -7,6 +7,7 @@ function loadDungeon( data ) {
 	$.setDefaultPal( data.colors );
 	$.screen( { "aspect": "640x400", "willReadFrequently": true } );
 	$.setColor( "white" );
+	data.temp = {};
 	showMenu( data );
 }
 
@@ -17,45 +18,63 @@ async function showMenu( data ) {
 	$.print( "Images: " + data.images.length );
 	$.print( "Tiles: " + data.tiles.length );
 	$.print( "Rooms: " + data.rooms.length );
+	$.print( "Objects: " + data.objects.length );
+	$.print( "Weapons: " + data.weapons.length );
+	$.print( "Armors: " + data.armors.length );
 	$.print( "" );
 	$.print( "1. Edit Images" );
 	$.print( "2. Edit Tiles" );
 	$.print( "3. Edit Character" );
 	$.print( "4. Edit Objects/Monsters" );
 	$.print( "5. Edit Rooms" );
-	$.print( "6. Reset Dungeon" );
+	$.print( "6. Edit Weapons" );
+	$.print( "7. Edit Armors" );
+	$.print( "8. Reset Dungeon" );
+	$.print( "9. Download Dungeon" );
 
 	let choice = -1;
-	while( choice < 1 || choice > 6 ) {
+	while( choice < 1 || choice > 9 ) {
 		choice = await $.input( "Enter selection: ", null, true, true, false );
-		if( choice < 1 || choice > 6 ) {
+		if( choice < 1 || choice > 9 ) {
 			$.print( "Invalid selection" );
 		}
 	}
 
 	if( choice === 1 ) {
-		data.selectedImage = 0;
-		data.selectedColor = 0;
+		data.temp.selectedImage = 0;
+		data.temp.selectedColor = 0;
 		editImages( data, true );
 	} else if( choice === 2 ) {
-		data.selectedImage = 0;
-		data.selectedTile = 0;
+		data.temp.selectedImage = 0;
+		data.temp.selectedTile = 0;
 		editTiles( data, true );
 	} else if( choice === 3 ) {
-		data.selectedImage = data.character.imageId;
+		data.temp.selectedImage = data.character.imageId;
 		editCharacter( data, true );
 	} else if( choice === 4 ) {
-		data.selectedObject = 0;
-		data.selectedImage = data.objects[ data.selectedObject ].imageId;
+		data.temp.selectedObject = 0;
+		data.temp.selectedImage = data.objects[ data.temp.selectedObject ].imageId;
 		editObjects( data, true );
 	} else if( choice === 5 ) {
-		data.selectedTile = 0;
-		data.selectedObject = -1;
-		data.setTrapStep = -1;
-		data.selectedRoom = 0;
+		data.temp.selectedTile = 0;
+		data.temp.selectedObject = -1;
+		data.temp.setTrapStep = -1;
+		data.temp.selectedRoom = 0;
 		editRooms( data, true );
 	} else if( choice === 6 ) {
+		data.temp.selectedWeapon = 0;
+		editWeapons( data );
+	} else if( choice === 7 ) {
+		data.temp.selectedArmor = 0;
+		editArmors( data );
+	} else if( choice === 8 ) {
 		resetData( data );
+		showMenu( data );
+	} else if( choice === 9 ) {
+		let temp = data.temp;
+		delete data.temp;
+		Util.SaveAsJson( data, "dungeon.json" );
+		data.temp = temp;
 		showMenu( data );
 	}
 }
@@ -180,7 +199,7 @@ function editImages( data, isFirst ) {
 	for( let i = 0; i < data.colors.length; i++ ) {
 		x = i * width + 8;
 		y = 200;
-		if( i === data.selectedColor ) {
+		if( i === data.temp.selectedColor ) {
 			$.setColor( "#acacac" );
 		} else {
 			$.setColor( data.colors[ i ] );
@@ -191,7 +210,7 @@ function editImages( data, isFirst ) {
 			$.line( x, y, x + width - 1, y + height - 1 );
 			$.line( x + width - 1, y, x, y + height - 1 );
 		}
-		if( i === data.selectedColor ) {
+		if( i === data.temp.selectedColor ) {
 			$.setColor( "#535353" );
 			$.rect( x + 1, y + 1, width - 2, height - 2 );
 		}
@@ -204,7 +223,7 @@ function editImages( data, isFirst ) {
 				"height": height
 			};
 			$.onclick( function ( mouse, selectedColor ) {
-				data.selectedColor = selectedColor;
+				data.temp.selectedColor = selectedColor;
 				editImages( data, false );
 			}, false, hitBox, i );
 		}
@@ -290,7 +309,7 @@ function drawImages( data, isFirst, callback ) {
 	for( let i = 0; i < data.images.length; i++ ) {
 		let image = Util.ConvertPutStringToData( data.images[ i ] );
 		$.setPosPx( x, y + 4 );
-		if( data.selectedImage === i ) {
+		if( data.temp.selectedImage === i ) {
 			$.setColor( "white" );
 		} else {
 			$.setColor( "gray" );
@@ -303,7 +322,7 @@ function drawImages( data, isFirst, callback ) {
 			"height": 15
 		};
 		$.put( image, hitBox.x, hitBox.y );
-		if( i === data.selectedImage ) {
+		if( i === data.temp.selectedImage ) {
 			$.setColor( "white" );
 			$.rect( hitBox );
 			$.setColor( "gray" );
@@ -311,7 +330,7 @@ function drawImages( data, isFirst, callback ) {
 		}
 		if( isFirst ) {
 			$.onclick( function ( mouse, selectedImage ) {
-				data.selectedImage = selectedImage;
+				data.temp.selectedImage = selectedImage;
 				callback( data, false );
 			}, false, hitBox, i );
 		}
@@ -324,7 +343,7 @@ function drawImages( data, isFirst, callback ) {
 }
 
 function drawBigImage( data, isFirst ) {
-	let image = Util.ConvertPutStringToData( data.images[ data.selectedImage ] );
+	let image = Util.ConvertPutStringToData( data.images[ data.temp.selectedImage ] );
 	let width = 12;
 	let height = 12;
 	for( let i = 0; i < image.length - 1; i++ ) {
@@ -349,14 +368,14 @@ function drawBigImage( data, isFirst ) {
 					"height": height
 				};
 				$.onclick( function ( mouse, pos ) {
-					//data.images[ data.selectedImage ][ pos.i ][ pos.j ] = data.selectedColor;
-					let line = data.images[ data.selectedImage ][ pos.i ];
-					data.images[ data.selectedImage ][ pos.i ] = line.substring( 0, pos.j ) +
-						data.selectedColor.toString( 32 ) + line.substring( pos.j + 1 );
+					//data.images[ data.temp.selectedImage ][ pos.i ][ pos.j ] = data.temp.selectedColor;
+					let line = data.images[ data.temp.selectedImage ][ pos.i ];
+					data.images[ data.temp.selectedImage ][ pos.i ] = line.substring( 0, pos.j ) +
+						data.temp.selectedColor.toString( 32 ) + line.substring( pos.j + 1 );
 					//editImages( data, false );
-					$.setColor( data.selectedColor );
-					$.rect( pos.x, pos.y, width, height, data.selectedColor );
-					if( data.selectedColor === 0 ) {
+					$.setColor( data.temp.selectedColor );
+					$.rect( pos.x, pos.y, width, height, data.temp.selectedColor );
+					if( data.temp.selectedColor === 0 ) {
 						$.setColor( "#333333" );
 						$.line( pos.x, pos.y, pos.x + width - 1, pos.y + height - 1 );
 						$.line( pos.x + width - 1, pos.y, pos.x, pos.y + height - 1 );
@@ -372,7 +391,7 @@ function editTiles( data, isFirst ) {
 	if( isFirst ) {
 		$.clearEvents();
 	} else {
-		data.tiles[ data.selectedTile ].imageId = data.selectedImage;
+		data.tiles[ data.temp.selectedTile ].imageId = data.temp.selectedImage;
 	}
 	drawImages( data, isFirst, editTiles );
 	let x = 2;
@@ -459,24 +478,48 @@ function editTiles( data, isFirst ) {
 				let pos = $.getPos();
 				$.setPos( pos );
 				$.input( " Description: ", function ( txt ) {
-					data.tiles[ data.selectedTile ].description = txt;
+					data.tiles[ data.temp.selectedTile ].description = txt;
 					editTiles( data, true );
 				} );
 			}, 100 );
 		}, false, hitBox3 );
 	}
 
+	// Special Button
+	let hitBox4 = {
+		"x": 206,
+		"y": y + 8,
+		"width": 64,
+		"height": 16
+	};
+	$.setColor( "#838383" );
+	$.setPosPx( hitBox4.x + 13, hitBox4.y + 4 );
+	$.print( "Special", true );
+	$.rect( hitBox4 );
+	if( isFirst ) {
+		$.onclick( function () {
+			$.setColor( "white" );
+			$.setPosPx( hitBox4.x + 13, hitBox4.y + 4 );
+			$.print( "Special", true );
+			$.rect( hitBox4 );
+			$.clearEvents();
+			setTimeout( function () {
+				setSpecialTile( data );
+			}, 100 );
+		}, false, hitBox4 );
+	}
+
 	y += 70;
 
 	$.setColor( "white" );
 	$.setPosPx( 0, hitBox3.y + 18 );
-	$.print( " Tile: " + Util.GetTileId( data.selectedTile ) );
+	$.print( " Tile: " + Util.GetTileId( data.temp.selectedTile ) );
 	$.setPosPx( 0, hitBox3.y + 29 );
-	$.print( " Image Id: " + data.tiles[ data.selectedTile ].imageId );
+	$.print( " Image Id: " + data.tiles[ data.temp.selectedTile ].imageId );
 	$.setPosPx( 0, hitBox3.y + 50 );
 	let pos = $.getPos();
 	$.setPos( pos );
-	$.print( " Description: " + data.tiles[ data.selectedTile ].description );
+	$.print( " Description: " + data.tiles[ data.temp.selectedTile ].description );
 
 	// Draw Tiles
 	for( let i = 0; i < data.tiles.length; i++ ) {
@@ -488,7 +531,7 @@ function editTiles( data, isFirst ) {
 			"height": 15
 		};
 		$.put( image, x, y );
-		if( i === data.selectedTile ) {
+		if( i === data.temp.selectedTile ) {
 			$.setColor( "white" );
 			$.rect( x + 1, y + 1, 13, 13 );
 		}
@@ -496,8 +539,8 @@ function editTiles( data, isFirst ) {
 		$.rect( hitBox );
 		if( isFirst ) {
 			$.onclick( function ( mouse, selectedTile ) {
-				data.selectedTile = selectedTile;
-				data.selectedImage = data.tiles[ data.selectedTile ].imageId;
+				data.temp.selectedTile = selectedTile;
+				data.temp.selectedImage = data.tiles[ data.temp.selectedTile ].imageId;
 				editTiles( data, false );
 			}, false, hitBox, i );
 		}
@@ -509,12 +552,68 @@ function editTiles( data, isFirst ) {
 	}
 }
 
+async function setSpecialTile( data ) {
+	$.cls();
+	$.clearEvents();
+	let tile = data.tiles[ data.temp.selectedTile ];
+	let image = Util.ConvertPutStringToData( data.images[ tile.imageId ] );
+	$.put( image, 2, 2 );
+	$.setPos( 0, 3 );
+	if( tile.special ) {
+		$.print( " " + tile.special );
+		$.print( "\n" );
+	}
+	$.print( " Set Special Tile" );
+	$.print( " 1. Stairs Up" );
+	$.print( " 2. Stairs Down" );
+	$.print( " 3. Wand Shop" );
+	$.print( " 4. Potion Shop" );
+	$.print( " 5. Key Shop" );
+	$.print( " 6. Weapon Shop" );
+	$.print( " 7. Armor Shop" );
+	$.print( " 8. Healing Shop" );
+	$.print( " 9. Reset - Normal Tile" );
+	$.print( " 10. Cancel - Go back" );
+
+	let choice = -1;
+	while( choice < 1 || choice > 10 ) {
+		choice = await $.input( "Enter selection: ", null, true, true, false );
+		if( choice < 1 || choice > 10 ) {
+			$.print( "Invalid selection" );
+		}
+	}
+
+	if( choice === 1 ) {
+		tile.special = "stairs up";
+	} else if( choice === 2 ) {
+		tile.special = "stairs down";
+	} else if( choice === 3 ) {
+		tile.special = "wand shop";
+	} else if( choice === 4 ) {
+		tile.special = "potion shop";
+	} else if( choice === 5 ) {
+		tile.special = "key shop";
+	} else if( choice === 6 ) {
+		tile.special = "weapon shop";
+		tile.shop = await $.input( "Enter shop #: ", null, true, true, false );
+	} else if( choice === 7 ) {
+		tile.special = "armor shop";
+		tile.shop = await $.input( "Enter shop #: ", null, true, true, false );
+	} else if( choice === 8 ) {
+		tile.special = "healing shop";
+	} else if( choice === 9 ) {
+		delete tile.special;
+		delete tile.shop;
+	}
+	editTiles( data, true );
+}
+
 async function editCharacter( data, isFirst ) {
 	$.cls();
 	if( isFirst ) {
 		$.clearEvents();
 	} else {
-		data.character.imageId = data.selectedImage;
+		data.character.imageId = data.temp.selectedImage;
 	}
 
 	$.print( "Edit Character" );
@@ -590,7 +689,7 @@ async function editCharacter( data, isFirst ) {
 		}
 		data.character.armorId = armorChoice - 1;
 	} else if( choice === 9 ) {
-		data.selectedImage = data.character.imageId;
+		data.temp.selectedImage = data.character.imageId;
 		$.cls();
 		$.clearEvents();
 		drawImages( data, true, editCharacter );
@@ -611,7 +710,7 @@ function editObjects( data, isFirst ) {
 	if( isFirst ) {
 		$.clearEvents();
 	} else {
-		data.objects[ data.selectedObject ].imageId = data.selectedImage;
+		data.objects[ data.temp.selectedObject ].imageId = data.temp.selectedImage;
 	}
 	drawImages( data, isFirst, editObjects );
 
@@ -704,7 +803,7 @@ function editObjects( data, isFirst ) {
 			"height": 15
 		};
 		$.put( image, x, y );
-		if( i === data.selectedObject ) {
+		if( i === data.temp.selectedObject ) {
 			$.setColor( "white" );
 			$.rect( x + 1, y + 1, 13, 13 );
 		}
@@ -712,8 +811,8 @@ function editObjects( data, isFirst ) {
 		$.rect( hitBox );
 		if( isFirst ) {
 			$.onclick( function ( mouse, selectedObject ) {
-				data.selectedObject = selectedObject;
-				data.selectedImage = data.objects[ data.selectedObject ].imageId;
+				data.temp.selectedObject = selectedObject;
+				data.temp.selectedImage = data.objects[ data.temp.selectedObject ].imageId;
 				editObjects( data, false );
 			}, false, hitBox, i );
 		}
@@ -728,18 +827,18 @@ function editObjects( data, isFirst ) {
 	$.setPosPx( 0, y + 25 );
 	let pos = $.getPos();
 	$.setPos( pos );
-	$.print( " Object: " + Util.GetTileId( data.selectedObject ) );
-	$.print( " Image Id: " + data.objects[ data.selectedObject ].imageId );
-	$.print( " Name: " + data.objects[ data.selectedObject ].name );
-	$.print( " Hits: " + data.objects[ data.selectedObject ].hits );
-	$.print( " Level: " + data.objects[ data.selectedObject ].level );
-	$.print( " Exp: " + data.objects[ data.selectedObject ].exp );
-	$.print( " Is Monster: " + data.objects[ data.selectedObject ].isMonster );
+	$.print( " Object: " + Util.GetTileId( data.temp.selectedObject ) );
+	$.print( " Image Id: " + data.objects[ data.temp.selectedObject ].imageId );
+	$.print( " Name: " + data.objects[ data.temp.selectedObject ].name );
+	$.print( " Hits: " + data.objects[ data.temp.selectedObject ].hits );
+	$.print( " Level: " + data.objects[ data.temp.selectedObject ].level );
+	$.print( " Exp: " + data.objects[ data.temp.selectedObject ].exp );
+	$.print( " Is Monster: " + data.objects[ data.temp.selectedObject ].isMonster );
 }
 
 async function editObject( data ) {
 	$.cls();
-	let obj = data.objects[ data.selectedObject ];
+	let obj = data.objects[ data.temp.selectedObject ];
 
 	let image = Util.ConvertPutStringToData( data.images[ obj.imageId ] );
 	$.put( image, 2, 2 );
@@ -792,7 +891,7 @@ function editRooms( data, isFirst ) {
 			"height": 15
 		};
 		$.put( image, x, y );
-		if( i === data.selectedTile ) {
+		if( i === data.temp.selectedTile ) {
 			$.setColor( "white" );
 			$.rect( x + 1, y + 1, 13, 13 );
 		}
@@ -800,8 +899,8 @@ function editRooms( data, isFirst ) {
 		$.rect( hitBox );
 		if( isFirst ) {
 			$.onclick( function ( mouse, selectedTile ) {
-				data.selectedTile = selectedTile;
-				data.selectedObject = -1;
+				data.temp.selectedTile = selectedTile;
+				data.temp.selectedObject = -1;
 				editRooms( data, false );
 			}, false, hitBox, i );
 		}
@@ -824,7 +923,7 @@ function editRooms( data, isFirst ) {
 			"height": 15
 		};
 		$.put( image, x, y );
-		if( i === data.selectedObject ) {
+		if( i === data.temp.selectedObject ) {
 			$.setColor( "white" );
 			$.rect( x + 1, y + 1, 13, 13 );
 		}
@@ -832,8 +931,8 @@ function editRooms( data, isFirst ) {
 		$.rect( hitBox );
 		if( isFirst ) {
 			$.onclick( function ( mouse, selectedObject ) {
-				data.selectedObject = selectedObject;
-				data.selectedTile = -1;
+				data.temp.selectedObject = selectedObject;
+				data.temp.selectedTile = -1;
 				editRooms( data, false );
 			}, false, hitBox, i );
 		}
@@ -918,7 +1017,7 @@ function editRooms( data, isFirst ) {
 			setTimeout( async function () {
 				$.cls();
 				$.setColor( "white" );
-				$.print( "Old name: " + data.rooms[ data.selectedRoom ].name );
+				$.print( "Old name: " + data.rooms[ data.temp.selectedRoom ].name );
 				room.name = await $.input( "Enter name: ", null );
 				editRooms( data, true );
 			}, 100 );
@@ -943,7 +1042,7 @@ function editRooms( data, isFirst ) {
 			$.print( "Set Trap", true );
 			$.rect( hitBox4 );
 			$.clearEvents();
-			data.setTrapStep = 0;
+			data.temp.setTrapStep = 0;
 			setTimeout( async function () {
 				setTrap( data, true );
 			}, 100 );
@@ -969,9 +1068,9 @@ function editRooms( data, isFirst ) {
 			$.rect( hitBox5 );
 			$.clearEvents();
 			setTimeout( function () {
-				if( data.selectedTile > -1 ) {
-					let room = data.rooms[ data.selectedRoom ];
-					let tileId = Util.GetTileId( data.selectedTile );
+				if( data.temp.selectedTile > -1 ) {
+					let room = data.rooms[ data.temp.selectedRoom ];
+					let tileId = Util.GetTileId( data.temp.selectedTile );
 					for( let col = 0; col < room.data.length; col++ ) {
 						room.data[ col ] = tileId.padStart( room.data[ col ].length, tileId );
 					}
@@ -986,7 +1085,7 @@ function editRooms( data, isFirst ) {
 	y += 50;
 	for( let i = 0; i < data.rooms.length; i++ ) {
 		$.setPosPx( x + 2, y + 2 );
-		if( i === data.selectedRoom ) {
+		if( i === data.temp.selectedRoom ) {
 			$.setColor( "white" );
 		} else {
 			$.setColor( "gray" );
@@ -1001,7 +1100,7 @@ function editRooms( data, isFirst ) {
 		$.rect( hitBox );
 		if( isFirst ) {
 			$.onclick( function ( mouse, selectedRoom ) {
-				data.selectedRoom = selectedRoom;
+				data.temp.selectedRoom = selectedRoom;
 				editRooms( data, false );
 			}, false, hitBox, i );
 		}
@@ -1016,14 +1115,14 @@ function editRooms( data, isFirst ) {
 	$.setPosPx( 0, y + 20 );
 	let pos = $.getPos();
 	$.setPos( pos );
-	$.print( " Room: " + Util.GetTileId( data.selectedRoom ) );
-	$.print( " Name: " + data.rooms[ data.selectedRoom ].name );
-	$.print( " Objects: " + data.rooms[ data.selectedRoom ].objects.length );
-	$.print( " Traps: " + data.rooms[ data.selectedRoom ].traps.length );
+	$.print( " Room: " + Util.GetTileId( data.temp.selectedRoom ) );
+	$.print( " Name: " + data.rooms[ data.temp.selectedRoom ].name );
+	$.print( " Objects: " + data.rooms[ data.temp.selectedRoom ].objects.length );
+	$.print( " Traps: " + data.rooms[ data.temp.selectedRoom ].traps.length );
 
 	x = 6;
 	y = $.getPosPx().y + 6;
-	let room = data.rooms[ data.selectedRoom ];
+	let room = data.rooms[ data.temp.selectedRoom ];
 	let startX = x;
 	for( let col = 0; col < room.data.length; col++ ) {
 		for( let row = 0; row < room.data[ col ].length; row += 1 ) {
@@ -1038,10 +1137,10 @@ function editRooms( data, isFirst ) {
 					"height": 15
 				};
 				$.onclick( function () {
-					if( data.selectedTile !== -1 ) {
+					if( data.temp.selectedTile !== -1 ) {
 						let line = room.data[ col ];
 						room.data[ col ] = line.substring( 0, row ) +
-							Util.GetTileId( data.selectedTile ) +
+							Util.GetTileId( data.temp.selectedTile ) +
 							line.substring( row + 1 );
 					}
 					editRooms( data, false );
@@ -1057,25 +1156,26 @@ function editRooms( data, isFirst ) {
 function setTrap( data ) {
 	$.cls();
 	$.clearEvents();
-	let room =  data.rooms[ data.selectedRoom ];
+	let room =  data.rooms[ data.temp.selectedRoom ];
 	let x = 2;
 	let y = 2;
 
-	if( ! data.setTrapStep ) {
-		data.setTrapStep = 0;
+	if( ! data.temp.setTrapStep ) {
+		data.temp.setTrapStep = 0;
 	}
 
-	let trap = room.traps[ data.selectedTrap ];
+	let trap = room.traps[ data.temp.selectedTrap ];
 
 	if( trap ) {
-		data.selectedImage = trap.imageId;
+		data.temp.selectedImage = trap.imageId;
+		data.temp.selectedObject = trap.object;
 	}
 
 	// Draw Images
 	for( let i = 0; i < data.images.length; i++ ) {
 		let image = Util.ConvertPutStringToData( data.images[ i ] );
 		$.setPosPx( x, y + 4 );
-		if( data.selectedImage === i ) {
+		if( data.temp.selectedImage === i ) {
 			$.setColor( "white" );
 		} else {
 			$.setColor( "gray" );
@@ -1088,15 +1188,15 @@ function setTrap( data ) {
 			"height": 15
 		};
 		$.put( image, hitBox.x, hitBox.y );
-		if( i === data.selectedImage ) {
+		if( i === data.temp.selectedImage ) {
 			$.setColor( "white" );
 			$.rect( hitBox );
 			$.setColor( "gray" );
 			$.rect( hitBox.x - 1, hitBox.y - 1, hitBox.width + 2, hitBox.height + 2 );
 		}
 		$.onclick( function ( mouse, selectedImage ) {
-			data.selectedImage = selectedImage;
-			room.traps[ data.selectedTrap ].imageId = selectedImage;
+			data.temp.selectedImage = selectedImage;
+			room.traps[ data.temp.selectedTrap ].imageId = selectedImage;
 			setTrap( data, false );
 		}, false, hitBox, i );
 		x += 45;
@@ -1160,7 +1260,7 @@ function setTrap( data ) {
 				"dir": { "x": 0, "y": 0 },
 				"object": 0
 			} );
-			data.selectedTrap = room.traps.length - 1;
+			data.temp.selectedTrap = room.traps.length - 1;
 			setTrap( data );
 		}, 100 );
 	}, false, hitBox2 );
@@ -1173,7 +1273,7 @@ function setTrap( data ) {
 		"height": 16
 	};
 	$.setColor( "#838383" );
-	if( data.setTrapStep === 0 ) {
+	if( data.temp.setTrapStep === 0 ) {
 		$.setColor( "#33aa33" );
 	}
 	$.setPosPx( hitBox3.x + 10, hitBox3.y + 4 );
@@ -1186,8 +1286,8 @@ function setTrap( data ) {
 		$.rect( hitBox3 );
 		$.clearEvents();
 		setTimeout( function () {
-			data.setTrapStep = 0;
-			data.selectedTrap = room.traps.length - 1;
+			data.temp.setTrapStep = 0;
+			data.temp.selectedTrap = room.traps.length - 1;
 			setTrap( data );
 		}, 100 );
 	}, false, hitBox3 );
@@ -1200,7 +1300,7 @@ function setTrap( data ) {
 		"height": 16
 	};
 	$.setColor( "#838383" );
-	if( data.setTrapStep === 1 ) {
+	if( data.temp.setTrapStep === 1 ) {
 		$.setColor( "#33aa33" );
 	}
 	$.setPosPx( hitBox4.x + 6, hitBox4.y + 4 );
@@ -1213,8 +1313,8 @@ function setTrap( data ) {
 		$.rect( hitBox4 );
 		$.clearEvents();
 		setTimeout( function () {
-			data.setTrapStep = 1;
-			data.selectedTrap = room.traps.length - 1;
+			data.temp.setTrapStep = 1;
+			data.temp.selectedTrap = room.traps.length - 1;
 			setTrap( data );
 		}, 100 );
 	}, false, hitBox4 );
@@ -1227,7 +1327,7 @@ function setTrap( data ) {
 		"height": 16
 	};
 	$.setColor( "#838383" );
-	if( data.setTrapStep === 2 ) {
+	if( data.temp.setTrapStep === 2 ) {
 		$.setColor( "#33aa33" );
 	}
 	$.setPosPx( hitBox5.x + 6, hitBox5.y + 4 );
@@ -1240,7 +1340,7 @@ function setTrap( data ) {
 		$.rect( hitBox5 );
 		$.clearEvents();
 		setTimeout( function () {
-			data.setTrapStep = 2;
+			data.temp.setTrapStep = 2;
 			setTrap( data );
 		}, 100 );
 	}, false, hitBox5 );
@@ -1258,7 +1358,7 @@ function setTrap( data ) {
 			"height": 15
 		};
 		$.put( image, x, y );
-		if( i === data.selectedTrap ) {
+		if( i === data.temp.selectedTrap ) {
 			$.setColor( "white" );
 			$.rect( x + 1, y + 1, 13, 13 );
 		}
@@ -1266,8 +1366,7 @@ function setTrap( data ) {
 		$.rect( hitBox );
 
 		$.onclick( function ( mouse, selectedTrap ) {
-			data.selectedTrap = selectedTrap;
-			data.selectedObject = -1;
+			data.temp.selectedTrap = selectedTrap;
 			setTrap( data );
 		}, false, hitBox, i );
 
@@ -1297,16 +1396,16 @@ function setTrap( data ) {
 				"height": 15
 			};
 			$.onclick( function () {
-				let trap = room.traps[ data.selectedTrap ];
-				if( trap && data.setTrapStep === 0 ) {
+				let trap = room.traps[ data.temp.selectedTrap ];
+				if( trap && data.temp.setTrapStep === 0 ) {
 					trap.pos.x = row;
 					trap.pos.y = col;
 				}
-				if( trap && data.setTrapStep === 1 ) {
+				if( trap && data.temp.setTrapStep === 1 ) {
 					trap.spawn.x = row;
 					trap.spawn.y = col;
 				}
-				if( trap && data.setTrapStep === 2 ) {
+				if( trap && data.temp.setTrapStep === 2 ) {
 					trap.dir.x = row;
 					trap.dir.y = col;
 				}
@@ -1339,32 +1438,376 @@ function setTrap( data ) {
 		$.print( "D", true );
 	}
 
-	// $.setColor( "gray" );
-	// if( data.setTrapStep === 0 ) {
-	// 	$.setColor( "white" );
-	// }
-	// $.print( "1. Select image for revealed trap." );
-	// $.setColor( "gray" );
-	// if( data.setTrapStep === 1 ) {
-	// 	$.setColor( "white" );
-	// }
-	// $.print( "2. Select trigger location for trap." );
-	// $.setColor( "gray" );
-	// if( data.setTrapStep === 2 ) {
-	// 	$.setColor( "white" );
-	// }
-	// $.print( "3. Select spawn point for object/projectile." );
-	// $.setColor( "gray" );
-	// if( data.setTrapStep === 3 ) {
-	// 	$.setColor( "white" );
-	// }
-	// $.print( "4. Select direction for projectile by clicking tile next to spawn point." );
-	// $.setColor( "gray" );
-	// if( data.setTrapStep === 4 ) {
-	// 	$.setColor( "white" );
-	// }
-	// $.print( "5. Select object/projectile that will be spawned when trap is triggered." );
+	// Draw Objects
+	startX = 320;
+	x = startX;
+	y = startY;
 
-	//$.print( "1. Select image for revealed trap." );
+	$.setColor( "white" );
+	$.setPosPx( x, y - 12 );
+	$.print( "Select Object/Projectile", true );
+	for( let i = 0; i < data.objects.length; i++ ) {
+		let image = Util.ConvertPutStringToData( data.images[ data.objects[ i ].imageId ] );
+		let hitBox = {
+			"x": x,
+			"y": y,
+			"width": 15,
+			"height": 15
+		};
+		$.put( image, x, y );
+		if( i === data.temp.selectedObject ) {
+			$.setColor( "white" );
+			$.rect( x + 1, y + 1, 13, 13 );
+		}
+		$.setColor( "gray" );
+		$.rect( hitBox );
+		$.onclick( function ( mouse, selectedObject ) {
+			if( room )
+			data.temp.selectedObject = selectedObject;
+			let trap = room.traps[ data.temp.selectedTrap ];
+			if( trap ) {
+				trap.object = data.temp.selectedObject;
+			}
+			setTrap( data );
+		}, false, hitBox, i );
+		x += 18
+		if( x > 628 ) {
+			x = startX;
+			y += 18;
+		}
+	}
+}
 
+function editWeapons( data ) {
+	$.cls();
+	$.clearEvents();
+
+	let x = 2;
+	let y = 2;
+
+	$.setPosPx( 2, y );
+	$.setColor( "white" );
+	$.print( "Editing Weapons" );
+
+	// Menu Button
+	let hitBox = {
+		"x": 2,
+		"y": y + 12,
+		"width": 64,
+		"height": 16
+	};
+	$.setColor( "#838383" );
+	$.setPosPx( hitBox.x + 22, hitBox.y + 4 );
+	$.print( "Menu", true );
+	$.rect( hitBox );
+	$.onclick( function () {
+		$.setColor( "white" );
+		$.setPosPx( hitBox.x + 22, hitBox.y + 4 );
+		$.print( "Menu", true );
+		$.rect( hitBox );
+		$.clearEvents();
+		setTimeout( function () {
+			showMenu( data );
+		}, 100 );
+	}, false, hitBox );
+
+
+	// Add Button
+	let hitBox2 = {
+		"x": 70,
+		"y": y + 12,
+		"width": 64,
+		"height": 16
+	};
+	$.setColor( "#838383" );
+	$.setPosPx( hitBox2.x + 22, hitBox2.y + 4 );
+	$.print( "Add", true );
+	$.rect( hitBox2 );
+	$.onclick( function () {
+		$.setColor( "white" );
+		$.setPosPx( hitBox2.x + 22, hitBox2.y + 4 );
+		$.print( "Add", true );
+		$.rect( hitBox2 );
+		$.clearEvents();
+		data.weapons.push( {
+			"name": "Dagger",
+			"damage": 2,
+			"hit": 0.8,
+			"cost": 5,
+			"store": 1
+		} );
+		data.temp.selectedWeapon = data.weapons.length - 1;
+		setTimeout( function () {
+			editWeapons( data );
+		}, 100 );
+	}, false, hitBox2 );
+
+	// Edit Button
+	let hitBox3 = {
+		"x": 138,
+		"y": y + 12,
+		"width": 64,
+		"height": 16
+	};
+	$.setColor( "#838383" );
+	$.setPosPx( hitBox3.x + 22, hitBox3.y + 4 );
+	$.print( "Edit", true );
+	$.rect( hitBox3 );
+	$.onclick( function () {
+		$.setColor( "white" );
+		$.setPosPx( hitBox3.x + 22, hitBox3.y + 4 );
+		$.print( "Edit", true );
+		$.rect( hitBox3 );
+		$.clearEvents();
+		setTimeout( function () { editWeapon( data ); }, 100 );
+	}, false, hitBox3 );
+
+
+	// Draw Weapons
+	y += 31;
+	for( let i = 0; i < data.weapons.length; i++ ) {
+		let hitBox4 = {
+			"x": x,
+			"y": y,
+			"width": 15,
+			"height": 15
+		};
+		$.setPosPx( x + 3, y + 3 );
+		$.print( Util.GetTileId( i ) );
+		if( i === data.temp.selectedWeapon ) {
+			$.setColor( "white" );
+			$.rect( x + 1, y + 1, 13, 13 );
+		}
+		$.setColor( "gray" );
+		$.rect( hitBox4 );
+		$.onclick( function ( mouse, selectedWeapon ) {
+			data.temp.selectedWeapon = selectedWeapon;
+			editWeapons( data );
+		}, false, hitBox4, i );
+
+		x += 18
+		if( x > 628 ) {
+			x = 2;
+			y += 18;
+		}
+	}
+
+	$.setColor( "white" );
+	$.setPosPx( 0, y + 25 );
+	let pos = $.getPos();
+	$.setPos( pos );
+	$.print( " Weapon: " + Util.GetTileId( data.temp.selectedWeapon ) );
+	$.print( " Name: " + data.weapons[ data.temp.selectedWeapon ].name );
+	$.print( " Damage: " + data.weapons[ data.temp.selectedWeapon ].damage );
+	$.print( " Hit Pct: " + data.weapons[ data.temp.selectedWeapon ].hit );
+	$.print( " Cost: " + data.weapons[ data.temp.selectedWeapon ].cost );
+	$.print( " Store: " + data.weapons[ data.temp.selectedWeapon ].store );
+}
+
+async function editWeapon( data ) {
+	$.cls();
+	$.setColor( "white" );
+	$.print( " Edit Weapon: " + Util.GetTileId( data.temp.selectedWeapon ) );
+	$.print( " 1. Name: " + data.weapons[ data.temp.selectedWeapon ].name );
+	$.print( " 2. Damage: " + data.weapons[ data.temp.selectedWeapon ].damage );
+	$.print( " 3. Hit Pct: " + data.weapons[ data.temp.selectedWeapon ].hit );
+	$.print( " 4. Cost: " + data.weapons[ data.temp.selectedWeapon ].cost );
+	$.print( " 5. Store: " + data.weapons[ data.temp.selectedWeapon ].store );
+	$.print( " 6. Done" );
+
+	let choice = -1;
+	while( choice < 1 || choice > 6 ) {
+		choice = await $.input( "Enter selection: ", null, true, true, false );
+		if( choice < 1 || choice > 6 ) {
+			$.print( "Invalid selection" );
+		}
+	}
+
+	let weapon = data.weapons[ data.temp.selectedWeapon ];
+	if( choice === 1 ) {
+		weapon.name = await $.input( "Enter name: ", null );
+	} else if( choice === 2 ) {
+		weapon.damage = await $.input( "Enter damage: ", null, true, true, false );
+	} else if( choice === 3 ) {
+		weapon.hit = await $.input( "Enter hit pct(0-1): ", null, true, false, false );
+		if( weapon.hit > 1 ) {
+			weapon.hit = 1;
+		}
+	} else if( choice === 4 ) {
+		weapon.cost = await $.input( "Enter cost: ", null, true, true, false );
+	} else if( choice === 5 ) {
+		weapon.store = await $.input( "Enter store: ", null, true, true, false );
+	} else if( choice === 6 ) {
+		editWeapons( data, true );
+		return;
+	}
+
+	editWeapon( data );
+}
+
+function editArmors( data ) {
+	$.cls();
+	$.clearEvents();
+
+	let x = 2;
+	let y = 2;
+
+	$.setPosPx( 2, y );
+	$.setColor( "white" );
+	$.print( "Editing Armors" );
+
+	// Menu Button
+	let hitBox = {
+		"x": 2,
+		"y": y + 12,
+		"width": 64,
+		"height": 16
+	};
+	$.setColor( "#838383" );
+	$.setPosPx( hitBox.x + 22, hitBox.y + 4 );
+	$.print( "Menu", true );
+	$.rect( hitBox );
+	$.onclick( function () {
+		$.setColor( "white" );
+		$.setPosPx( hitBox.x + 22, hitBox.y + 4 );
+		$.print( "Menu", true );
+		$.rect( hitBox );
+		$.clearEvents();
+		setTimeout( function () {
+			showMenu( data );
+		}, 100 );
+	}, false, hitBox );
+
+
+	// Add Button
+	let hitBox2 = {
+		"x": 70,
+		"y": y + 12,
+		"width": 64,
+		"height": 16
+	};
+	$.setColor( "#838383" );
+	$.setPosPx( hitBox2.x + 22, hitBox2.y + 4 );
+	$.print( "Add", true );
+	$.rect( hitBox2 );
+	$.onclick( function () {
+		$.setColor( "white" );
+		$.setPosPx( hitBox2.x + 22, hitBox2.y + 4 );
+		$.print( "Add", true );
+		$.rect( hitBox2 );
+		$.clearEvents();
+		data.armors.push( {
+			"name": "Cloth",
+			"protection": 1,
+			"dodge": 0.9,
+			"cost": 20,
+			"store": 1
+		} );
+		data.temp.selectedWeapon = data.weapons.length - 1;
+		setTimeout( function () {
+			editArmors( data );
+		}, 100 );
+	}, false, hitBox2 );
+
+	// Edit Button
+	let hitBox3 = {
+		"x": 138,
+		"y": y + 12,
+		"width": 64,
+		"height": 16
+	};
+	$.setColor( "#838383" );
+	$.setPosPx( hitBox3.x + 22, hitBox3.y + 4 );
+	$.print( "Edit", true );
+	$.rect( hitBox3 );
+	$.onclick( function () {
+		$.setColor( "white" );
+		$.setPosPx( hitBox3.x + 22, hitBox3.y + 4 );
+		$.print( "Edit", true );
+		$.rect( hitBox3 );
+		$.clearEvents();
+		setTimeout( function () { editArmor( data ); }, 100 );
+	}, false, hitBox3 );
+
+
+	// Draw Armors
+	y += 31;
+	for( let i = 0; i < data.armors.length; i++ ) {
+		let hitBox4 = {
+			"x": x,
+			"y": y,
+			"width": 15,
+			"height": 15
+		};
+		$.setPosPx( x + 3, y + 3 );
+		$.print( Util.GetTileId( i ) );
+		if( i === data.temp.selectedArmor ) {
+			$.setColor( "white" );
+			$.rect( x + 1, y + 1, 13, 13 );
+		}
+		$.setColor( "gray" );
+		$.rect( hitBox4 );
+		$.onclick( function ( mouse, selectedArmor ) {
+			data.temp.selectedArmor = selectedArmor;
+			editArmors( data );
+		}, false, hitBox4, i );
+
+		x += 18
+		if( x > 628 ) {
+			x = 2;
+			y += 18;
+		}
+	}
+
+	$.setColor( "white" );
+	$.setPosPx( 0, y + 25 );
+	let pos = $.getPos();
+	$.setPos( pos );
+	$.print( " Armor: " + Util.GetTileId( data.temp.selectedArmor ) );
+	$.print( " Name: " + data.armors[ data.temp.selectedArmor ].name );
+	$.print( " Damage: " + data.armors[ data.temp.selectedArmor ].protection );
+	$.print( " Hit Pct: " + data.armors[ data.temp.selectedArmor ].dodge );
+	$.print( " Cost: " + data.armors[ data.temp.selectedArmor ].cost );
+	$.print( " Store: " + data.armors[ data.temp.selectedArmor ].store );
+}
+
+async function editArmor( data ) {
+	$.cls();
+	$.setColor( "white" );
+	$.print( " Edit Armor: " + Util.GetTileId( data.temp.selectedArmor ) );
+	$.print( " 1. Name: " + data.armors[ data.temp.selectedArmor ].name );
+	$.print( " 2. Protection: " + data.armors[ data.temp.selectedArmor ].protection );
+	$.print( " 3. Dodge Pct: " + data.armors[ data.temp.selectedArmor ].dodge );
+	$.print( " 4. Cost: " + data.armors[ data.temp.selectedArmor ].cost );
+	$.print( " 5. Store: " + data.armors[ data.temp.selectedArmor ].store );
+	$.print( " 6. Done" );
+
+	let choice = -1;
+	while( choice < 1 || choice > 6 ) {
+		choice = await $.input( "Enter selection: ", null, true, true, false );
+		if( choice < 1 || choice > 6 ) {
+			$.print( "Invalid selection" );
+		}
+	}
+
+	let armor = data.armors[ data.temp.selectedArmor ];
+	if( choice === 1 ) {
+		armor.name = await $.input( "Enter name: ", null );
+	} else if( choice === 2 ) {
+		armor.protection = await $.input( "Enter protection: ", null, true, true, false );
+	} else if( choice === 3 ) {
+		armor.dodge = await $.input( "Enter dodge pct(0-1): ", null, true, false, false );
+		if( armor.dodge > 1 ) {
+			armor.dodge = 1;
+		}
+	} else if( choice === 4 ) {
+		armor.cost = await $.input( "Enter cost: ", null, true, true, false );
+	} else if( choice === 5 ) {
+		armor.store = await $.input( "Enter store: ", null, true, true, false );
+	} else if( choice === 6 ) {
+		editArmors( data );
+		return;
+	}
+
+	editArmor( data );
 }

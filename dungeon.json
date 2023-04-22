@@ -119,6 +119,30 @@
 		}, {
 			"imageId": 80,
 			"description": "a repel field"
+		}, {
+			"imageId": 28,
+			"description": "a wand shop",
+			"special": "wand shop"
+		}, {
+			"imageId": 38,
+			"description": "a potion shop",
+			"special": "potion shop"
+		}, {
+			"imageId": 26,
+			"description": "a key shop",
+			"special": "key shop"
+		}, {
+			"imageId": 24,
+			"description": "a weapon shop",
+			"special": "weapon shop"
+		}, {
+			"imageId": 25,
+			"description": "an armor shop",
+			"special": "armor shop"
+		}, {
+			"imageId": 27,
+			"description": "an healing shop",
+			"special": "armor shop"
 		}
 	],
 	"colors": [
@@ -155,22 +179,30 @@
 		{
 			"name": "Hands",
 			"damage": 1,
-			"hit": 0.9
+			"hit": 0.9,
+			"store": 0,
+			"cost": 0
 		}, {
 			"name": "Dagger",
 			"damage": 2,
-			"hit": 0.8
+			"hit": 0.8,
+			"cost": 5,
+			"store": 1
 		}
 	],
 	"armors": [
 		{
 			"name": "Skin",
 			"protection": 0,
-			"dodge": 1
+			"dodge": 1,
+			"cost": 0,
+			"store": 0
 		}, {
 			"name": "Cloth",
 			"protection": 1,
-			"dodge": 0.9
+			"dodge": 0.9,
+			"cost": 20,
+			"store": 1
 		}
 	],
 	"objects": [
@@ -190,14 +222,14 @@
 			"objects": [],
 			"traps": [],
 			"data": [
-				"00000000000000000000",
-				"00000000000000000000",
-				"00000000000000000000",
-				"00000000000000000000",
-				"00000000000000000000",
-				"00000000000000000000",
-				"00000000000000000000",
-				"00000000000000000000"
+				"9999mmmmmmmmm4mmm999",
+				"99mmpmmymmmmq44q4499",
+				"9mpmmmmmmxmmqq444449",
+				"9mmmmmmmmmmmmqqqq449",
+				"9mmmDmEmFmmGmHmIqqq9",
+				"9mmymmmmmmmmmmmmmmm9",
+				"99mmmmmmmmmmmympmm99",
+				"99999999999999999999"
 			]
 		}
 	],

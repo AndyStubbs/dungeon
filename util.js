@@ -8,7 +8,7 @@
 		"Delay": Delay,
 		"LoadAllImages": LoadAllImages,
 		"LoadAllJson": LoadAllJson,
-		"SaveAsText": SaveAsText,
+		"SaveAsJson": SaveAsJson,
 		"ConvertImagesToPutString32": ConvertImagesToPutString32,
 		"ConvertPutStringToData": ConvertPutStringToData,
 		"GetImageData": GetImageData,
@@ -74,9 +74,9 @@
 		} );
 	}
 
-	function SaveAsText( obj, filename ) {
+	function SaveAsJson( obj, filename ) {
 		const text = JSON.stringify( obj, null, 2 );
-		const blob = new Blob( [ text ], { type: 'text/plain' } );
+		const blob = new Blob( [ text ], { type: 'text/JSON' } );
 		const link = document.createElement( 'a' );
 		link.download = filename;
 		link.href = URL.createObjectURL( blob );
