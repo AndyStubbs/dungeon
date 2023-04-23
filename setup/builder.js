@@ -29,13 +29,14 @@ async function showMenu( data ) {
 	$.print( "5. Edit Rooms" );
 	$.print( "6. Edit Weapons" );
 	$.print( "7. Edit Armors" );
-	$.print( "8. Reset Dungeon" );
-	$.print( "9. Download Dungeon" );
+	$.print( "8. Edit Maps" );
+	$.print( "9. Reset Dungeon" );
+	$.print( "10. Download Dungeon" );
 
 	let choice = -1;
-	while( choice < 1 || choice > 9 ) {
+	while( choice < 1 || choice > 10 ) {
 		choice = await $.input( "Enter selection: ", null, true, true, false );
-		if( choice < 1 || choice > 9 ) {
+		if( choice < 1 || choice > 10 ) {
 			$.print( "Invalid selection" );
 		}
 	}
@@ -68,9 +69,13 @@ async function showMenu( data ) {
 		data.temp.selectedArmor = 0;
 		editArmors( data );
 	} else if( choice === 8 ) {
+		data.temp.selectedRoom = 0;
+		data.temp.selectedMapLevel = 0;
+		editMaps( data );
+	} else if( choice === 9 ) {
 		resetData( data );
 		showMenu( data );
-	} else if( choice === 9 ) {
+	} else if( choice === 10 ) {
 		let temp = data.temp;
 		delete data.temp;
 		Util.SaveAsJson( data, "dungeon.json" );
@@ -1018,7 +1023,7 @@ function editRooms( data, isFirst ) {
 				$.cls();
 				$.setColor( "white" );
 				$.print( "Old name: " + data.rooms[ data.temp.selectedRoom ].name );
-				room.name = await $.input( "Enter name: ", null );
+				data.rooms[ data.temp.selectedRoom ].name = await $.input( "Enter name: ", null );
 				editRooms( data, true );
 			}, 100 );
 		}, false, hitBox3 );
@@ -1080,6 +1085,32 @@ function editRooms( data, isFirst ) {
 		}, false, hitBox5 );
 	}
 
+	// Clear Objects
+	let hitBox6 = {
+		"x": 352,
+		"y": y + 31,
+		"width": 72,
+		"height": 16
+	};
+	$.setColor( "#838383" );
+	$.setPosPx( hitBox6.x + 4, hitBox6.y + 4 );
+	$.print( "Clear Objs", true );
+	$.rect( hitBox6 );
+	if( isFirst ) {
+		$.onclick( function () {
+			$.setColor( "white" );
+			$.setPosPx( hitBox6.x + 4, hitBox6.y + 4 );
+			$.print( "Clear Objs", true );
+			$.rect( hitBox6 );
+			$.clearEvents();
+			setTimeout( function () {
+				let room = data.rooms[ data.temp.selectedRoom ];
+				room.objects = [];
+				editRooms( data, true );
+			}, 100 );
+		}, false, hitBox6 );
+	}
+
 	// Draw Room Selectors
 	x = 2;
 	y += 50;
@@ -1124,6 +1155,7 @@ function editRooms( data, isFirst ) {
 	y = $.getPosPx().y + 6;
 	let room = data.rooms[ data.temp.selectedRoom ];
 	let startX = x;
+	let startY = y;
 	for( let col = 0; col < room.data.length; col++ ) {
 		for( let row = 0; row < room.data[ col ].length; row += 1 ) {
 			let tile = data.tiles[ Util.GetTileIndex( room.data[ col ].charAt( row ) ) ];
@@ -1136,20 +1168,37 @@ function editRooms( data, isFirst ) {
 					"width": 15,
 					"height": 15
 				};
-				$.onclick( function () {
+				$.onclick( function ( mouse, pos ) {
 					if( data.temp.selectedTile !== -1 ) {
 						let line = room.data[ col ];
 						room.data[ col ] = line.substring( 0, row ) +
 							Util.GetTileId( data.temp.selectedTile ) +
 							line.substring( row + 1 );
+					} else if( data.temp.selectedObject > -1 ) {
+						let room = data.rooms[ data.temp.selectedRoom ];
+						room.objects.push( {
+							"x": pos.x,
+							"y": pos.y,
+							"id": Util.GetTileId( data.temp.selectedObject )
+						} );
 					}
 					editRooms( data, false );
-				}, false, hitBoxRoom );
+				}, false, hitBoxRoom, { "x": row, "y": col } );
 			}
 			x += 15;
 		}
 		x = startX;
 		y += 15;
+	}
+
+	for( let i = 0; i < room.objects.length; i++ ) {
+		let obj = room.objects[ i ];
+		let image = Util.ConvertPutStringToData(
+			data.images[ data.objects[ Util.GetTileIndex( obj.id ) ].imageId ]
+		);
+		let mx = obj.x * 15 + startX;
+		let my = obj.y * 15 + startY;
+		$.put( image, mx, my );
 	}
 }
 
@@ -1810,4 +1859,269 @@ async function editArmor( data ) {
 	}
 
 	editArmor( data );
+}
+
+function editMaps( data ) {
+	$.cls();
+	$.clearEvents();
+
+	let x = 2;
+	let y = 2;
+
+	$.setColor( "white" );
+	$.print( "Editing Maps" );
+
+	// Menu Button
+	let hitBox = {
+		"x": 2,
+		"y": y + 8,
+		"width": 64,
+		"height": 16
+	};
+	$.setColor( "#838383" );
+	$.setPosPx( hitBox.x + 19, hitBox.y + 4 );
+	$.print( "Menu", true );
+	$.rect( hitBox );
+	$.onclick( function () {
+		$.setColor( "white" );
+		$.setPosPx( hitBox.x + 19, hitBox.y + 4 );
+		$.print( "Menu", true );
+		$.rect( hitBox );
+		$.clearEvents();
+		setTimeout( function () {
+			showMenu( data );
+		}, 100 );
+	}, false, hitBox );
+
+
+	// Up Level
+	let hitBox2 = {
+		"x": 70,
+		"y": y + 8,
+		"width": 64,
+		"height": 16
+	};
+	$.setColor( "#838383" );
+	$.setPosPx( hitBox2.x + 30, hitBox2.y + 4 );
+	$.print( "Up", true );
+	$.rect( hitBox2 );
+	$.onclick( function () {
+		$.setColor( "white" );
+		$.setPosPx( hitBox2.x + 30, hitBox2.y + 4 );
+		$.print( "Up", true );
+		$.rect( hitBox2 );
+		$.clearEvents();
+		data.temp.selectedMapLevel -= 1;
+		if( data.temp.selectedMapLevel < 0 ) {
+			data.maps.unshift( [ "" ] );
+			data.temp.selectedMapLevel = 0;
+		}
+		setTimeout( function () {
+			editMaps( data );
+		}, 100 );
+	}, false, hitBox2 );
+
+	// Down Level
+	let hitBox3 = {
+		"x": 138,
+		"y": y + 8,
+		"width": 64,
+		"height": 16
+	};
+	$.setColor( "#838383" );
+	$.setPosPx( hitBox3.x + 18, hitBox3.y + 4 );
+	$.print( "Down", true );
+	$.rect( hitBox3 );
+	$.onclick( function () {
+		$.setColor( "white" );
+		$.setPosPx( hitBox3.x + 18, hitBox3.y + 4 );
+		$.print( "Down", true );
+		$.rect( hitBox3 );
+		$.clearEvents();
+		data.temp.selectedMapLevel += 1;
+		if( data.temp.selectedMapLevel >= data.maps.length ) {
+			data.maps.push( [ "" ] );
+		}
+		setTimeout( async function () {
+			editMaps( data );
+		}, 100 );
+	}, false, hitBox3 );
+
+	// Clear
+	let hitBox4 = {
+		"x": 206,
+		"y": y + 8,
+		"width": 64,
+		"height": 16
+	};
+	$.setColor( "#838383" );
+	$.setPosPx( hitBox4.x + 20, hitBox4.y + 4 );
+	$.print( "Clear", true );
+	$.rect( hitBox4 );
+	$.onclick( function () {
+		$.setColor( "white" );
+		$.setPosPx( hitBox4.x + 20, hitBox4.y + 4 );
+		$.print( "Clear", true );
+		$.rect( hitBox4 );
+		$.clearEvents();
+		data.maps[ data.temp.selectedMapLevel ] = [ "" ];
+		setTimeout( async function () {
+			editMaps( data );
+		}, 100 );
+	}, false, hitBox4 );
+
+	// Draw Room Selectors
+	x = 2;
+	y += 28;
+	for( let i = 0; i < data.rooms.length; i++ ) {
+		$.setPosPx( x + 2, y + 2 );
+		if( i === data.temp.selectedRoom ) {
+			$.setColor( "white" );
+		} else {
+			$.setColor( "gray" );
+		}
+		$.print( Util.GetTileId( i ), true );
+		let hitBox = {
+			"x": x,
+			"y": y,
+			"width": 15,
+			"height": 15
+		};
+		$.rect( hitBox );
+			$.onclick( function ( mouse, selectedRoom ) {
+				data.temp.selectedRoom = selectedRoom;
+				editMaps( data );
+			}, false, hitBox, i );
+		x += 18;
+		if( x > 628 ) {
+			x = 2;
+			y += 18;
+		}
+	}
+
+	x = 6;
+	y += 18;
+
+	// Draw Selected Room
+	let room = data.rooms[ data.temp.selectedRoom ];
+	let startX = x;
+	for( let col = 0; col < room.data.length; col++ ) {
+		for( let row = 0; row < room.data[ col ].length; row += 1 ) {
+			let tile = data.tiles[ Util.GetTileIndex( room.data[ col ].charAt( row ) ) ];
+			let image = Util.ConvertPutStringToData( data.images[ tile.imageId ] );
+			$.put( image, x, y );
+			let hitBoxRoom = {
+				"x": x,
+				"y": y,
+				"width": 15,
+				"height": 15
+			};
+			$.onclick( function () {
+				if( data.temp.selectedTile !== -1 ) {
+					let line = room.data[ col ];
+					room.data[ col ] = line.substring( 0, row ) +
+						Util.GetTileId( data.temp.selectedTile ) +
+						line.substring( row + 1 );
+				}
+				editRooms( data, false );
+			}, false, hitBoxRoom );
+			x += 15;
+		}
+		x = startX;
+		y += 15;
+	}
+
+	x = 2;
+	y += 2;
+
+	// Get the map data
+	let map = data.maps[ data.temp.selectedMapLevel ];
+
+	if( map.length === 0 ) {
+		map = [ "." ];
+		data.maps[ data.temp.selectedMapLevel ] = map;
+	} else {
+		// Is top empty
+		let emptyRow = false;
+		for( let mx = 0; mx < map[ 0 ].length; mx++ ) {
+			if( map[ 0 ].charAt( mx ) !== "." ) {
+				emptyRow = true;
+			}
+		}
+		if( emptyRow ) {
+			map.unshift( ".".padStart( map[ 0 ].length, "." ) );
+		}
+
+		// Is bottom empty
+		emptyRow = false;
+		for( let mx = 0; mx < map[ map.length - 1 ].length; mx++ ) {
+			if( map[ map.length - 1 ].charAt( mx ) !== "." ) {
+				emptyRow = true;
+			}
+		}
+		if( emptyRow ) {
+			map.push( ".".padStart( map[ 0 ].length, "." ) );
+		}
+	
+		// Is left empty
+		let emptyCol = false;
+		for( let my = 0; my < map.length; my++ ) {
+			if( map[ my ].charAt( 0 ) !== "." ) {
+				emptyCol = true;
+			}
+		}
+		if( emptyCol ) {
+			for( let my = 0; my < map.length; my++ ) {
+				map[ my ] = "." + map[ my ];
+			}
+		}
+
+		// Is left empty
+		emptyCol = false;
+		for( let my = 0; my < map.length; my++ ) {
+			if( map[ my ].charAt( map[ my ].length - 1 ) !== "." ) {
+				emptyCol = true;
+			}
+		}
+		if( emptyCol ) {
+			for( let my = 0; my < map.length; my++ ) {
+				map[ my ] = map[ my ] + ".";
+			}
+		}
+	}
+
+	$.setPosPx( 2, y );
+	$.setColor( "white" );
+	$.print( "Click on the square(s) below to place a room.", true );
+	y += 8;
+
+	// Draw Map
+	for( let my = 0; my < map.length; my++ ) {
+		for( let mx = 0; mx < map[ my ].length; mx++ ) {
+			rect = {
+				"x": mx * 15 + 2,
+				"y": my * 15 + y + 2,
+				"width": 15,
+				"height": 15
+			};
+			let roomId = map[ my ].charAt( mx );
+			if( roomId !== "." ) {
+				$.setColor( "white" );
+				$.rect( rect );
+				$.setPosPx( rect.x + 3, rect.y + 3 );
+				$.print( map[ my ].charAt( mx ) );
+			} else {
+				$.setColor( "grey" );
+				$.rect( rect );
+			}
+			$.onclick( function ( mouse, pos ) {
+				let line = map[ pos.y ];
+				map[ pos.y ] = line.substring( 0, pos.x ) +
+					Util.GetTileId( data.temp.selectedRoom ) +
+					line.substring( pos.x + 1 );
+				editMaps( data );
+			}, false, rect, { "x": mx, "y": my } );
+		}
+	}
+
 }

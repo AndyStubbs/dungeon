@@ -154,7 +154,7 @@
 	}
 
 	function GetTileId( index ) {
-		let values = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+";
+		let values = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+.";
 		return values.charAt( index );
 	}
 
