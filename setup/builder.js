@@ -478,7 +478,7 @@ function editTiles( data, isFirst ) {
 			$.clearEvents();
 			setTimeout( function () {
 				//showMenu( data );
-				$.cls( 0, hitBox3.y + 40, 500, 15 );
+				$.cls( 0, hitBox3.y + 40, 500, 16 );
 				$.setPosPx( 0, hitBox3.y + 50 );
 				let pos = $.getPos();
 				$.setPos( pos );
@@ -521,6 +521,42 @@ function editTiles( data, isFirst ) {
 	$.print( " Tile: " + Util.GetTileId( data.temp.selectedTile ) );
 	$.setPosPx( 0, hitBox3.y + 29 );
 	$.print( " Image Id: " + data.tiles[ data.temp.selectedTile ].imageId );
+
+	$.setPosPx( 120, hitBox3.y + 18 );
+	if( data.tiles[ data.temp.selectedTile ].special ) {
+		$.print( " Special: " +  data.tiles[ data.temp.selectedTile ].special );
+	} else {
+		$.print( " Special: " );
+	}
+
+	$.setPosPx( 120, hitBox3.y + 29 );
+	if( data.tiles[ data.temp.selectedTile ].floor ) {
+		$.print( " Floor: " +  data.tiles[ data.temp.selectedTile ].floor );
+	} else {
+		$.print( " Floor: 0" );
+	}
+
+	$.setPosPx( 300, hitBox3.y + 18 );
+	if( data.tiles[ data.temp.selectedTile ].water ) {
+		$.print( " Water: " +  data.tiles[ data.temp.selectedTile ].water );
+	} else {
+		$.print( " Water: 0" );
+	}
+
+	$.setPosPx( 300, hitBox3.y + 29 );
+	if( data.tiles[ data.temp.selectedTile ].lava ) {
+		$.print( " Lava: " +  data.tiles[ data.temp.selectedTile ].lava );
+	} else {
+		$.print( " Lava: 0" );
+	}
+
+	$.setPosPx( 420, hitBox3.y + 18 );
+	if( data.tiles[ data.temp.selectedTile ].void ) {
+		$.print( " Void: " +  data.tiles[ data.temp.selectedTile ].void );
+	} else {
+		$.print( " Void: 0" );
+	}
+
 	$.setPosPx( 0, hitBox3.y + 50 );
 	let pos = $.getPos();
 	$.setPos( pos );
@@ -577,13 +613,17 @@ async function setSpecialTile( data ) {
 	$.print( " 6. Weapon Shop" );
 	$.print( " 7. Armor Shop" );
 	$.print( " 8. Healing Shop" );
-	$.print( " 9. Reset - Normal Tile" );
-	$.print( " 10. Cancel - Go back" );
+	$.print( " 9. Floor Tile" );
+	$.print( " 10. Water Tile" );
+	$.print( " 11. Lava Tile" );
+	$.print( " 12. Void Tile" );
+	$.print( " 13. Reset - Normal Tile" );
+	$.print( " 14. Cancel - Go back" );
 
 	let choice = -1;
-	while( choice < 1 || choice > 10 ) {
+	while( choice < 1 || choice > 14 ) {
 		choice = await $.input( "Enter selection: ", null, true, true, false );
-		if( choice < 1 || choice > 10 ) {
+		if( choice < 1 || choice > 14 ) {
 			$.print( "Invalid selection" );
 		}
 	}
@@ -607,8 +647,20 @@ async function setSpecialTile( data ) {
 	} else if( choice === 8 ) {
 		tile.special = "healing shop";
 	} else if( choice === 9 ) {
+		tile.floor = 1;
+	} else if( choice === 10 ) {
+		tile.water = 1;
+	} else if( choice === 11 ) {
+		tile.lava = 1;
+	} else if( choice === 12 ) {
+		tile.void = 1;
+	} else if( choice === 13 ) {
 		delete tile.special;
 		delete tile.shop;
+		delete tile.floor;
+		delete tile.water;
+		delete tile.lava;
+		delete tile.void;
 	}
 	editTiles( data, true );
 }
@@ -917,17 +969,25 @@ function editRooms( data, isFirst ) {
 	}
 
 	// Draw Objects
-	x = 2;
+	x = 20;
 	y = 60;
-	for( let i = 0; i < data.objects.length; i++ ) {
-		let image = Util.ConvertPutStringToData( data.images[ data.objects[ i ].imageId ] );
+	for( let i = 0; i < data.objects.length + 1; i++ ) {
+		let image = null;
+		if( i < data.objects.length ) {
+			image = Util.ConvertPutStringToData( data.images[ data.objects[ i ].imageId ] );
+		} else {
+			x = 2;
+			y = 60;
+		}
 		let hitBox = {
 			"x": x,
 			"y": y,
 			"width": 15,
 			"height": 15
 		};
-		$.put( image, x, y );
+		if( image ) {
+			$.put( image, x, y );
+		}
 		if( i === data.temp.selectedObject ) {
 			$.setColor( "white" );
 			$.rect( x + 1, y + 1, 13, 13 );
@@ -1176,11 +1236,22 @@ function editRooms( data, isFirst ) {
 							line.substring( row + 1 );
 					} else if( data.temp.selectedObject > -1 ) {
 						let room = data.rooms[ data.temp.selectedRoom ];
-						room.objects.push( {
-							"x": pos.x,
-							"y": pos.y,
-							"id": Util.GetTileId( data.temp.selectedObject )
-						} );
+						if( data.temp.selectedObject < data.objects.length ) {
+							room.objects.push( {
+								"x": pos.x,
+								"y": pos.y,
+								"id": Util.GetTileId( data.temp.selectedObject )
+							} );
+						} else {
+							for( let i = 0; i < room.objects.length; i++ ) {
+								if(
+									room.objects[ i ].x === pos.x && room.objects[ i ].y === pos.y
+								) {
+									room.objects.splice( i, 1 );
+									break;
+								}
+							}
+						}
 					}
 					editRooms( data, false );
 				}, false, hitBoxRoom, { "x": row, "y": col } );
