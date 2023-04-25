@@ -904,12 +904,13 @@ async function editObject( data ) {
 	$.print( " 2. Hits: " + obj.hits );
 	$.print( " 3. Level: " + obj.level );
 	$.print( " 4. Exp: " + obj.exp );
-	$.print( " 5. Is Monster: " + obj.isMonster );
-	$.print( " 6. Done" );
+	$.print( " 5. Is Monster: " + ( obj.isMonster === true ) );
+	$.print( " 6. Is Projectile: " + ( obj.isProjectile === true ) );
+	$.print( " 7. Done" );
 	let choice = -1;
-	while( choice < 1 || choice > 6 ) {
+	while( choice < 1 || choice > 7 ) {
 		choice = await $.input( "Enter selection: ", null, true, true, false );
-		if( choice < 1 || choice > 6 ) {
+		if( choice < 1 || choice > 7 ) {
 			$.print( "Invalid selection" );
 		}
 	}
@@ -923,9 +924,13 @@ async function editObject( data ) {
 		obj.exp = await $.input( "Enter exp: ", null, true, true, false );
 	} else if( choice === 5 ) {
 		obj.isMonster = (
-			await $.input( "Is Monster (y/n): ", null)
+			await $.input( "Is Monster (y/n): ", null )
 		).toLowerCase().charAt( 0 ) === "y";
 	} else if( choice === 6 ) {
+		obj.isProjectile = (
+			await $.input( "Is Projectile (y/n): ", null )
+		).toLowerCase().charAt( 0 ) === "y";
+	} else if( choice === 7 ) {
 		editObjects( data, true );
 		return;
 	}

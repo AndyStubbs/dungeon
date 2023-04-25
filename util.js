@@ -163,4 +163,41 @@
 		return values.indexOf( id );
 	}
 
+	function handleJSONFileDrop( event ) {
+		event.preventDefault();
+		
+		const file = event.dataTransfer.files[0];
+		
+		if ( !file ) {
+			return;
+		}
+		
+		const reader = new FileReader();
+		
+		reader.onload = async function() {
+			const data = JSON.parse( reader.result );
+			$.clearEvents();
+			$.cancelInput();
+			$.cls();
+			let answer = await $.input( "Do you wish to load the dungeon \"" + data.name + "\" (y/n)? " );
+			if( answer.charAt( 0 ).toLowerCase() === "y" ) {
+				data.temp = {};
+				showMenu( data );
+			}
+		};
+		
+		reader.readAsText( file );
+	}
+
+	// Add event listeners to the document for drag and drop
+	document.addEventListener( "dragenter", function( event ) {
+		event.preventDefault();
+	} );
+
+	document.addEventListener( "dragover", function( event ) {
+		event.preventDefault();
+	} );
+
+	document.addEventListener( "drop", handleJSONFileDrop );
+
 } )();
