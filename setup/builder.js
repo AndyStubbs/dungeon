@@ -890,7 +890,13 @@ function editObjects( data, isFirst ) {
 	$.print( " Hits: " + data.objects[ data.temp.selectedObject ].hits );
 	$.print( " Level: " + data.objects[ data.temp.selectedObject ].level );
 	$.print( " Exp: " + data.objects[ data.temp.selectedObject ].exp );
-	$.print( " Is Monster: " + data.objects[ data.temp.selectedObject ].isMonster );
+	$.print( " Is Monster: " + ( data.objects[ data.temp.selectedObject ].isMonster === true ) );
+	$.print( " Is Projectile: " + ( data.objects[ data.temp.selectedObject ].isProjectile === true ) );
+	$.print( " Is Flame: " + ( data.objects[ data.temp.selectedObject ].isFlame === true ) );
+	$.print( " Lose Items: " + ( data.objects[ data.temp.selectedObject ].loseItems === true ) );
+	$.print( " Wooden Ship: " + ( data.objects[ data.temp.selectedObject ].woodenShip === true ) );
+	$.print( " Flying Ship: " + ( data.objects[ data.temp.selectedObject ].flyingShip === true ) );
+	$.print( " Metal Ship: " + ( data.objects[ data.temp.selectedObject ].metalShip === true ) );
 }
 
 async function editObject( data ) {
@@ -906,11 +912,17 @@ async function editObject( data ) {
 	$.print( " 4. Exp: " + obj.exp );
 	$.print( " 5. Is Monster: " + ( obj.isMonster === true ) );
 	$.print( " 6. Is Projectile: " + ( obj.isProjectile === true ) );
-	$.print( " 7. Done" );
+	$.print( " 7. Is Flame: " + ( obj.isFlame === true ) );
+	$.print( " 8. Lose Items: " + ( obj.loseItems === true ) );
+	$.print( " 9. Wooden Ship: " + ( obj.woodenShip === true ) );
+	$.print( " 10. Flying Ship: " + ( obj.flyingShip === true ) );
+	$.print( " 11. Metal Ship: " + ( obj.metalShip === true ) );
+	$.print( " 12. Projectile: " + obj.projectile );
+	$.print( " 13. Done" );
 	let choice = -1;
-	while( choice < 1 || choice > 7 ) {
+	while( choice < 1 || choice > 13 ) {
 		choice = await $.input( "Enter selection: ", null, true, true, false );
-		if( choice < 1 || choice > 7 ) {
+		if( choice < 1 || choice > 13 ) {
 			$.print( "Invalid selection" );
 		}
 	}
@@ -931,6 +943,28 @@ async function editObject( data ) {
 			await $.input( "Is Projectile (y/n): ", null )
 		).toLowerCase().charAt( 0 ) === "y";
 	} else if( choice === 7 ) {
+		obj.isFlame = (
+			await $.input( "Is Flame (y/n): ", null )
+		).toLowerCase().charAt( 0 ) === "y";
+	} else if( choice === 8 ) {
+		obj.loseItems = (
+			await $.input( "Lose Items (y/n): ", null )
+		).toLowerCase().charAt( 0 ) === "y";
+	} else if( choice === 9 ) {
+		obj.woodenShip = (
+			await $.input( "Wooden Ship (y/n): ", null )
+		).toLowerCase().charAt( 0 ) === "y";
+	} else if( choice === 10 ) {
+		obj.flyingShip = (
+			await $.input( "Flying Ship (y/n): ", null )
+		).toLowerCase().charAt( 0 ) === "y";
+	} else if( choice === 11 ) {
+		obj.metalShip = (
+			await $.input( "Metal Ship (y/n): ", null )
+		).toLowerCase().charAt( 0 ) === "y";
+	} else if( choice === 12 ) {
+		
+	} else if( choice === 13 ) {
 		editObjects( data, true );
 		return;
 	}
@@ -1235,6 +1269,7 @@ function editRooms( data, isFirst ) {
 				};
 				$.onclick( function ( mouse, pos ) {
 					if( data.temp.selectedTile !== -1 ) {
+						let room = data.rooms[ data.temp.selectedRoom ];
 						let line = room.data[ col ];
 						room.data[ col ] = line.substring( 0, row ) +
 							Util.GetTileId( data.temp.selectedTile ) +

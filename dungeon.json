@@ -117,7 +117,8 @@
 	  },
 	  {
 		"imageId": 53,
-		"description": "some swamp land"
+		"description": "some swamp land",
+		"floor": 1
 	  },
 	  {
 		"imageId": 55,
@@ -278,6 +279,139 @@
 		"imageId": 91,
 		"isMonster": true,
 		"isRanged": true
+	  },
+	  {
+		"name": "a chest",
+		"hits": 0,
+		"level": 1,
+		"exp": 0,
+		"imageId": 21,
+		"isMonster": false,
+		"isRanged": true
+	  },
+	  {
+		"name": "a coffin",
+		"hits": 0,
+		"level": 1,
+		"exp": 0,
+		"imageId": 49,
+		"isMonster": false,
+		"isRanged": true
+	  },
+	  {
+		"name": "a door",
+		"hits": 0,
+		"level": 1,
+		"exp": 0,
+		"imageId": 36,
+		"isMonster": false,
+		"isRanged": true
+	  },
+	  {
+		"name": "a door",
+		"hits": 0,
+		"level": 1,
+		"exp": 0,
+		"imageId": 37,
+		"isMonster": false,
+		"isRanged": true
+	  },
+	  {
+		"name": "Spider",
+		"hits": 24,
+		"level": 3,
+		"exp": 6,
+		"imageId": 86,
+		"isMonster": true,
+		"isRanged": true
+	  },
+	  {
+		"name": "Trap",
+		"hits": 0,
+		"level": 3,
+		"exp": 0,
+		"imageId": 9,
+		"isMonster": false,
+		"isRanged": true,
+		"isProjectile": true
+	  },
+	  {
+		"name": "Snake",
+		"hits": 16,
+		"level": 2,
+		"exp": 4,
+		"imageId": 111,
+		"isMonster": true,
+		"isRanged": true
+	  },
+	  {
+		"name": "Skeleton",
+		"hits": 8,
+		"level": 1,
+		"exp": 2,
+		"imageId": 84,
+		"isMonster": true,
+		"isRanged": true
+	  },
+	  {
+		"name": "Trap 2",
+		"hits": 0,
+		"level": 4,
+		"exp": 0,
+		"imageId": 11,
+		"isMonster": false,
+		"isRanged": true,
+		"isProjectile": true
+	  },
+	  {
+		"name": "Trap 3",
+		"hits": 0,
+		"level": 5,
+		"exp": 0,
+		"imageId": 10,
+		"isMonster": false,
+		"isRanged": true,
+		"isProjectile": true,
+		"loseItems": true
+	  },
+	  {
+		"name": "Guarded Tomb",
+		"hits": 24,
+		"level": 3,
+		"exp": 7,
+		"imageId": 97,
+		"isMonster": true,
+		"isRanged": true
+	  },
+	  {
+		"name": "Trap 4",
+		"hits": 0,
+		"level": 6,
+		"exp": 0,
+		"imageId": 8,
+		"isMonster": false,
+		"isRanged": true,
+		"isProjectile": true,
+		"isFlame": true
+	  },
+	  {
+		"name": "Sleep Bug",
+		"hits": 24,
+		"level": 3,
+		"exp": 6,
+		"imageId": 88,
+		"isMonster": true,
+		"isRanged": true
+	  },
+	  {
+		"name": "a wooden ship",
+		"hits": 0,
+		"level": 1,
+		"exp": 0,
+		"imageId": 14,
+		"isMonster": false,
+		"isRanged": true,
+		"woodenShip": true
 	  }
 	],
 	"rooms": [
@@ -290,7 +424,7 @@
 		  "99mmpmymmmmmq44q4499",
 		  "9mpmmmmmmxmmqq444449",
 		  "9mmmmmmmmmmmmqqqq449",
-		  "9mmmDmEmFmmGmHmIqqq9",
+		  "9mmmDmEmFmmGmHmImqq9",
 		  "9mmymmmmmmmmmmmmmmm9",
 		  "99mmmmmmmmmmmympmm99",
 		  "99999999999999999999"
@@ -325,7 +459,7 @@
 		  "999mmmmmmmm444mm9999",
 		  "99mpmmmmmmym44qmym99",
 		  "9mmmmxmm0000m44qmm99",
-		  "9i222i2ii002i2422299",
+		  "99222i2ii002i2422299",
 		  "992ii2222002224222i9",
 		  "99mmmpmm80m7qq4qmpm9",
 		  "999mmmmwmmmmq44pmm99",
@@ -380,7 +514,38 @@
 	  },
 	  {
 		"name": "Grassy Canyon",
-		"objects": [],
+		"objects": [
+		  {
+			"x": 4,
+			"y": 4,
+			"id": "4"
+		  },
+		  {
+			"x": 16,
+			"y": 4,
+			"id": "4"
+		  },
+		  {
+			"x": 8,
+			"y": 6,
+			"id": "2"
+		  },
+		  {
+			"x": 16,
+			"y": 6,
+			"id": "2"
+		  },
+		  {
+			"x": 15,
+			"y": 6,
+			"id": "3"
+		  },
+		  {
+			"x": 17,
+			"y": 6,
+			"id": "3"
+		  }
+		],
 		"traps": [],
 		"data": [
 		  "9mmymmmq444444444444",
@@ -395,7 +560,48 @@
 	  },
 	  {
 		"name": "Grassy Canyon",
-		"objects": [],
+		"objects": [
+		  {
+			"x": 10,
+			"y": 2,
+			"id": "8"
+		  },
+		  {
+			"x": 11,
+			"y": 3,
+			"id": "8"
+		  },
+		  {
+			"x": 10,
+			"y": 4,
+			"id": "8"
+		  },
+		  {
+			"x": 9,
+			"y": 5,
+			"id": "8"
+		  },
+		  {
+			"x": 11,
+			"y": 6,
+			"id": "8"
+		  },
+		  {
+			"x": 12,
+			"y": 5,
+			"id": "8"
+		  },
+		  {
+			"x": 12,
+			"y": 4,
+			"id": "8"
+		  },
+		  {
+			"x": 13,
+			"y": 4,
+			"id": "8"
+		  }
+		],
 		"traps": [],
 		"data": [
 		  "9mmmmm44444444444444",
@@ -410,7 +616,78 @@
 	  },
 	  {
 		"name": "Grassy Canyon",
-		"objects": [],
+		"objects": [
+		  {
+			"x": 7,
+			"y": 1,
+			"id": "9"
+		  },
+		  {
+			"x": 5,
+			"y": 2,
+			"id": "9"
+		  },
+		  {
+			"x": 4,
+			"y": 2,
+			"id": "9"
+		  },
+		  {
+			"x": 3,
+			"y": 2,
+			"id": "9"
+		  },
+		  {
+			"x": 2,
+			"y": 2,
+			"id": "9"
+		  },
+		  {
+			"x": 2,
+			"y": 3,
+			"id": "9"
+		  },
+		  {
+			"x": 3,
+			"y": 3,
+			"id": "9"
+		  },
+		  {
+			"x": 4,
+			"y": 3,
+			"id": "9"
+		  },
+		  {
+			"x": 5,
+			"y": 3,
+			"id": "9"
+		  },
+		  {
+			"x": 5,
+			"y": 4,
+			"id": "9"
+		  },
+		  {
+			"x": 4,
+			"y": 4,
+			"id": "9"
+		  },
+		  {
+			"x": 3,
+			"y": 4,
+			"id": "9"
+		  },
+		  {
+			"x": 2,
+			"y": 4,
+			"id": "9"
+		  },
+		  {
+			"x": 6,
+			"y": 3,
+			"id": "5"
+		  }
+		],
 		"traps": [],
 		"data": [
 		  "99999999999999999999",
@@ -424,9 +701,53 @@
 		]
 	  },
 	  {
-		"name": "Grassy Canyon",
-		"objects": [],
-		"traps": [],
+		"name": "Deadly Hall",
+		"objects": [
+		  {
+			"x": 12,
+			"y": 2,
+			"id": "2"
+		  },
+		  {
+			"x": 13,
+			"y": 2,
+			"id": "2"
+		  }
+		],
+		"traps": [
+		  {
+			"imageId": 20,
+			"pos": {
+			  "x": 9,
+			  "y": 2
+			},
+			"spawn": {
+			  "x": 6,
+			  "y": 2
+			},
+			"dir": {
+			  "x": 7,
+			  "y": 2
+			},
+			"object": 10
+		  },
+		  {
+			"imageId": 20,
+			"pos": {
+			  "x": 11,
+			  "y": 2
+			},
+			"spawn": {
+			  "x": 6,
+			  "y": 2
+			},
+			"dir": {
+			  "x": 7,
+			  "y": 2
+			},
+			"object": 0
+		  }
+		],
 		"data": [
 		  "99999999999999999999",
 		  "9mpmy2ii2222222999mm",
@@ -439,8 +760,39 @@
 		]
 	  },
 	  {
-		"name": "Grassy Canyon",
-		"objects": [],
+		"name": "Treasure Island",
+		"objects": [
+		  {
+			"x": 7,
+			"y": 5,
+			"id": "2"
+		  },
+		  {
+			"x": 9,
+			"y": 4,
+			"id": "2"
+		  },
+		  {
+			"x": 9,
+			"y": 5,
+			"id": "2"
+		  },
+		  {
+			"x": 10,
+			"y": 5,
+			"id": "2"
+		  },
+		  {
+			"x": 10,
+			"y": 6,
+			"id": "2"
+		  },
+		  {
+			"x": 8,
+			"y": 6,
+			"id": "2"
+		  }
+		],
 		"traps": [],
 		"data": [
 		  "99999999999999999999",
@@ -454,29 +806,146 @@
 		]
 	  },
 	  {
-		"name": "Grassy Canyon",
-		"objects": [],
-		"traps": [],
+		"name": "Small Building",
+		"objects": [
+		  {
+			"x": 14,
+			"y": 5,
+			"id": "5"
+		  },
+		  {
+			"x": 18,
+			"y": 4,
+			"id": "5"
+		  },
+		  {
+			"x": 7,
+			"y": 5,
+			"id": "2"
+		  },
+		  {
+			"x": 8,
+			"y": 5,
+			"id": "2"
+		  },
+		  {
+			"x": 9,
+			"y": 5,
+			"id": "2"
+		  }
+		],
+		"traps": [
+		  {
+			"imageId": 20,
+			"pos": {
+			  "x": 10,
+			  "y": 5
+			},
+			"spawn": {
+			  "x": 10,
+			  "y": 5
+			},
+			"dir": {
+			  "x": 10,
+			  "y": 5
+			},
+			"object": 11
+		  },
+		  {
+			"imageId": 20,
+			"pos": {
+			  "x": 11,
+			  "y": 5
+			},
+			"spawn": {
+			  "x": 11,
+			  "y": 5
+			},
+			"dir": {
+			  "x": 11,
+			  "y": 5
+			},
+			"object": 11
+		  },
+		  {
+			"imageId": 20,
+			"pos": {
+			  "x": 12,
+			  "y": 5
+			},
+			"spawn": {
+			  "x": 12,
+			  "y": 5
+			},
+			"dir": {
+			  "x": 12,
+			  "y": 5
+			},
+			"object": 11
+		  },
+		  {
+			"imageId": 20,
+			"pos": {
+			  "x": 13,
+			  "y": 5
+			},
+			"spawn": {
+			  "x": 13,
+			  "y": 5
+			},
+			"dir": {
+			  "x": 13,
+			  "y": 5
+			},
+			"object": 11
+		  }
+		],
 		"data": [
 		  "444444444444444mmm99",
 		  "44444444444444qmmm99",
 		  "4444444mqqp44qmym999",
 		  "4444pqmmymmmxm220i29",
-		  "44qqqmii22ii22i00000",
+		  "44qqqmii22ii22i0000h",
 		  "44pqmmi0000000000h29",
 		  "444pmm22222i222222i9",
 		  "444mymmmxmmmmmmmmm99"
 		]
 	  },
 	  {
-		"name": "Grassy Canyon",
-		"objects": [],
+		"name": "Boat House",
+		"objects": [
+		  {
+			"x": 5,
+			"y": 1,
+			"id": "e"
+		  },
+		  {
+			"x": 8,
+			"y": 2,
+			"id": "e"
+		  },
+		  {
+			"x": 7,
+			"y": 4,
+			"id": "e"
+		  },
+		  {
+			"x": 13,
+			"y": 1,
+			"id": "e"
+		  },
+		  {
+			"x": 12,
+			"y": 3,
+			"id": "e"
+		  }
+		],
 		"traps": [],
 		"data": [
 		  "444mmmmmmmmmmmmmmm99",
 		  "q444qmmmwmpmxmmmmmm9",
-		  "qqqmmmpmmm222m222mm9",
-		  "444mmxmmmmimmm442mp9",
+		  "qqqmmmpmmm2220222mm9",
+		  "444mmxmmmmi000442mp9",
 		  "mq4pmmqqmq244444imy9",
 		  "9m444q44444444442m99",
 		  "9mqq444qym22i2222999",
@@ -485,8 +954,139 @@
 	  },
 	  {
 		"name": "Guarded Tomb",
-		"objects": [],
-		"traps": [],
+		"objects": [
+		  {
+			"x": 3,
+			"y": 2,
+			"id": "c"
+		  },
+		  {
+			"x": 5,
+			"y": 1,
+			"id": "c"
+		  },
+		  {
+			"x": 3,
+			"y": 4,
+			"id": "c"
+		  },
+		  {
+			"x": 4,
+			"y": 5,
+			"id": "c"
+		  },
+		  {
+			"x": 5,
+			"y": 4,
+			"id": "c"
+		  },
+		  {
+			"x": 6,
+			"y": 5,
+			"id": "c"
+		  },
+		  {
+			"x": 7,
+			"y": 3,
+			"id": "c"
+		  },
+		  {
+			"x": 13,
+			"y": 2,
+			"id": "2"
+		  },
+		  {
+			"x": 15,
+			"y": 2,
+			"id": "2"
+		  },
+		  {
+			"x": 17,
+			"y": 2,
+			"id": "2"
+		  },
+		  {
+			"x": 17,
+			"y": 5,
+			"id": "2"
+		  },
+		  {
+			"x": 15,
+			"y": 5,
+			"id": "2"
+		  },
+		  {
+			"x": 13,
+			"y": 5,
+			"id": "2"
+		  }
+		],
+		"traps": [
+		  {
+			"imageId": 20,
+			"pos": {
+			  "x": 12,
+			  "y": 3
+			},
+			"spawn": {
+			  "x": 17,
+			  "y": 3
+			},
+			"dir": {
+			  "x": 16,
+			  "y": 3
+			},
+			"object": 13
+		  },
+		  {
+			"imageId": 20,
+			"pos": {
+			  "x": 12,
+			  "y": 4
+			},
+			"spawn": {
+			  "x": 17,
+			  "y": 4
+			},
+			"dir": {
+			  "x": 16,
+			  "y": 4
+			},
+			"object": 13
+		  },
+		  {
+			"imageId": 20,
+			"pos": {
+			  "x": 14,
+			  "y": 3
+			},
+			"spawn": {
+			  "x": 17,
+			  "y": 3
+			},
+			"dir": {
+			  "x": 16,
+			  "y": 3
+			},
+			"object": 13
+		  },
+		  {
+			"imageId": 20,
+			"pos": {
+			  "x": 14,
+			  "y": 4
+			},
+			"spawn": {
+			  "x": 17,
+			  "y": 4
+			},
+			"dir": {
+			  "x": 16,
+			  "y": 4
+			},
+			"object": 13
+		  }
+		],
 		"data": [
 		  "99999999999999999999",
 		  "999mmmm999992ii22229",
@@ -497,6 +1097,170 @@
 		  "999mmmmy9999i2i2i229",
 		  "99999999999999999999"
 		]
+	  },
+	  {
+		"name": "Grassy Canyon",
+		"objects": [
+		  {
+			"x": 8,
+			"y": 3,
+			"id": "5"
+		  },
+		  {
+			"x": 8,
+			"y": 4,
+			"id": "5"
+		  },
+		  {
+			"x": 9,
+			"y": 1,
+			"id": "3"
+		  },
+		  {
+			"x": 11,
+			"y": 1,
+			"id": "3"
+		  },
+		  {
+			"x": 13,
+			"y": 1,
+			"id": "3"
+		  },
+		  {
+			"x": 14,
+			"y": 1,
+			"id": "3"
+		  },
+		  {
+			"x": 16,
+			"y": 1,
+			"id": "3"
+		  },
+		  {
+			"x": 18,
+			"y": 1,
+			"id": "3"
+		  },
+		  {
+			"x": 18,
+			"y": 3,
+			"id": "3"
+		  },
+		  {
+			"x": 18,
+			"y": 4,
+			"id": "3"
+		  },
+		  {
+			"x": 18,
+			"y": 6,
+			"id": "3"
+		  },
+		  {
+			"x": 16,
+			"y": 6,
+			"id": "3"
+		  },
+		  {
+			"x": 14,
+			"y": 6,
+			"id": "3"
+		  },
+		  {
+			"x": 13,
+			"y": 6,
+			"id": "3"
+		  },
+		  {
+			"x": 11,
+			"y": 6,
+			"id": "3"
+		  },
+		  {
+			"x": 9,
+			"y": 6,
+			"id": "3"
+		  },
+		  {
+			"x": 9,
+			"y": 4,
+			"id": "6"
+		  },
+		  {
+			"x": 10,
+			"y": 2,
+			"id": "6"
+		  },
+		  {
+			"x": 13,
+			"y": 2,
+			"id": "6"
+		  },
+		  {
+			"x": 12,
+			"y": 5,
+			"id": "6"
+		  },
+		  {
+			"x": 14,
+			"y": 5,
+			"id": "6"
+		  },
+		  {
+			"x": 16,
+			"y": 2,
+			"id": "6"
+		  },
+		  {
+			"x": 16,
+			"y": 5,
+			"id": "6"
+		  }
+		],
+		"traps": [
+		  {
+			"imageId": 20,
+			"pos": {
+			  "x": 7,
+			  "y": 3
+			},
+			"spawn": {
+			  "x": 7,
+			  "y": 6
+			},
+			"dir": {
+			  "x": 7,
+			  "y": 5
+			},
+			"object": 7
+		  },
+		  {
+			"imageId": 20,
+			"pos": {
+			  "x": 7,
+			  "y": 4
+			},
+			"spawn": {
+			  "x": 7,
+			  "y": 1
+			},
+			"dir": {
+			  "x": 7,
+			  "y": 2
+			},
+			"object": 7
+		  }
+		],
+		"data": [
+		  "i22i22i2222i2i22222i",
+		  "i8000008i00000000002",
+		  "20j033j0200000000002",
+		  "i003ch00000i22222002",
+		  "200030000002i2i2i002",
+		  "20j000j0200000000002",
+		  "2800000820000000000i",
+		  "2ii22222i2i22i22ii22"
+		]
 	  }
 	],
 	"maps": [
@@ -505,7 +1269,7 @@
 		".567..",
 		".4.8a.",
 		".329..",
-		"..1...",
+		"..11..",
 		"..0...",
 		"......"
 	  ]
@@ -891,19 +1655,19 @@
 	  ],
 	  [
 		"0000000000000000",
-		"0000000000000000",
-		"0000001222222000",
-		"0000017777717200",
-		"0000177777171220",
-		"0002222221762720",
-		"0027777772126720",
-		"0277777777277720",
-		"0277166177277760",
-		"0277711777277200",
-		"0277777777272000",
-		"0277777777220000",
-		"0662222226600000",
-		"0000000000000000",
+		"0000004444444000",
+		"0000041222222400",
+		"0000417777717240",
+		"0004177777171220",
+		"0042222221762720",
+		"0427777772126720",
+		"4277777777277720",
+		"4277166177277760",
+		"4277711777277240",
+		"4277777777272400",
+		"4277777777224000",
+		"4662222226640000",
+		"4444444444400000",
 		"0000000000000000",
 		"0000000000000000"
 	  ],
