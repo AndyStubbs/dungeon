@@ -411,7 +411,8 @@
 		"imageId": 14,
 		"isMonster": false,
 		"isRanged": true,
-		"woodenShip": true
+		"woodenShip": true,
+		"projectile": 10
 	  }
 	],
 	"rooms": [
@@ -431,7 +432,7 @@
 		]
 	  },
 	  {
-		"name": "Grassy Canyon",
+		"name": "Ancient Wall",
 		"objects": [
 		  {
 			"x": 10,
@@ -513,7 +514,7 @@
 		]
 	  },
 	  {
-		"name": "Grassy Canyon",
+		"name": "Crumbling Tombs",
 		"objects": [
 		  {
 			"x": 4,
@@ -559,7 +560,7 @@
 		]
 	  },
 	  {
-		"name": "Grassy Canyon",
+		"name": "Tiny Island",
 		"objects": [
 		  {
 			"x": 10,
@@ -615,7 +616,7 @@
 		]
 	  },
 	  {
-		"name": "Grassy Canyon",
+		"name": "Dangerous Tomb",
 		"objects": [
 		  {
 			"x": 7,
@@ -938,6 +939,11 @@
 			"x": 12,
 			"y": 3,
 			"id": "e"
+		  },
+		  {
+			"x": 14,
+			"y": 3,
+			"id": "f"
 		  }
 		],
 		"traps": [],
@@ -1099,7 +1105,7 @@
 		]
 	  },
 	  {
-		"name": "Grassy Canyon",
+		"name": "Forgotten Crypt",
 		"objects": [
 		  {
 			"x": 8,
@@ -1258,7 +1264,7 @@
 		  "i003ch00000i22222002",
 		  "200030000002i2i2i002",
 		  "20j000j0200000000002",
-		  "2800000820000000000i",
+		  "2800a00820000000000i",
 		  "2ii22222i2i22i22ii22"
 		]
 	  }

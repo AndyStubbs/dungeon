@@ -917,13 +917,20 @@ async function editObject( data ) {
 	$.print( " 9. Wooden Ship: " + ( obj.woodenShip === true ) );
 	$.print( " 10. Flying Ship: " + ( obj.flyingShip === true ) );
 	$.print( " 11. Metal Ship: " + ( obj.metalShip === true ) );
-	$.print( " 12. Projectile: " + obj.projectile );
+	$.print( " 12. Projectile: " );
+	if( obj.projectile ) {
+		let image = Util.ConvertPutStringToData(
+			data.images[ data.objects[ obj.projectile ].imageId ]
+		);
+		$.put( image, 40, 120 );
+	}
+	$.print( "\n" );
 	$.print( " 13. Done" );
 	let choice = -1;
 	while( choice < 1 || choice > 13 ) {
-		choice = await $.input( "Enter selection: ", null, true, true, false );
+		choice = await $.input( " Enter selection: ", null, true, true, false );
 		if( choice < 1 || choice > 13 ) {
-			$.print( "Invalid selection" );
+			$.print( " Invalid selection" );
 		}
 	}
 	if( choice === 1 ) {
@@ -963,13 +970,91 @@ async function editObject( data ) {
 			await $.input( "Metal Ship (y/n): ", null )
 		).toLowerCase().charAt( 0 ) === "y";
 	} else if( choice === 12 ) {
-		
+		editProjectile( data );
+		return;
 	} else if( choice === 13 ) {
 		editObjects( data, true );
 		return;
 	}
 
 	editObject( data );
+}
+
+function editProjectile( data ) {
+	$.clearEvents();
+	$.cls();
+	$.setColor( "white" );
+	$.print( "Select projectile" );
+	let x = 2;
+	let y = 16;
+	let foundProjectile = false;
+	let selectedObject = data.objects[ data.temp.selectedObject ];
+	if( selectedObject.projectile ) {
+		let image = Util.ConvertPutStringToData(
+			data.images[ data.objects[ selectedObject.projectile ].imageId ]
+		);
+		$.put( image, x, y );
+	}
+	// Draw Objects
+	y += 31;
+	for( let i = 0; i < data.objects.length; i++ ) {
+		if( !data.objects[ i ].isProjectile ) {
+			continue;
+		} else {
+			foundProjectile = true;
+		}
+		image = Util.ConvertPutStringToData( data.images[ data.objects[ i ].imageId ] );
+		let hitBox = {
+			"x": x,
+			"y": y,
+			"width": 15,
+			"height": 15
+		};
+		$.put( image, x, y );
+		if( i === selectedObject.projectile ) {
+			$.setColor( "white" );
+			$.rect( x + 1, y + 1, 13, 13 );
+		}
+		$.setColor( "gray" );
+		$.rect( hitBox );
+		$.onclick( function ( mouse, selectedProjectile ) {
+			let selectedObject = data.objects[ data.temp.selectedObject ];
+			selectedObject.projectile = selectedProjectile;
+			editProjectile( data );
+		}, false, hitBox, i );
+
+		x += 18
+		if( x > 628 ) {
+			x = 2;
+			y += 18;
+		}
+	}
+
+	if( !foundProjectile ) {
+		$.print( "No projectiles to select" );
+	}
+
+	// Add Button
+	let hitBox2 = {
+		"x": 2,
+		"y": 100,
+		"width": 64,
+		"height": 16
+	};
+	$.setColor( "#838383" );
+	$.setPosPx( hitBox2.x + 22, hitBox2.y + 4 );
+	$.print( "Done", true );
+	$.rect( hitBox2 );
+	$.onclick( function () {
+		$.setColor( "white" );
+		$.setPosPx( hitBox2.x + 22, hitBox2.y + 4 );
+		$.print( "Done", true );
+		$.rect( hitBox2 );
+		$.clearEvents();
+		setTimeout( function () {
+			editObject( data );
+		}, 100 );
+	}, false, hitBox2 );
 }
 
 function editRooms( data, isFirst ) {
