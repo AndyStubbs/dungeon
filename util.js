@@ -13,7 +13,8 @@
 		"ConvertPutStringToData": ConvertPutStringToData,
 		"GetImageData": GetImageData,
 		"GetTileId": GetTileId,
-		"GetTileIndex": GetTileIndex
+		"GetTileIndex": GetTileIndex,
+		"Pad": Pad
 	};
 
 	m_delayTimeouts = {};
@@ -163,6 +164,20 @@
 		return values.indexOf( id );
 	}
 
+	function Pad( str, size ) {
+		const strLength = str.length;
+		const spacesNeeded = size - strLength;
+		if( spacesNeeded <= 0 ) {
+			return str.substring( 0, size );
+		}
+
+		const leftSpaces = Math.floor( spacesNeeded / 2 );
+		const rightSpaces = spacesNeeded - leftSpaces;
+		const paddedString = " ".repeat( leftSpaces ) + str + " ".repeat( rightSpaces );
+
+		return paddedString;
+	}
+
 	function handleJSONFileDrop( event ) {
 		event.preventDefault();
 		
@@ -181,8 +196,7 @@
 			$.cls();
 			let answer = await $.input( "Do you wish to load the dungeon \"" + data.name + "\" (y/n)? " );
 			if( answer.charAt( 0 ).toLowerCase() === "y" ) {
-				data.temp = {};
-				showMenu( data );
+				loadDungeon( data );
 			}
 		};
 		

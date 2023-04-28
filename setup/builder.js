@@ -12,6 +12,7 @@ function loadDungeon( data ) {
 }
 
 async function showMenu( data ) {
+	$.clearEvents();
 	$.cls();
 	$.print( "Name: " + data.name );
 	$.print( "Colors: " + data.colors.length );
@@ -190,215 +191,53 @@ function createObject() {
 	};
 }
 
-function editImages( data, isFirst ) {
+function editImages( data ) {
 	$.cls();
-	if( isFirst ) {
-		$.clearEvents();
-	}
-	drawImages( data, isFirst, editImages );
-	drawBigImage( data, isFirst );
-
-	// Draw Colors
-	let width = 12;
-	let height = 12;
-	for( let i = 0; i < data.colors.length; i++ ) {
-		x = i * width + 8;
-		y = 200;
-		if( i === data.temp.selectedColor ) {
-			$.setColor( "#acacac" );
-		} else {
-			$.setColor( data.colors[ i ] );
-		}
-		$.rect( x, y, width, height, data.colors[ i ] );
-		if( i === 0 ) {
-			$.setColor( "#333333" );
-			$.line( x, y, x + width - 1, y + height - 1 );
-			$.line( x + width - 1, y, x, y + height - 1 );
-		}
-		if( i === data.temp.selectedColor ) {
-			$.setColor( "#535353" );
-			$.rect( x + 1, y + 1, width - 2, height - 2 );
-		}
-
-		if( isFirst ) {
-			let hitBox = {
-				"x": x,
-				"y": y,
-				"width": width,
-				"height": height
-			};
-			$.onclick( function ( mouse, selectedColor ) {
-				data.temp.selectedColor = selectedColor;
-				editImages( data, false );
-			}, false, hitBox, i );
-		}
-	}
+	$.clearEvents();
+	BuilderTools.drawImages( data, 8, 2, editImages );
+	BuilderTools.drawBigImage( data, 8, 216 );
+	BuilderTools.drawColors( data, 2, 200, editImages );
 
 	$.setPosPx( 198, 216 );
 	$.setColor( "white" );
 	$.print( "Editing Images" );
 
 	// Menu Button
-	hitBox = {
-		"x": 198,
-		"y": 232,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox.x + 22, hitBox.y + 4 );
-	$.print( "Menu", true );
-	$.rect( hitBox );
-	if( isFirst ) {
-		$.onclick( function () {
-			$.setColor( "white" );
-			$.setPosPx( hitBox.x + 22, hitBox.y + 4 );
-			$.print( "Menu", true );
-			$.rect( hitBox );
-			$.clearEvents();
-			setTimeout( function () {
-				showMenu( data );
-			}, 100 );
-		}, false, hitBox );
-	}
+	BuilderTools.button( "Menu", 198, 232, () => { showMenu( data ); } );
 
 	if( data.images.length > 153 ) {
 		return;
 	}
 
 	// Add New Button
-	let hitBox2 = {
-		"x": 265,
-		"y": 232,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox2.x + 6, hitBox2.y + 4 );
-	$.print( "Add Image", true );
-	$.rect( hitBox2 );
-	if( isFirst ) {
-		$.onclick( function () {
-			$.setColor( "white" );
-			$.setPosPx( hitBox2.x + 6, hitBox2.y + 4 );
-			$.print( "Add Image", true );
-			$.rect( hitBox2 );
-			data.images.push( [
-				"000000000000000",
-				"000000000000000",
-				"000000000000000",
-				"000000000000000",
-				"000000000000000",
-				"000000000000000",
-				"000000000000000",
-				"000000000000000",
-				"000000000000000",
-				"000000000000000",
-				"000000000000000",
-				"000000000000000",
-				"000000000000000",
-				"000000000000000",
-				"000000000000000"
-			] );
-			$.clearEvents();
-			setTimeout( function () {
-				editImages( data, true );
-			}, 100 );
-		}, false, hitBox2 );
-	}
+	BuilderTools.button( "Add New", 265, 232, () => {
+		data.images.push( [
+			"000000000000000",
+			"000000000000000",
+			"000000000000000",
+			"000000000000000",
+			"000000000000000",
+			"000000000000000",
+			"000000000000000",
+			"000000000000000",
+			"000000000000000",
+			"000000000000000",
+			"000000000000000",
+			"000000000000000",
+			"000000000000000",
+			"000000000000000",
+			"000000000000000"
+		] );
+		editImages( data );
+	} );
 }
 
-function drawImages( data, isFirst, callback ) {
-	let x = 8;
-	let y = 2;
-	for( let i = 0; i < data.images.length; i++ ) {
-		let image = Util.ConvertPutStringToData( data.images[ i ] );
-		$.setPosPx( x, y + 4 );
-		if( data.temp.selectedImage === i ) {
-			$.setColor( "white" );
-		} else {
-			$.setColor( "gray" );
-		}
-		$.print( i.toString().padStart( 3, " " ) + ":", true );
-		let hitBox = {
-			"x": x + 25,
-			"y": y,
-			"width": 15,
-			"height": 15
-		};
-		$.put( image, hitBox.x, hitBox.y );
-		if( i === data.temp.selectedImage ) {
-			$.setColor( "white" );
-			$.rect( hitBox );
-			$.setColor( "gray" );
-			$.rect( hitBox.x - 1, hitBox.y - 1, hitBox.width + 2, hitBox.height + 2 );
-		}
-		if( isFirst ) {
-			$.onclick( function ( mouse, selectedImage ) {
-				data.temp.selectedImage = selectedImage;
-				callback( data, false );
-			}, false, hitBox, i );
-		}
-		x += 45;
-		if( x > 624 ) {
-			x = 8;
-			y += 18;
-		}
-	}
-}
-
-function drawBigImage( data, isFirst ) {
-	let image = Util.ConvertPutStringToData( data.images[ data.temp.selectedImage ] );
-	let width = 12;
-	let height = 12;
-	for( let i = 0; i < image.length - 1; i++ ) {
-		for( let j = 0; j < image[ i ].length - 1; j++ ) {
-			let x = j * width + 8;
-			let y = i * height + 216;
-			let c = image[ i ][ j ];
-			if( c === 0 ) {
-				$.setColor( "#333333" );
-				$.line( x, y, x + width - 1, y + height - 1 );
-				$.line( x + width - 1, y, x, y + height - 1 );
-			} else {
-				$.setColor( c );
-				$.rect( x, y, width, height, c );
-			}
-
-			if( isFirst ) {
-				let hitBox = {
-					"x": x,
-					"y": y,
-					"width": width,
-					"height": height
-				};
-				$.onclick( function ( mouse, pos ) {
-					//data.images[ data.temp.selectedImage ][ pos.i ][ pos.j ] = data.temp.selectedColor;
-					let line = data.images[ data.temp.selectedImage ][ pos.i ];
-					data.images[ data.temp.selectedImage ][ pos.i ] = line.substring( 0, pos.j ) +
-						data.temp.selectedColor.toString( 32 ) + line.substring( pos.j + 1 );
-					//editImages( data, false );
-					$.setColor( data.temp.selectedColor );
-					$.rect( pos.x, pos.y, width, height, data.temp.selectedColor );
-					if( data.temp.selectedColor === 0 ) {
-						$.setColor( "#333333" );
-						$.line( pos.x, pos.y, pos.x + width - 1, pos.y + height - 1 );
-						$.line( pos.x + width - 1, pos.y, pos.x, pos.y + height - 1 );
-					}
-				}, false, hitBox, { "i": i, "j": j, "x": x, "y": y } );
-			}
-		}
-	}
-}
-
-function editTiles( data, isFirst ) {
+function editTiles( data ) {
 	$.cls();
-	if( isFirst ) {
-		$.clearEvents();
-	} else {
-		data.tiles[ data.temp.selectedTile ].imageId = data.temp.selectedImage;
-	}
-	drawImages( data, isFirst, editTiles );
+	$.clearEvents();
+	data.tiles[ data.temp.selectedTile ].imageId = data.temp.selectedImage;
+	BuilderTools.drawImages( data, 8, 2, editTiles );
+
 	let x = 2;
 	let y = 200;
 
@@ -407,190 +246,81 @@ function editTiles( data, isFirst ) {
 	$.print( "Editing Tiles" );
 
 	// Menu Button
-	hitBox = {
-		"x": 2,
-		"y": y + 8,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox.x + 22, hitBox.y + 4 );
-	$.print( "Menu", true );
-	$.rect( hitBox );
-	if( isFirst ) {
-		$.onclick( function () {
-			$.setColor( "white" );
-			$.setPosPx( hitBox.x + 22, hitBox.y + 4 );
-			$.print( "Menu", true );
-			$.rect( hitBox );
-			$.clearEvents();
-			setTimeout( function () {
-				showMenu( data );
-			}, 100 );
-		}, false, hitBox );
-	}
+	BuilderTools.button( "Menu", 2, y + 10, () => { showMenu( data ); } );
 
 	// Add Button
-	let hitBox2 = {
-		"x": 70,
-		"y": y + 8,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox2.x + 22, hitBox2.y + 4 );
-	$.print( "Add", true );
-	$.rect( hitBox2 );
-	if( isFirst ) {
-		$.onclick( function () {
-			$.setColor( "white" );
-			$.setPosPx( hitBox2.x + 22, hitBox2.y + 4 );
-			$.print( "Add", true );
-			$.rect( hitBox2 );
-			$.clearEvents();
-			data.tiles.push( {
-				"imageId": 0,
-				"description": ""
-			} );
-			setTimeout( function () {
-				editTiles( data, true );
-			}, 100 );
-		}, false, hitBox2 );
-	}
+	BuilderTools.button( "Add", 70, y + 10, () => { 
+		data.tiles.push( {
+			"imageId": 0,
+			"description": ""
+		} );
+		editTiles( data );
+	 } );
 
 	// Edit Button
-	let hitBox3 = {
-		"x": 138,
-		"y": y + 8,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox3.x + 22, hitBox3.y + 4 );
-	$.print( "Edit", true );
-	$.rect( hitBox3 );
-	if( isFirst ) {
-		$.onclick( function () {
-			$.setColor( "white" );
-			$.setPosPx( hitBox3.x + 22, hitBox3.y + 4 );
-			$.print( "Edit", true );
-			$.rect( hitBox3 );
-			$.clearEvents();
-			setTimeout( function () {
-				//showMenu( data );
-				$.cls( 0, hitBox3.y + 40, 500, 16 );
-				$.setPosPx( 0, hitBox3.y + 50 );
-				let pos = $.getPos();
-				$.setPos( pos );
-				$.input( " Description: ", function ( txt ) {
-					data.tiles[ data.temp.selectedTile ].description = txt;
-					editTiles( data, true );
-				} );
-			}, 100 );
-		}, false, hitBox3 );
-	}
+	BuilderTools.button( "Edit", 138, y + 10, () => { 
+		$.cls( 0, y + 48, 500, 16 );
+		$.setPosPx( 0, y + 58 );
+		let pos = $.getPos();
+		$.setPos( pos );
+		$.input( " Description: ", function ( txt ) {
+			data.tiles[ data.temp.selectedTile ].description = txt;
+			editTiles( data, true );
+		} );
+	} );
 
 	// Special Button
-	let hitBox4 = {
-		"x": 206,
-		"y": y + 8,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox4.x + 13, hitBox4.y + 4 );
-	$.print( "Special", true );
-	$.rect( hitBox4 );
-	if( isFirst ) {
-		$.onclick( function () {
-			$.setColor( "white" );
-			$.setPosPx( hitBox4.x + 13, hitBox4.y + 4 );
-			$.print( "Special", true );
-			$.rect( hitBox4 );
-			$.clearEvents();
-			setTimeout( function () {
-				setSpecialTile( data );
-			}, 100 );
-		}, false, hitBox4 );
-	}
-
-	y += 70;
+	BuilderTools.button( "Special", 206, y + 10, () => {
+		setSpecialTile( data );
+	} );
 
 	$.setColor( "white" );
-	$.setPosPx( 0, hitBox3.y + 18 );
+	$.setPosPx( 0, y + 88 );
 	$.print( " Tile: " + Util.GetTileId( data.temp.selectedTile ) );
-	$.setPosPx( 0, hitBox3.y + 29 );
+	$.setPosPx( 0, y + 99 );
 	$.print( " Image Id: " + data.tiles[ data.temp.selectedTile ].imageId );
 
-	$.setPosPx( 120, hitBox3.y + 18 );
+	$.setPosPx( 120, y + 88 );
 	if( data.tiles[ data.temp.selectedTile ].special ) {
 		$.print( " Special: " +  data.tiles[ data.temp.selectedTile ].special );
 	} else {
 		$.print( " Special: " );
 	}
 
-	$.setPosPx( 120, hitBox3.y + 29 );
+	$.setPosPx( 120, y + 99 );
 	if( data.tiles[ data.temp.selectedTile ].floor ) {
 		$.print( " Floor: " +  data.tiles[ data.temp.selectedTile ].floor );
 	} else {
 		$.print( " Floor: 0" );
 	}
 
-	$.setPosPx( 300, hitBox3.y + 18 );
+	$.setPosPx( 300, y + 88 );
 	if( data.tiles[ data.temp.selectedTile ].water ) {
 		$.print( " Water: " +  data.tiles[ data.temp.selectedTile ].water );
 	} else {
 		$.print( " Water: 0" );
 	}
 
-	$.setPosPx( 300, hitBox3.y + 29 );
+	$.setPosPx( 300, y + 99 );
 	if( data.tiles[ data.temp.selectedTile ].lava ) {
 		$.print( " Lava: " +  data.tiles[ data.temp.selectedTile ].lava );
 	} else {
 		$.print( " Lava: 0" );
 	}
 
-	$.setPosPx( 420, hitBox3.y + 18 );
+	$.setPosPx( 420, y + 88 );
 	if( data.tiles[ data.temp.selectedTile ].void ) {
 		$.print( " Void: " +  data.tiles[ data.temp.selectedTile ].void );
 	} else {
 		$.print( " Void: 0" );
 	}
 
-	$.setPosPx( 0, hitBox3.y + 50 );
+	$.setPosPx( 0, y + 120 );
 	let pos = $.getPos();
 	$.setPos( pos );
 	$.print( " Description: " + data.tiles[ data.temp.selectedTile ].description );
 
-	// Draw Tiles
-	for( let i = 0; i < data.tiles.length; i++ ) {
-		let image = Util.ConvertPutStringToData( data.images[ data.tiles[ i ].imageId ] );
-		let hitBox = {
-			"x": x,
-			"y": y,
-			"width": 15,
-			"height": 15
-		};
-		$.put( image, x, y );
-		if( i === data.temp.selectedTile ) {
-			$.setColor( "white" );
-			$.rect( x + 1, y + 1, 13, 13 );
-		}
-		$.setColor( "gray" );
-		$.rect( hitBox );
-		if( isFirst ) {
-			$.onclick( function ( mouse, selectedTile ) {
-				data.temp.selectedTile = selectedTile;
-				data.temp.selectedImage = data.tiles[ data.temp.selectedTile ].imageId;
-				editTiles( data, false );
-			}, false, hitBox, i );
-		}
-		x += 18
-		if( x > 628 ) {
-			x = 2;
-			y += 18;
-		}
-	}
+	BuilderTools.drawTiles( data, x, y + 30, editTiles );
 }
 
 async function setSpecialTile( data ) {
@@ -622,7 +352,7 @@ async function setSpecialTile( data ) {
 
 	let choice = -1;
 	while( choice < 1 || choice > 14 ) {
-		choice = await $.input( "Enter selection: ", null, true, true, false );
+		choice = await $.input( " Enter selection: ", null, true, true, false );
 		if( choice < 1 || choice > 14 ) {
 			$.print( "Invalid selection" );
 		}
@@ -665,13 +395,9 @@ async function setSpecialTile( data ) {
 	editTiles( data, true );
 }
 
-async function editCharacter( data, isFirst ) {
+async function editCharacter( data ) {
 	$.cls();
-	if( isFirst ) {
-		$.clearEvents();
-	} else {
-		data.character.imageId = data.temp.selectedImage;
-	}
+	$.clearEvents();
 
 	$.print( "Edit Character" );
 	$.print( "1. Name: " + data.character.name );
@@ -749,7 +475,10 @@ async function editCharacter( data, isFirst ) {
 		data.temp.selectedImage = data.character.imageId;
 		$.cls();
 		$.clearEvents();
-		drawImages( data, true, editCharacter );
+		BuilderTools.drawImages( data, 2, 8, () => {
+			data.character.imageId = data.temp.selectedImage;
+			editCharacter( data );
+		} );
 		$.setPos( 2, 25 );
 		$.setColor( "white" );
 		$.print( "Use the mouse to select an image from up above." );
@@ -759,17 +488,17 @@ async function editCharacter( data, isFirst ) {
 		return;
 	}
 
-	editCharacter( data, false );
+	editCharacter( data );
 }
 
-function editObjects( data, isFirst ) {
+function editObjects( data ) {
 	$.cls();
-	if( isFirst ) {
-		$.clearEvents();
-	} else {
+	$.clearEvents();
+
+	BuilderTools.drawImages( data, 2, 8, () => {
 		data.objects[ data.temp.selectedObject ].imageId = data.temp.selectedImage;
-	}
-	drawImages( data, isFirst, editObjects );
+		editObjects( data );
+	} );
 
 	let x = 2;
 	let y = 200;
@@ -779,106 +508,22 @@ function editObjects( data, isFirst ) {
 	$.print( "Editing Objects/Monsters" );
 
 	// Menu Button
-	hitBox = {
-		"x": 2,
-		"y": y + 12,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox.x + 22, hitBox.y + 4 );
-	$.print( "Menu", true );
-	$.rect( hitBox );
-	if( isFirst ) {
-		$.onclick( function () {
-			$.setColor( "white" );
-			$.setPosPx( hitBox.x + 22, hitBox.y + 4 );
-			$.print( "Menu", true );
-			$.rect( hitBox );
-			$.clearEvents();
-			setTimeout( function () {
-				showMenu( data );
-			}, 100 );
-		}, false, hitBox );
-	}
+	BuilderTools.button( "Menu", 2, y + 12, () => { showMenu( data ); } );
 
 	// Add Button
-	let hitBox2 = {
-		"x": 70,
-		"y": y + 12,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox2.x + 22, hitBox2.y + 4 );
-	$.print( "Add", true );
-	$.rect( hitBox2 );
-	if( isFirst ) {
-		$.onclick( function () {
-			$.setColor( "white" );
-			$.setPosPx( hitBox2.x + 22, hitBox2.y + 4 );
-			$.print( "Add", true );
-			$.rect( hitBox2 );
-			$.clearEvents();
-			data.objects.push( createObject() );
-			setTimeout( function () {
-				editObjects( data, true );
-			}, 100 );
-		}, false, hitBox2 );
-	}
+	BuilderTools.button( "Add", 70, y + 12, () => {
+		data.objects.push( createObject() );
+		editObjects( data );
+	 } );
 
 	// Edit Button
-	let hitBox3 = {
-		"x": 138,
-		"y": y + 12,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox3.x + 22, hitBox3.y + 4 );
-	$.print( "Edit", true );
-	$.rect( hitBox3 );
-	if( isFirst ) {
-		$.onclick( function () {
-			$.setColor( "white" );
-			$.setPosPx( hitBox3.x + 22, hitBox3.y + 4 );
-			$.print( "Edit", true );
-			$.rect( hitBox3 );
-			$.clearEvents();
-			setTimeout( function () { editObject( data ); }, 100 );
-		}, false, hitBox3 );
-	}
+	BuilderTools.button( "Edit", 138, y + 12, () => {
+		editObject( data );
+	 } );
 
 	// Draw Objects
 	y += 31;
-	for( let i = 0; i < data.objects.length; i++ ) {
-		let image = Util.ConvertPutStringToData( data.images[ data.objects[ i ].imageId ] );
-		let hitBox = {
-			"x": x,
-			"y": y,
-			"width": 15,
-			"height": 15
-		};
-		$.put( image, x, y );
-		if( i === data.temp.selectedObject ) {
-			$.setColor( "white" );
-			$.rect( x + 1, y + 1, 13, 13 );
-		}
-		$.setColor( "gray" );
-		$.rect( hitBox );
-		if( isFirst ) {
-			$.onclick( function ( mouse, selectedObject ) {
-				data.temp.selectedObject = selectedObject;
-				data.temp.selectedImage = data.objects[ data.temp.selectedObject ].imageId;
-				editObjects( data, false );
-			}, false, hitBox, i );
-		}
-		x += 18
-		if( x > 628 ) {
-			x = 2;
-			y += 18;
-		}
-	}
+	BuilderTools.drawObjects( data, x, y, false, editObjects );
 
 	$.setColor( "white" );
 	$.setPosPx( 0, y + 25 );
@@ -901,8 +546,9 @@ function editObjects( data, isFirst ) {
 
 async function editObject( data ) {
 	$.cls();
-	let obj = data.objects[ data.temp.selectedObject ];
+	$.clearEvents();
 
+	let obj = data.objects[ data.temp.selectedObject ];
 	let image = Util.ConvertPutStringToData( data.images[ obj.imageId ] );
 	$.put( image, 2, 2 );
 	$.print( "\n\n" );
@@ -987,7 +633,6 @@ function editProjectile( data ) {
 	$.print( "Select projectile" );
 	let x = 2;
 	let y = 16;
-	let foundProjectile = false;
 	let selectedObject = data.objects[ data.temp.selectedObject ];
 	if( selectedObject.projectile ) {
 		let image = Util.ConvertPutStringToData(
@@ -995,336 +640,95 @@ function editProjectile( data ) {
 		);
 		$.put( image, x, y );
 	}
+
 	// Draw Objects
 	y += 31;
-	for( let i = 0; i < data.objects.length; i++ ) {
-		if( !data.objects[ i ].isProjectile ) {
-			continue;
-		} else {
-			foundProjectile = true;
-		}
-		image = Util.ConvertPutStringToData( data.images[ data.objects[ i ].imageId ] );
-		let hitBox = {
-			"x": x,
-			"y": y,
-			"width": 15,
-			"height": 15
-		};
-		$.put( image, x, y );
-		if( i === selectedObject.projectile ) {
-			$.setColor( "white" );
-			$.rect( x + 1, y + 1, 13, 13 );
-		}
-		$.setColor( "gray" );
-		$.rect( hitBox );
-		$.onclick( function ( mouse, selectedProjectile ) {
-			let selectedObject = data.objects[ data.temp.selectedObject ];
-			selectedObject.projectile = selectedProjectile;
-			editProjectile( data );
-		}, false, hitBox, i );
-
-		x += 18
-		if( x > 628 ) {
-			x = 2;
-			y += 18;
-		}
-	}
-
-	if( !foundProjectile ) {
-		$.print( "No projectiles to select" );
-	}
+	BuilderTools.drawObjects( data, x, y, true, () => {
+		selectedObject.projectile = data.temp.selectedObject;
+		data.temp.selectedObject = data.objects.indexOf( selectedObject );
+		editProjectile( data );
+	} );
 
 	// Add Button
-	let hitBox2 = {
-		"x": 2,
-		"y": 100,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox2.x + 22, hitBox2.y + 4 );
-	$.print( "Done", true );
-	$.rect( hitBox2 );
-	$.onclick( function () {
-		$.setColor( "white" );
-		$.setPosPx( hitBox2.x + 22, hitBox2.y + 4 );
-		$.print( "Done", true );
-		$.rect( hitBox2 );
-		$.clearEvents();
-		setTimeout( function () {
-			editObject( data );
-		}, 100 );
-	}, false, hitBox2 );
+	BuilderTools.button( "Done", 2, 100, () => {
+		editObject( data );
+	} );
 }
 
-function editRooms( data, isFirst ) {
+function editRooms( data ) {
 	$.cls();
+	$.clearEvents();
+
 	let x = 2;
 	let y = 2;
 
 	// Draw Tiles
-	for( let i = 0; i < data.tiles.length; i++ ) {
-		let image = Util.ConvertPutStringToData( data.images[ data.tiles[ i ].imageId ] );
-		let hitBox = {
-			"x": x,
-			"y": y,
-			"width": 15,
-			"height": 15
-		};
-		$.put( image, x, y );
-		if( i === data.temp.selectedTile ) {
-			$.setColor( "white" );
-			$.rect( x + 1, y + 1, 13, 13 );
-		}
-		$.setColor( "gray" );
-		$.rect( hitBox );
-		if( isFirst ) {
-			$.onclick( function ( mouse, selectedTile ) {
-				data.temp.selectedTile = selectedTile;
-				data.temp.selectedObject = -1;
-				editRooms( data, false );
-			}, false, hitBox, i );
-		}
-		x += 18
-		if( x > 628 ) {
-			x = 2;
-			y += 18;
-		}
-	}
+	BuilderTools.drawTiles( data, x, y, () => {
+		data.temp.selectedObject = -1;
+		editRooms( data );
+	} );
 
 	// Draw Objects
 	x = 20;
 	y = 60;
-	for( let i = 0; i < data.objects.length + 1; i++ ) {
-		let image = null;
-		if( i < data.objects.length ) {
-			image = Util.ConvertPutStringToData( data.images[ data.objects[ i ].imageId ] );
-		} else {
-			x = 2;
-			y = 60;
-		}
-		let hitBox = {
-			"x": x,
-			"y": y,
-			"width": 15,
-			"height": 15
-		};
-		if( image ) {
-			$.put( image, x, y );
-		}
-		if( i === data.temp.selectedObject ) {
-			$.setColor( "white" );
-			$.rect( x + 1, y + 1, 13, 13 );
-		}
-		$.setColor( "gray" );
-		$.rect( hitBox );
-		if( isFirst ) {
-			$.onclick( function ( mouse, selectedObject ) {
-				data.temp.selectedObject = selectedObject;
-				data.temp.selectedTile = -1;
-				editRooms( data, false );
-			}, false, hitBox, i );
-		}
-		x += 18
-		if( x > 628 ) {
-			x = 2;
-			y += 18;
-		}
-	}
+	BuilderTools.drawObjects( data, x, y, false, () => {
+		data.temp.selectedTile = -1;
+		editRooms( data );
+	} );
 
 	$.setPosPx( 2, y + 20 );
 	$.setColor( "white" );
 	$.print( "Editing Rooms" );
 
 	// Menu Button
-	hitBox = {
-		"x": 2,
-		"y": y + 31,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox.x + 22, hitBox.y + 4 );
-	$.print( "Menu", true );
-	$.rect( hitBox );
-	if( isFirst ) {
-		$.onclick( function () {
-			$.setColor( "white" );
-			$.setPosPx( hitBox.x + 22, hitBox.y + 4 );
-			$.print( "Menu", true );
-			$.rect( hitBox );
-			$.clearEvents();
-			setTimeout( function () {
-				showMenu( data );
-			}, 100 );
-		}, false, hitBox );
-	}
+	BuilderTools.button( "Menu", 2, y + 31, () => { showMenu( data ); } );
 
 	// Add Button
-	let hitBox2 = {
-		"x": 70,
-		"y": y + 31,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox2.x + 22, hitBox2.y + 4 );
-	$.print( "Add", true );
-	$.rect( hitBox2 );
-	if( isFirst ) {
-		$.onclick( function () {
-			$.setColor( "white" );
-			$.setPosPx( hitBox2.x + 22, hitBox2.y + 4 );
-			$.print( "Add", true );
-			$.rect( hitBox2 );
-			$.clearEvents();
-			data.rooms.push( createRoom() );
-			setTimeout( function () {
-				editRooms( data, true );
-			}, 100 );
-		}, false, hitBox2 );
-	}
+	BuilderTools.button( "Add", 70, y + 31, () => {
+		data.rooms.push( createRoom() );
+		editRooms( data );
+	} );
 
 	// Edit Button
-	let hitBox3 = {
-		"x": 138,
-		"y": y + 31,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox3.x + 4, hitBox3.y + 4 );
-	$.print( "Edit Name", true );
-	$.rect( hitBox3 );
-	if( isFirst ) {
-		$.onclick( function () {
-			$.setColor( "white" );
-			$.setPosPx( hitBox3.x + 4, hitBox3.y + 4 );
-			$.print( "Edit Name", true );
-			$.rect( hitBox3 );
-			$.clearEvents();
-			setTimeout( async function () {
-				$.cls();
-				$.setColor( "white" );
-				$.print( "Old name: " + data.rooms[ data.temp.selectedRoom ].name );
-				data.rooms[ data.temp.selectedRoom ].name = await $.input( "Enter name: ", null );
-				editRooms( data, true );
-			}, 100 );
-		}, false, hitBox3 );
-	}
+	BuilderTools.button( "Edit Name", 138, y + 31, async () => {
+		$.cls();
+		$.setColor( "white" );
+		$.print( " Old name: " + data.rooms[ data.temp.selectedRoom ].name );
+		data.rooms[ data.temp.selectedRoom ].name = await $.input( " Enter name: ", null );
+		editRooms( data );
+	} );
 
 	// Set Trap Button
-	let hitBox4 = {
-		"x": 206,
-		"y": y + 31,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox4.x + 8, hitBox4.y + 4 );
-	$.print( "Set Trap", true );
-	$.rect( hitBox4 );
-	if( isFirst ) {
-		$.onclick( function () {
-			$.setColor( "white" );
-			$.setPosPx( hitBox4.x + 8, hitBox4.y + 4 );
-			$.print( "Set Trap", true );
-			$.rect( hitBox4 );
-			$.clearEvents();
-			data.temp.setTrapStep = 0;
-			setTimeout( async function () {
-				setTrap( data, true );
-			}, 100 );
-		}, false, hitBox4 );
-	}
+	BuilderTools.button( "Set Trap", 206, y + 31, async () => {
+		data.temp.setTrapStep = 0;
+		setTrap( data );
+	} );
 
 	// Replace All Button
-	let hitBox5 = {
-		"x": 274,
-		"y": y + 31,
-		"width": 72,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox5.x + 4, hitBox5.y + 4 );
-	$.print( "Replace All", true );
-	$.rect( hitBox5 );
-	if( isFirst ) {
-		$.onclick( function () {
-			$.setColor( "white" );
-			$.setPosPx( hitBox5.x + 4, hitBox5.y + 4 );
-			$.print( "Replace All", true );
-			$.rect( hitBox5 );
-			$.clearEvents();
-			setTimeout( function () {
-				if( data.temp.selectedTile > -1 ) {
-					let room = data.rooms[ data.temp.selectedRoom ];
-					let tileId = Util.GetTileId( data.temp.selectedTile );
-					for( let col = 0; col < room.data.length; col++ ) {
-						room.data[ col ] = tileId.padStart( room.data[ col ].length, tileId );
-					}
-				}
-				editRooms( data, true );
-			}, 100 );
-		}, false, hitBox5 );
-	}
+	BuilderTools.button( "Set All", 274, y + 31, async () => {
+		if( data.temp.selectedTile > -1 ) {
+			let room = data.rooms[ data.temp.selectedRoom ];
+			let tileId = Util.GetTileId( data.temp.selectedTile );
+			for( let col = 0; col < room.data.length; col++ ) {
+				room.data[ col ] = tileId.padStart( room.data[ col ].length, tileId );
+			}
+		}
+		editRooms( data );
+	} );
 
 	// Clear Objects
-	let hitBox6 = {
-		"x": 352,
-		"y": y + 31,
-		"width": 72,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox6.x + 4, hitBox6.y + 4 );
-	$.print( "Clear Objs", true );
-	$.rect( hitBox6 );
-	if( isFirst ) {
-		$.onclick( function () {
-			$.setColor( "white" );
-			$.setPosPx( hitBox6.x + 4, hitBox6.y + 4 );
-			$.print( "Clear Objs", true );
-			$.rect( hitBox6 );
-			$.clearEvents();
-			setTimeout( function () {
-				let room = data.rooms[ data.temp.selectedRoom ];
-				room.objects = [];
-				editRooms( data, true );
-			}, 100 );
-		}, false, hitBox6 );
-	}
+	BuilderTools.button( "Clear Obj", 352, y + 31, () => {
+		let room = data.rooms[ data.temp.selectedRoom ];
+		room.objects = [];
+		editRooms( data );
+	 } );
 
 	// Draw Room Selectors
 	x = 2;
 	y += 50;
-	for( let i = 0; i < data.rooms.length; i++ ) {
-		$.setPosPx( x + 2, y + 2 );
-		if( i === data.temp.selectedRoom ) {
-			$.setColor( "white" );
-		} else {
-			$.setColor( "gray" );
-		}
-		$.print( Util.GetTileId( i ), true );
-		let hitBox = {
-			"x": x,
-			"y": y,
-			"width": 15,
-			"height": 15
-		};
-		$.rect( hitBox );
-		if( isFirst ) {
-			$.onclick( function ( mouse, selectedRoom ) {
-				data.temp.selectedRoom = selectedRoom;
-				editRooms( data, false );
-			}, false, hitBox, i );
-		}
-		x += 18;
-		if( x > 628 ) {
-			x = 2;
-			y += 18;
-		}
-	}
+	BuilderTools.drawRoomSelectors( data, x, y, () => {
+		editRooms( data );
+	} );
 
 	$.setColor( "white" );
 	$.setPosPx( 0, y + 20 );
@@ -1337,65 +741,34 @@ function editRooms( data, isFirst ) {
 
 	x = 6;
 	y = $.getPosPx().y + 6;
-	let room = data.rooms[ data.temp.selectedRoom ];
-	let startX = x;
-	let startY = y;
-	for( let col = 0; col < room.data.length; col++ ) {
-		for( let row = 0; row < room.data[ col ].length; row += 1 ) {
-			let tile = data.tiles[ Util.GetTileIndex( room.data[ col ].charAt( row ) ) ];
-			let image = Util.ConvertPutStringToData( data.images[ tile.imageId ] );
-			$.put( image, x, y );
-			if( isFirst ) {
-				let hitBoxRoom = {
-					"x": x,
-					"y": y,
-					"width": 15,
-					"height": 15
-				};
-				$.onclick( function ( mouse, pos ) {
-					if( data.temp.selectedTile !== -1 ) {
-						let room = data.rooms[ data.temp.selectedRoom ];
-						let line = room.data[ col ];
-						room.data[ col ] = line.substring( 0, row ) +
-							Util.GetTileId( data.temp.selectedTile ) +
-							line.substring( row + 1 );
-					} else if( data.temp.selectedObject > -1 ) {
-						let room = data.rooms[ data.temp.selectedRoom ];
-						if( data.temp.selectedObject < data.objects.length ) {
-							room.objects.push( {
-								"x": pos.x,
-								"y": pos.y,
-								"id": Util.GetTileId( data.temp.selectedObject )
-							} );
-						} else {
-							for( let i = 0; i < room.objects.length; i++ ) {
-								if(
-									room.objects[ i ].x === pos.x && room.objects[ i ].y === pos.y
-								) {
-									room.objects.splice( i, 1 );
-									break;
-								}
-							}
-						}
+	BuilderTools.drawRoom( data, x, y, ( pos ) => {
+		if( data.temp.selectedTile !== -1 ) {
+			let room = data.rooms[ data.temp.selectedRoom ];
+			let line = room.data[ pos.y ];
+			room.data[ pos.y ] = line.substring( 0, pos.x ) +
+				Util.GetTileId( data.temp.selectedTile ) +
+				line.substring( pos.x + 1 );
+		} else if( data.temp.selectedObject > -1 ) {
+			let room = data.rooms[ data.temp.selectedRoom ];
+			if( data.temp.selectedObject < data.objects.length ) {
+				room.objects.push( {
+					"x": pos.x,
+					"y": pos.y,
+					"id": Util.GetTileId( data.temp.selectedObject )
+				} );
+			} else {
+				for( let i = 0; i < room.objects.length; i++ ) {
+					if(
+						room.objects[ i ].x === pos.x && room.objects[ i ].y === pos.y
+					) {
+						room.objects.splice( i, 1 );
+						break;
 					}
-					editRooms( data, false );
-				}, false, hitBoxRoom, { "x": row, "y": col } );
+				}
 			}
-			x += 15;
 		}
-		x = startX;
-		y += 15;
-	}
-
-	for( let i = 0; i < room.objects.length; i++ ) {
-		let obj = room.objects[ i ];
-		let image = Util.ConvertPutStringToData(
-			data.images[ data.objects[ Util.GetTileIndex( obj.id ) ].imageId ]
-		);
-		let mx = obj.x * 15 + startX;
-		let my = obj.y * 15 + startY;
-		$.put( image, mx, my );
-	}
+		editRooms( data );
+	} );
 }
 
 function setTrap( data ) {
