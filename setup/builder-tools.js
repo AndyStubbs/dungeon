@@ -49,7 +49,7 @@
 			}
 			$.onclick( function ( mouse, selectedImage ) {
 				data.temp.selectedImage = selectedImage;
-				callback( data, false );
+				callback( data );
 			}, false, hitBox, i );
 			x += 45;
 			if( x > 624 ) {
@@ -152,15 +152,19 @@
 		}
 	}
 
-	function button( title, x, y, callback ) {
+	function button( title, x, y, callback, isSelected ) {
 		let hitBox = {
 			"x": x,
 			"y": y,
 			"width": 64,
 			"height": 16
 		};
+		let color = "#838383";
+		if( isSelected ) {
+			color = "white";
+		}
 		title = Util.Pad( title, 9 );
-		$.setColor( "#838383" );
+		$.setColor( color );
 		$.setPosPx( hitBox.x + 6, hitBox.y + 4 );
 		$.print( title, true );
 		$.rect( hitBox );
@@ -204,7 +208,27 @@
 		}
 	}
 
-	function drawObjects( data, x, y, isProjectile, callback ) {
+	function drawObjects( data, x, y, isProjectile, isForRoom, callback ) {
+		if( isForRoom ) {
+			let hitBox = {
+				"x": x,
+				"y": y,
+				"width": 15,
+				"height": 15
+			};
+			if( data.temp.selectedObject === data.objects.length ) {
+				$.setColor( "white" );
+			} else {
+				$.setColor( "gray" );
+			}
+			$.rect( hitBox );
+			$.onclick( function () {
+				data.temp.selectedObject = data.objects.length;
+				callback( data );
+			}, false, hitBox );
+			x += 18;
+		}
+
 		for( let i = 0; i < data.objects.length; i++ ) {
 			if( isProjectile ) {
 				if( !data.objects[ i ].isProjectile ) {

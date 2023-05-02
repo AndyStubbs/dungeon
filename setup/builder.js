@@ -523,7 +523,7 @@ function editObjects( data ) {
 
 	// Draw Objects
 	y += 31;
-	BuilderTools.drawObjects( data, x, y, false, editObjects );
+	BuilderTools.drawObjects( data, x, y, false, false, editObjects );
 
 	$.setColor( "white" );
 	$.setPosPx( 0, y + 25 );
@@ -643,7 +643,7 @@ function editProjectile( data ) {
 
 	// Draw Objects
 	y += 31;
-	BuilderTools.drawObjects( data, x, y, true, () => {
+	BuilderTools.drawObjects( data, x, y, true, false, () => {
 		selectedObject.projectile = data.temp.selectedObject;
 		data.temp.selectedObject = data.objects.indexOf( selectedObject );
 		editProjectile( data );
@@ -669,9 +669,9 @@ function editRooms( data ) {
 	} );
 
 	// Draw Objects
-	x = 20;
+	x = 2;
 	y = 60;
-	BuilderTools.drawObjects( data, x, y, false, () => {
+	BuilderTools.drawObjects( data, x, y, false, true, () => {
 		data.temp.selectedTile = -1;
 		editRooms( data );
 	} );
@@ -790,39 +790,11 @@ function setTrap( data ) {
 	}
 
 	// Draw Images
-	for( let i = 0; i < data.images.length; i++ ) {
-		let image = Util.ConvertPutStringToData( data.images[ i ] );
-		$.setPosPx( x, y + 4 );
-		if( data.temp.selectedImage === i ) {
-			$.setColor( "white" );
-		} else {
-			$.setColor( "gray" );
-		}
-		$.print( i.toString().padStart( 3, " " ) + ":", true );
-		let hitBox = {
-			"x": x + 25,
-			"y": y,
-			"width": 15,
-			"height": 15
-		};
-		$.put( image, hitBox.x, hitBox.y );
-		if( i === data.temp.selectedImage ) {
-			$.setColor( "white" );
-			$.rect( hitBox );
-			$.setColor( "gray" );
-			$.rect( hitBox.x - 1, hitBox.y - 1, hitBox.width + 2, hitBox.height + 2 );
-		}
-		$.onclick( function ( mouse, selectedImage ) {
-			data.temp.selectedImage = selectedImage;
-			room.traps[ data.temp.selectedTrap ].imageId = selectedImage;
-			setTrap( data, false );
-		}, false, hitBox, i );
-		x += 45;
-		if( x > 624 ) {
-			x = 8;
-			y += 18;
-		}
-	}
+	BuilderTools.drawImages( data, 8, 2, () => {
+		room.traps[ data.temp.selectedTrap ].imageId = data.temp.selectedImage;
+		setTrap( data );
+	} );
+	y = 180;
 
 	// Print the Title
 	y += 25;
@@ -832,136 +804,42 @@ function setTrap( data ) {
 	$.print( "Editing traps" );
 
 	// Back Button
-	let hitBox = {
-		"x": 2,
-		"y": y + 5,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox.x + 22, hitBox.y + 4 );
-	$.print( "Back", true );
-	$.rect( hitBox );
-	$.onclick( function () {
-		$.setColor( "white" );
-		$.setPosPx( hitBox.x + 22, hitBox.y + 4 );
-		$.print( "Back", true );
-		$.rect( hitBox );
-		$.clearEvents();
-		setTimeout( function () {
-			editRooms( data, true );
-		}, 100 );
-	}, false, hitBox );
+	BuilderTools.button( "Back", 2, y + 5, () => {
+		editRooms( data );
+	} );
 
 	// Add Button
-	let hitBox2 = {
-		"x": 70,
-		"y": y + 5,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox2.x + 22, hitBox2.y + 4 );
-	$.print( "Add", true );
-	$.rect( hitBox2 );
-	$.onclick( function () {
-		$.setColor( "white" );
-		$.setPosPx( hitBox2.x + 22, hitBox2.y + 4 );
-		$.print( "Add", true );
-		$.rect( hitBox2 );
-		$.clearEvents();
-		setTimeout( function () {
-			room.traps.push( {
-				"imageId": 0,
-				"pos": { "x": 0, "y": 0 },
-				"spawn": { "x": 0, "y": 0 },
-				"dir": { "x": 0, "y": 0 },
-				"object": 0
-			} );
-			data.temp.selectedTrap = room.traps.length - 1;
-			setTrap( data );
-		}, 100 );
-	}, false, hitBox2 );
+	BuilderTools.button( "Add", 70, y + 5, () => {
+		room.traps.push( {
+			"imageId": 0,
+			"pos": { "x": 0, "y": 0 },
+			"spawn": { "x": 0, "y": 0 },
+			"dir": { "x": 0, "y": 0 },
+			"object": 0
+		} );
+		data.temp.selectedTrap = room.traps.length - 1;
+		setTrap( data );
+	} );
 
 	// Set Pos Button
-	let hitBox3 = {
-		"x": 138,
-		"y": y + 5,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	if( data.temp.setTrapStep === 0 ) {
-		$.setColor( "#33aa33" );
-	}
-	$.setPosPx( hitBox3.x + 10, hitBox3.y + 4 );
-	$.print( "Set Pos", true );
-	$.rect( hitBox3 );
-	$.onclick( function () {
-		$.setColor( "white" );
-		$.setPosPx( hitBox3.x + 10, hitBox3.y + 4 );
-		$.print( "Set Pos", true );
-		$.rect( hitBox3 );
-		$.clearEvents();
-		setTimeout( function () {
-			data.temp.setTrapStep = 0;
-			data.temp.selectedTrap = room.traps.length - 1;
-			setTrap( data );
-		}, 100 );
-	}, false, hitBox3 );
+	BuilderTools.button( "Set Pos", 138, y + 5, () => {
+		data.temp.setTrapStep = 0;
+		data.temp.selectedTrap = room.traps.length - 1;
+		setTrap( data );
+	}, data.temp.setTrapStep === 0 );
 
 	// Set Spawn Button
-	let hitBox4 = {
-		"x": 206,
-		"y": y + 5,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	if( data.temp.setTrapStep === 1 ) {
-		$.setColor( "#33aa33" );
-	}
-	$.setPosPx( hitBox4.x + 6, hitBox4.y + 4 );
-	$.print( "Set Spawn", true );
-	$.rect( hitBox4 );
-	$.onclick( function () {
-		$.setColor( "white" );
-		$.setPosPx( hitBox4.x + 6, hitBox4.y + 4 );
-		$.print( "Set Spawn", true );
-		$.rect( hitBox4 );
-		$.clearEvents();
-		setTimeout( function () {
-			data.temp.setTrapStep = 1;
-			data.temp.selectedTrap = room.traps.length - 1;
-			setTrap( data );
-		}, 100 );
-	}, false, hitBox4 );
+	BuilderTools.button( "Set Spawn", 206, y + 5, () => {
+		data.temp.setTrapStep = 1;
+		data.temp.selectedTrap = room.traps.length - 1;
+		setTrap( data );
+	}, data.temp.setTrapStep === 1 );
 
 	// Set Direction Button
-	let hitBox5 = {
-		"x": 275,
-		"y": y + 5,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	if( data.temp.setTrapStep === 2 ) {
-		$.setColor( "#33aa33" );
-	}
-	$.setPosPx( hitBox5.x + 6, hitBox5.y + 4 );
-	$.print( "Direction", true );
-	$.rect( hitBox5 );
-	$.onclick( function () {
-		$.setColor( "white" );
-		$.setPosPx( hitBox5.x + 6, hitBox5.y + 4 );
-		$.print( "Direction", true );
-		$.rect( hitBox5 );
-		$.clearEvents();
-		setTimeout( function () {
-			data.temp.setTrapStep = 2;
-			setTrap( data );
-		}, 100 );
-	}, false, hitBox5 );
+	BuilderTools.button( "Direction", 275, y + 5, () => {
+		data.temp.setTrapStep = 2;
+		setTrap( data );
+	}, data.temp.setTrapStep === 2 );
 
 	x = 2;
 	y += 25;
@@ -999,42 +877,27 @@ function setTrap( data ) {
 	y += 18;
 
 	// Draw the map
+	BuilderTools.drawRoom( data, x, y, ( pos ) => {
+		if( data.temp.selectedObject > -1 ) {
+			let trap = room.traps[ data.temp.selectedTrap ];
+			if( trap && data.temp.setTrapStep === 0 ) {
+				trap.pos.x = pos.x;
+				trap.pos.y = pos.y;
+			}
+			if( trap && data.temp.setTrapStep === 1 ) {
+				trap.spawn.x = pos.x;
+				trap.spawn.y = pos.y;
+			}
+			if( trap && data.temp.setTrapStep === 2 ) {
+				trap.dir.x = pos.x;
+				trap.dir.y = pos.y;
+			}
+			setTrap( data );
+		}
+		setTrap( data );
+	} );
 	let startX = x;
 	let startY = y;
-	for( let col = 0; col < room.data.length; col++ ) {
-		for( let row = 0; row < room.data[ col ].length; row += 1 ) {
-			let tile = data.tiles[ Util.GetTileIndex( room.data[ col ].charAt( row ) ) ];
-			let image = Util.ConvertPutStringToData( data.images[ tile.imageId ] );
-			$.put( image, x, y );
-
-			let hitBoxRoom = {
-				"x": x,
-				"y": y,
-				"width": 15,
-				"height": 15
-			};
-			$.onclick( function () {
-				let trap = room.traps[ data.temp.selectedTrap ];
-				if( trap && data.temp.setTrapStep === 0 ) {
-					trap.pos.x = row;
-					trap.pos.y = col;
-				}
-				if( trap && data.temp.setTrapStep === 1 ) {
-					trap.spawn.x = row;
-					trap.spawn.y = col;
-				}
-				if( trap && data.temp.setTrapStep === 2 ) {
-					trap.dir.x = row;
-					trap.dir.y = col;
-				}
-				setTrap( data );
-			}, false, hitBoxRoom, { "col": col, "row": row } );
-
-			x += 15;
-		}
-		x = startX;
-		y += 15;
-	}
 
 	// Draw Trap
 	if( trap ) {
@@ -1057,43 +920,18 @@ function setTrap( data ) {
 	}
 
 	// Draw Objects
-	startX = 320;
-	x = startX;
-	y = startY;
-
+	x = 320;
 	$.setColor( "white" );
 	$.setPosPx( x, y - 12 );
 	$.print( "Select Object/Projectile", true );
-	for( let i = 0; i < data.objects.length; i++ ) {
-		let image = Util.ConvertPutStringToData( data.images[ data.objects[ i ].imageId ] );
-		let hitBox = {
-			"x": x,
-			"y": y,
-			"width": 15,
-			"height": 15
-		};
-		$.put( image, x, y );
-		if( i === data.temp.selectedObject ) {
-			$.setColor( "white" );
-			$.rect( x + 1, y + 1, 13, 13 );
+	
+	BuilderTools.drawObjects( data, x, y, false, false, () => {
+		let trap = room.traps[ data.temp.selectedTrap ];
+		if( trap ) {
+			trap.object = data.temp.selectedObject;
 		}
-		$.setColor( "gray" );
-		$.rect( hitBox );
-		$.onclick( function ( mouse, selectedObject ) {
-			if( room )
-			data.temp.selectedObject = selectedObject;
-			let trap = room.traps[ data.temp.selectedTrap ];
-			if( trap ) {
-				trap.object = data.temp.selectedObject;
-			}
-			setTrap( data );
-		}, false, hitBox, i );
-		x += 18
-		if( x > 628 ) {
-			x = startX;
-			y += 18;
-		}
-	}
+		setTrap( data );
+	} );
 }
 
 function editWeapons( data ) {
@@ -1108,45 +946,12 @@ function editWeapons( data ) {
 	$.print( "Editing Weapons" );
 
 	// Menu Button
-	let hitBox = {
-		"x": 2,
-		"y": y + 12,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox.x + 22, hitBox.y + 4 );
-	$.print( "Menu", true );
-	$.rect( hitBox );
-	$.onclick( function () {
-		$.setColor( "white" );
-		$.setPosPx( hitBox.x + 22, hitBox.y + 4 );
-		$.print( "Menu", true );
-		$.rect( hitBox );
-		$.clearEvents();
-		setTimeout( function () {
-			showMenu( data );
-		}, 100 );
-	}, false, hitBox );
-
+	BuilderTools.button( "Menu", 2, y + 12, () => {
+		showMenu( data );
+	} );
 
 	// Add Button
-	let hitBox2 = {
-		"x": 70,
-		"y": y + 12,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox2.x + 22, hitBox2.y + 4 );
-	$.print( "Add", true );
-	$.rect( hitBox2 );
-	$.onclick( function () {
-		$.setColor( "white" );
-		$.setPosPx( hitBox2.x + 22, hitBox2.y + 4 );
-		$.print( "Add", true );
-		$.rect( hitBox2 );
-		$.clearEvents();
+	BuilderTools.button( "Add", 70, y + 12, () => {
 		data.weapons.push( {
 			"name": "Dagger",
 			"damage": 2,
@@ -1155,31 +960,13 @@ function editWeapons( data ) {
 			"store": 1
 		} );
 		data.temp.selectedWeapon = data.weapons.length - 1;
-		setTimeout( function () {
-			editWeapons( data );
-		}, 100 );
-	}, false, hitBox2 );
+		editWeapons( data );
+	} );
 
 	// Edit Button
-	let hitBox3 = {
-		"x": 138,
-		"y": y + 12,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox3.x + 22, hitBox3.y + 4 );
-	$.print( "Edit", true );
-	$.rect( hitBox3 );
-	$.onclick( function () {
-		$.setColor( "white" );
-		$.setPosPx( hitBox3.x + 22, hitBox3.y + 4 );
-		$.print( "Edit", true );
-		$.rect( hitBox3 );
-		$.clearEvents();
-		setTimeout( function () { editWeapon( data ); }, 100 );
-	}, false, hitBox3 );
-
+	BuilderTools.button( "Edit", 138, y + 12, () => {
+		editWeapon( data );
+	} );
 
 	// Draw Weapons
 	y += 31;
@@ -1223,6 +1010,7 @@ function editWeapons( data ) {
 }
 
 async function editWeapon( data ) {
+	$.clearEvents();
 	$.cls();
 	$.setColor( "white" );
 	$.print( " Edit Weapon: " + Util.GetTileId( data.temp.selectedWeapon ) );
@@ -1275,45 +1063,12 @@ function editArmors( data ) {
 	$.print( "Editing Armors" );
 
 	// Menu Button
-	let hitBox = {
-		"x": 2,
-		"y": y + 12,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox.x + 22, hitBox.y + 4 );
-	$.print( "Menu", true );
-	$.rect( hitBox );
-	$.onclick( function () {
-		$.setColor( "white" );
-		$.setPosPx( hitBox.x + 22, hitBox.y + 4 );
-		$.print( "Menu", true );
-		$.rect( hitBox );
-		$.clearEvents();
-		setTimeout( function () {
-			showMenu( data );
-		}, 100 );
-	}, false, hitBox );
-
+	BuilderTools.button( "Menu", 2, y + 12, () => {
+		showMenu( data );
+	} );
 
 	// Add Button
-	let hitBox2 = {
-		"x": 70,
-		"y": y + 12,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox2.x + 22, hitBox2.y + 4 );
-	$.print( "Add", true );
-	$.rect( hitBox2 );
-	$.onclick( function () {
-		$.setColor( "white" );
-		$.setPosPx( hitBox2.x + 22, hitBox2.y + 4 );
-		$.print( "Add", true );
-		$.rect( hitBox2 );
-		$.clearEvents();
+	BuilderTools.button( "Add", 70, y + 12, () => {
 		data.armors.push( {
 			"name": "Cloth",
 			"protection": 1,
@@ -1321,32 +1076,14 @@ function editArmors( data ) {
 			"cost": 20,
 			"store": 1
 		} );
-		data.temp.selectedWeapon = data.weapons.length - 1;
-		setTimeout( function () {
-			editArmors( data );
-		}, 100 );
-	}, false, hitBox2 );
+		data.temp.selectedArmor = data.armors.length - 1;
+		editArmors( data );
+	} );
 
 	// Edit Button
-	let hitBox3 = {
-		"x": 138,
-		"y": y + 12,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox3.x + 22, hitBox3.y + 4 );
-	$.print( "Edit", true );
-	$.rect( hitBox3 );
-	$.onclick( function () {
-		$.setColor( "white" );
-		$.setPosPx( hitBox3.x + 22, hitBox3.y + 4 );
-		$.print( "Edit", true );
-		$.rect( hitBox3 );
-		$.clearEvents();
-		setTimeout( function () { editArmor( data ); }, 100 );
-	}, false, hitBox3 );
-
+	BuilderTools.button( "Edit", 138, y + 12, () => {
+		editArmor( data );
+	} );
 
 	// Draw Armors
 	y += 31;
@@ -1391,6 +1128,7 @@ function editArmors( data ) {
 
 async function editArmor( data ) {
 	$.cls();
+	$.clearEvents();
 	$.setColor( "white" );
 	$.print( " Edit Armor: " + Util.GetTileId( data.temp.selectedArmor ) );
 	$.print( " 1. Name: " + data.armors[ data.temp.selectedArmor ].name );
@@ -1441,103 +1179,34 @@ function editMaps( data ) {
 	$.print( "Editing Maps" );
 
 	// Menu Button
-	let hitBox = {
-		"x": 2,
-		"y": y + 8,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox.x + 19, hitBox.y + 4 );
-	$.print( "Menu", true );
-	$.rect( hitBox );
-	$.onclick( function () {
-		$.setColor( "white" );
-		$.setPosPx( hitBox.x + 19, hitBox.y + 4 );
-		$.print( "Menu", true );
-		$.rect( hitBox );
-		$.clearEvents();
-		setTimeout( function () {
-			showMenu( data );
-		}, 100 );
-	}, false, hitBox );
-
+	BuilderTools.button( "Menu", 2, y + 8, () => {
+		showMenu( data );
+	} );
 
 	// Up Level
-	let hitBox2 = {
-		"x": 70,
-		"y": y + 8,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox2.x + 30, hitBox2.y + 4 );
-	$.print( "Up", true );
-	$.rect( hitBox2 );
-	$.onclick( function () {
-		$.setColor( "white" );
-		$.setPosPx( hitBox2.x + 30, hitBox2.y + 4 );
-		$.print( "Up", true );
-		$.rect( hitBox2 );
-		$.clearEvents();
+	BuilderTools.button( "Up", 70, y + 8, () => {
 		data.temp.selectedMapLevel -= 1;
 		if( data.temp.selectedMapLevel < 0 ) {
 			data.maps.unshift( [ "" ] );
 			data.temp.selectedMapLevel = 0;
 		}
-		setTimeout( function () {
-			editMaps( data );
-		}, 100 );
-	}, false, hitBox2 );
+		editMaps( data );
+	} );
 
 	// Down Level
-	let hitBox3 = {
-		"x": 138,
-		"y": y + 8,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox3.x + 18, hitBox3.y + 4 );
-	$.print( "Down", true );
-	$.rect( hitBox3 );
-	$.onclick( function () {
-		$.setColor( "white" );
-		$.setPosPx( hitBox3.x + 18, hitBox3.y + 4 );
-		$.print( "Down", true );
-		$.rect( hitBox3 );
-		$.clearEvents();
+	BuilderTools.button( "Down", 138, y + 8, () => {
 		data.temp.selectedMapLevel += 1;
 		if( data.temp.selectedMapLevel >= data.maps.length ) {
 			data.maps.push( [ "" ] );
 		}
-		setTimeout( async function () {
-			editMaps( data );
-		}, 100 );
-	}, false, hitBox3 );
+		editMaps( data );
+	} );
 
 	// Clear
-	let hitBox4 = {
-		"x": 206,
-		"y": y + 8,
-		"width": 64,
-		"height": 16
-	};
-	$.setColor( "#838383" );
-	$.setPosPx( hitBox4.x + 20, hitBox4.y + 4 );
-	$.print( "Clear", true );
-	$.rect( hitBox4 );
-	$.onclick( function () {
-		$.setColor( "white" );
-		$.setPosPx( hitBox4.x + 20, hitBox4.y + 4 );
-		$.print( "Clear", true );
-		$.rect( hitBox4 );
-		$.clearEvents();
+	BuilderTools.button( "Clear", 206, y + 8, () => {
 		data.maps[ data.temp.selectedMapLevel ] = [ "" ];
-		setTimeout( async function () {
-			editMaps( data );
-		}, 100 );
-	}, false, hitBox4 );
+		editMaps( data );
+	} );
 
 	// Draw Room Selectors
 	x = 2;
@@ -1586,13 +1255,7 @@ function editMaps( data ) {
 				"height": 15
 			};
 			$.onclick( function () {
-				if( data.temp.selectedTile !== -1 ) {
-					let line = room.data[ col ];
-					room.data[ col ] = line.substring( 0, row ) +
-						Util.GetTileId( data.temp.selectedTile ) +
-						line.substring( row + 1 );
-				}
-				editRooms( data, false );
+				
 			}, false, hitBoxRoom );
 			x += 15;
 		}
