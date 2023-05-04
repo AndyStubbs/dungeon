@@ -265,15 +265,21 @@
 		}
 	}
 
-	function drawRoomSelectors( data, x, y, callback ) {
-		for( let i = 0; i < data.rooms.length; i++ ) {
+	function drawRoomSelectors( data, x, y, callback, addBlank ) {
+		let start = 0;
+		if( addBlank ) {
+			start = -1;
+		}
+		for( let i = start; i < data.rooms.length; i++ ) {
 			$.setPosPx( x + 2, y + 2 );
 			if( i === data.temp.selectedRoom ) {
 				$.setColor( "white" );
 			} else {
 				$.setColor( "gray" );
 			}
-			$.print( Util.GetTileId( i ), true );
+			if( i > -1 ) {
+				$.print( Util.GetTileId( i ), true );
+			}
 			let hitBox = {
 				"x": x,
 				"y": y,

@@ -429,7 +429,8 @@
 		  "9mmymmmmmmmmmmmmmmm9",
 		  "99mmmmmmmmmmmympmm99",
 		  "99999999999999999999"
-		]
+		],
+		"paths": "1     "
 	  },
 	  {
 		"name": "Ancient Wall",
@@ -465,7 +466,8 @@
 		  "99mmmpmm80m7qq4qmpm9",
 		  "999mmmmwmmmmq44pmm99",
 		  "9999mmmmmmmmm4mmm999"
-		]
+		],
+		"paths": "2 1   "
 	  },
 	  {
 		"name": "Poisoned Lake",
@@ -511,7 +513,8 @@
 		  "9mmmmmpqq4444q444mm9",
 		  "99mmmmmmqq444qqqmy99",
 		  "999mmmmmmmm444qm9999"
-		]
+		],
+		"paths": "  13  "
 	  },
 	  {
 		"name": "Crumbling Tombs",
@@ -557,7 +560,8 @@
 		  "99i000ii7mm77i200029",
 		  "9920b02900m0092000i9",
 		  "99i222i999999922i229"
-		]
+		],
+		"paths": "42   b"
 	  },
 	  {
 		"name": "Tiny Island",
@@ -613,7 +617,8 @@
 		  "99mmmq444mymmq444444",
 		  "9mpmxqq444pmq4444444",
 		  "9mmmmmmq444444444444"
-		]
+		],
+		"paths": "5 3   "
 	  },
 	  {
 		"name": "Dangerous Tomb",
@@ -699,7 +704,8 @@
 		  "92222i2mq44444444444",
 		  "999pmxmqq44444444444",
 		  "9mmmmmmq444444444444"
-		]
+		],
+		"paths": " 64   "
 	  },
 	  {
 		"name": "Deadly Hall",
@@ -758,7 +764,8 @@
 		  "444qqqqpmwqq444qqqmm",
 		  "444444qqmp4444444444",
 		  "44444444444444444444"
-		]
+		],
+		"paths": " 7 5  "
 	  },
 	  {
 		"name": "Treasure Island",
@@ -804,7 +811,8 @@
 		  "m44444mmxmq4444qmmp9",
 		  "4444444mmqqq4444mmm9",
 		  "444444444444444mmm99"
-		]
+		],
+		"paths": "  86  "
 	  },
 	  {
 		"name": "Small Building",
@@ -910,7 +918,8 @@
 		  "44pqmmi0000000000h29",
 		  "444pmm22222i222222i9",
 		  "444mymmmxmmmmmmmmm99"
-		]
+		],
+		"paths": " a9   "
 	  },
 	  {
 		"name": "Boat House",
@@ -956,7 +965,8 @@
 		  "9m444q44444444442m99",
 		  "9mqq444qym22i2222999",
 		  "99999999999999999999"
-		]
+		],
+		"paths": "82    "
 	  },
 	  {
 		"name": "Guarded Tomb",
@@ -1102,7 +1112,8 @@
 		  "90mmmmmmm9m8i00000i9",
 		  "999mmmmy9999i2i2i229",
 		  "99999999999999999999"
-		]
+		],
+		"paths": " 8    "
 	  },
 	  {
 		"name": "Forgotten Crypt",
@@ -1266,7 +1277,8 @@
 		  "20j000j0200000000002",
 		  "2800a00820000000000i",
 		  "2ii22222i2i22i22ii22"
-		]
+		],
+		"paths": "    3 "
 	  }
 	],
 	"maps": [

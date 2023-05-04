@@ -30,7 +30,7 @@ async function showMenu( data ) {
 	$.print( "5. Edit Rooms" );
 	$.print( "6. Edit Weapons" );
 	$.print( "7. Edit Armors" );
-	$.print( "8. Edit Maps" );
+	$.print( "8. Edit Paths/Map" );
 	$.print( "9. Reset Dungeon" );
 	$.print( "10. Download Dungeon" );
 
@@ -71,8 +71,7 @@ async function showMenu( data ) {
 		editArmors( data );
 	} else if( choice === 8 ) {
 		data.temp.selectedRoom = 0;
-		data.temp.selectedMapLevel = 0;
-		editMaps( data );
+		editPaths( data );
 	} else if( choice === 9 ) {
 		resetData( data );
 		showMenu( data );
@@ -175,7 +174,8 @@ function createRoom() {
 			"00000000000000000000",
 			"00000000000000000000",
 			"00000000000000000000"
-		]
+		],
+		"paths": "      "
 	};
 }
 
@@ -717,10 +717,15 @@ function editRooms( data ) {
 	} );
 
 	// Clear Objects
-	BuilderTools.button( "Clear Obj", 352, y + 31, () => {
+	BuilderTools.button( "Clear Obj", 342, y + 31, () => {
 		let room = data.rooms[ data.temp.selectedRoom ];
 		room.objects = [];
 		editRooms( data );
+	 } );
+
+	// Edit Paths
+	BuilderTools.button( "Edit Paths", 410, y + 31, () => {
+		editPaths( data );
 	 } );
 
 	// Draw Room Selectors
@@ -931,6 +936,59 @@ function setTrap( data ) {
 			trap.object = data.temp.selectedObject;
 		}
 		setTrap( data );
+	} );
+}
+
+function editPaths( data ) {
+	let room = data.rooms[ data.temp.selectedRoom ];
+	$.cls();
+	$.clearEvents();
+	$.setPos( 1, 2 );
+	$.setColor( "white" );
+	$.print( "Editing Paths - Room " + Util.GetTileId( data.temp.selectedRoom ) );
+	
+	let x = 2;
+	let y = 28;
+
+	BuilderTools.button( "Menu", 2, y, () => { showMenu( data ); } );
+
+	y += 18;
+	BuilderTools.drawRoomSelectors( data, x, y, () => {
+		editPaths( data );
+	} );
+
+	y += 18;
+	BuilderTools.drawRoom( data, x, y, ( pos ) => {} );
+
+	y += 132;
+	[
+		"Select North/Up Room",
+		"Select East/Right Room",
+		"Select South/Down Room",
+		"Select West/Left Room",
+		"Select Stairs/Up Room",
+		"Select Stairs/Down Room"
+	].forEach( ( msg, i ) => {
+		$.setPosPx( x, y );
+		$.setColor( "white" );
+		$.print( msg );
+		y += 10;
+		let tempRoom = data.temp.selectedRoom;
+
+		data.temp.selectedRoom = Util.GetTileIndex( room.paths.charAt( i ) );
+		BuilderTools.drawRoomSelectors( data, x, y, () => {
+			let roomId = "";
+			if( data.temp.selectedRoom === -1 ) {
+				roomId = " ";
+			} else {
+				roomId = Util.GetTileId( data.temp.selectedRoom );
+			}
+			room.paths = room.paths.substring( 0, i ) + roomId + room.paths.substring( i + 1 );
+			data.temp.selectedRoom = data.rooms.indexOf( room );
+			editPaths( data );
+		}, true );
+		data.temp.selectedRoom = tempRoom;
+		y += 22;
 	} );
 }
 
@@ -1211,14 +1269,18 @@ function editMaps( data ) {
 	// Draw Room Selectors
 	x = 2;
 	y += 28;
-	for( let i = 0; i < data.rooms.length; i++ ) {
+	for( let i = -1; i < data.rooms.length; i++ ) {
 		$.setPosPx( x + 2, y + 2 );
 		if( i === data.temp.selectedRoom ) {
 			$.setColor( "white" );
 		} else {
 			$.setColor( "gray" );
 		}
-		$.print( Util.GetTileId( i ), true );
+		if( i === -1 ) {
+			$.print( ".", true );
+		} else {
+			$.print( Util.GetTileId( i ), true );
+		}
 		let hitBox = {
 			"x": x,
 			"y": y,
@@ -1243,24 +1305,26 @@ function editMaps( data ) {
 	// Draw Selected Room
 	let room = data.rooms[ data.temp.selectedRoom ];
 	let startX = x;
-	for( let col = 0; col < room.data.length; col++ ) {
-		for( let row = 0; row < room.data[ col ].length; row += 1 ) {
-			let tile = data.tiles[ Util.GetTileIndex( room.data[ col ].charAt( row ) ) ];
-			let image = Util.ConvertPutStringToData( data.images[ tile.imageId ] );
-			$.put( image, x, y );
-			let hitBoxRoom = {
-				"x": x,
-				"y": y,
-				"width": 15,
-				"height": 15
-			};
-			$.onclick( function () {
-				
-			}, false, hitBoxRoom );
-			x += 15;
+	if( room ) {
+		for( let col = 0; col < room.data.length; col++ ) {
+			for( let row = 0; row < room.data[ col ].length; row += 1 ) {
+				let tile = data.tiles[ Util.GetTileIndex( room.data[ col ].charAt( row ) ) ];
+				let image = Util.ConvertPutStringToData( data.images[ tile.imageId ] );
+				$.put( image, x, y );
+				let hitBoxRoom = {
+					"x": x,
+					"y": y,
+					"width": 15,
+					"height": 15
+				};
+				$.onclick( function () {
+					
+				}, false, hitBoxRoom );
+				x += 15;
+			}
+			x = startX;
+			y += 15;
 		}
-		x = startX;
-		y += 15;
 	}
 
 	x = 2;
@@ -1318,6 +1382,19 @@ function editMaps( data ) {
 		if( emptyCol ) {
 			for( let my = 0; my < map.length; my++ ) {
 				map[ my ] = map[ my ] + ".";
+			}
+		}
+
+		// Make sure all the same length
+		let yMax = 0;
+		for( let my = 0; my < map.length; my++ ) {
+			if( map[ my ].length > yMax ) {
+				yMax = map[ my ].length;
+			}
+		}
+		for( let my = 0; my < map.length; my++ ) {
+			if( map[ my ].length < yMax ) {
+				map[ my ] = map[ my ].padEnd( yMax, "." );
 			}
 		}
 	}
