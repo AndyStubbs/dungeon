@@ -249,7 +249,7 @@ function editTiles( data ) {
 	BuilderTools.button( "Menu", 2, y + 10, () => { showMenu( data ); } );
 
 	// Add Button
-	BuilderTools.button( "Add", 70, y + 10, () => { 
+	BuilderTools.button( "Add", 70, y + 10, () => {
 		data.tiles.push( {
 			"imageId": 0,
 			"description": ""
@@ -348,7 +348,8 @@ async function setSpecialTile( data ) {
 	$.print( " 11. Lava Tile" );
 	$.print( " 12. Void Tile" );
 	$.print( " 13. Reset - Normal Tile" );
-	$.print( " 14. Cancel - Go back" );
+	$.print( " 14. Shop Level" );
+	$.print( " 15. Cancel - Go back" );
 
 	let choice = -1;
 	while( choice < 1 || choice > 14 ) {
