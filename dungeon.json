@@ -410,7 +410,8 @@
 		"exp": 2,
 		"imageId": 112,
 		"isMonster": true,
-		"isRanged": true
+		"isRanged": true,
+		"dropChance": 0
 	  },
 	  {
 		"name": "Sand Man",
@@ -428,7 +429,9 @@
 		"exp": 0,
 		"imageId": 21,
 		"isMonster": false,
-		"isRanged": true
+		"isRanged": true,
+		"dropChance": 0,
+		"isChest": true
 	  },
 	  {
 		"name": "a coffin",
@@ -437,7 +440,8 @@
 		"exp": 0,
 		"imageId": 49,
 		"isMonster": false,
-		"isRanged": true
+		"isRanged": true,
+		"dropChance": 0.5
 	  },
 	  {
 		"name": "a door",
@@ -446,7 +450,9 @@
 		"exp": 0,
 		"imageId": 36,
 		"isMonster": false,
-		"isRanged": true
+		"isRanged": true,
+		"dropChance": 0,
+		"isDoor": true
 	  },
 	  {
 		"name": "a door",
@@ -455,7 +461,9 @@
 		"exp": 0,
 		"imageId": 37,
 		"isMonster": false,
-		"isRanged": true
+		"isRanged": true,
+		"dropChance": 0,
+		"isDoor": true
 	  },
 	  {
 		"name": "Spider",
@@ -582,7 +590,8 @@
 		"exp": 0,
 		"imageId": 54,
 		"isMonster": false,
-		"isRanged": true
+		"isRanged": true,
+		"dropChance": 0.6
 	  },
 	  {
 		"name": "Tomb Warrior",
@@ -592,6 +601,18 @@
 		"imageId": 92,
 		"isMonster": true,
 		"isRanged": true
+	  },
+	  {
+		"name": "a movable block",
+		"hits": 0,
+		"level": 1,
+		"exp": 1,
+		"imageId": 29,
+		"isMonster": false,
+		"isRanged": true,
+		"dropChance": 0,
+		"isDoor": false,
+		"isMovable": true
 	  }
 	],
 	"rooms": [
@@ -693,7 +714,7 @@
 		  "99mmmmmmqq444qqqmy99",
 		  "999mmmmmmmm444qm9999"
 		],
-		"paths": " 913  "
+		"paths": "c913  "
 	  },
 	  {
 		"name": "Crumbling Tombs",
@@ -797,7 +818,7 @@
 		  "9mpmxqq444pmq4444444",
 		  "9mmmmmmq444444444444"
 		],
-		"paths": "5 3   "
+		"paths": "5e3   "
 	  },
 	  {
 		"name": "Dangerous Tomb",
@@ -1098,7 +1119,7 @@
 		  "444pmm22222i222222i9",
 		  "444mymmmxmmmmmmmmm99"
 		],
-		"paths": "7a9   "
+		"paths": "7a9h  "
 	  },
 	  {
 		"name": "Boat House",
@@ -1145,7 +1166,7 @@
 		  "9mqq444qym22i2222999",
 		  "99999999999999999999"
 		],
-		"paths": "82    "
+		"paths": "8  2  "
 	  },
 	  {
 		"name": "Guarded Tomb",
@@ -1292,7 +1313,7 @@
 		  "999mmmmy9999i2i2i229",
 		  "99999999999999999999"
 		],
-		"paths": " 8    "
+		"paths": "   8  "
 	  },
 	  {
 		"name": "Forgotten Crypt",
@@ -1569,7 +1590,7 @@
 		  "i22i7i22444422222ii2",
 		  "44444444444444444444"
 		],
-		"paths": "dj2   "
+		"paths": "dj2f  "
 	  },
 	  {
 		"name": "Ancient Harbor",
@@ -1585,7 +1606,7 @@
 		  "111022i2244i22220111",
 		  "11101111244211110111"
 		],
-		"paths": "   e  "
+		"paths": " h e  "
 	  },
 	  {
 		"name": "Troll Temple",
@@ -1727,7 +1748,7 @@
 		  "4i220222i222222ii111",
 		  "42110111111111111111"
 		],
-		"paths": "gdf   "
+		"paths": "gdf0  "
 	  },
 	  {
 		"name": "Monster Lair",
@@ -1963,6 +1984,41 @@
 			"x": 18,
 			"y": 4,
 			"id": "2"
+		  },
+		  {
+			"x": 10,
+			"y": 2,
+			"id": "k"
+		  },
+		  {
+			"x": 10,
+			"y": 3,
+			"id": "k"
+		  },
+		  {
+			"x": 11,
+			"y": 3,
+			"id": "k"
+		  },
+		  {
+			"x": 11,
+			"y": 2,
+			"id": "k"
+		  },
+		  {
+			"x": 12,
+			"y": 2,
+			"id": "k"
+		  },
+		  {
+			"x": 12,
+			"y": 3,
+			"id": "k"
+		  },
+		  {
+			"x": 12,
+			"y": 4,
+			"id": "k"
 		  }
 		],
 		"traps": [],
@@ -1976,7 +2032,7 @@
 		  "421000h0hh00h0000122",
 		  "4211011111111111112i"
 		],
-		"paths": "6 e   "
+		"paths": "6ke4  "
 	  },
 	  {
 		"name": "Dungeon Entrance",
@@ -2023,7 +2079,7 @@
 		  "18000811111111101124",
 		  "11111111111111101124"
 		],
-		"paths": "i jd  "
+		"paths": "i8jd  "
 	  },
 	  {
 		"name": "Cemetary",
@@ -2150,7 +2206,7 @@
 		  "22nnnnnnnnnnnnn1nn24",
 		  "i21111111111111011i4"
 		],
-		"paths": "  h   "
+		"paths": "68hk  "
 	  },
 	  {
 		"name": "Side Chambers",
@@ -2307,7 +2363,7 @@
 		  "i222i22222ii2222i224",
 		  "44444444444444444444"
 		],
-		"paths": "h 2c  "
+		"paths": "h82c  "
 	  },
 	  {
 		"name": "Hidden Rooms",
@@ -2604,7 +2660,7 @@
 		  "2h000h2444444ih00002",
 		  "2ii2222i2222i22ii22i"
 		],
-		"paths": "6     "
+		"paths": "6i g  "
 	  }
 	],
 	"maps": [

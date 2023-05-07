@@ -529,20 +529,28 @@ function editObjects( data ) {
 	$.setColor( "white" );
 	$.setPosPx( 0, y + 25 );
 	let pos = $.getPos();
+	let obj = data.objects[ data.temp.selectedObject ];
+	if( obj.dropChance === undefined ) {
+		obj.dropChance = 0;
+	}
 	$.setPos( pos );
 	$.print( " Object: " + Util.GetTileId( data.temp.selectedObject ) );
-	$.print( " Image Id: " + data.objects[ data.temp.selectedObject ].imageId );
-	$.print( " Name: " + data.objects[ data.temp.selectedObject ].name );
-	$.print( " Hits: " + data.objects[ data.temp.selectedObject ].hits );
-	$.print( " Level: " + data.objects[ data.temp.selectedObject ].level );
-	$.print( " Exp: " + data.objects[ data.temp.selectedObject ].exp );
-	$.print( " Is Monster: " + ( data.objects[ data.temp.selectedObject ].isMonster === true ) );
-	$.print( " Is Projectile: " + ( data.objects[ data.temp.selectedObject ].isProjectile === true ) );
-	$.print( " Is Flame: " + ( data.objects[ data.temp.selectedObject ].isFlame === true ) );
-	$.print( " Lose Items: " + ( data.objects[ data.temp.selectedObject ].loseItems === true ) );
-	$.print( " Wooden Ship: " + ( data.objects[ data.temp.selectedObject ].woodenShip === true ) );
-	$.print( " Flying Ship: " + ( data.objects[ data.temp.selectedObject ].flyingShip === true ) );
-	$.print( " Metal Ship: " + ( data.objects[ data.temp.selectedObject ].metalShip === true ) );
+	$.print( " Image Id: " + obj.imageId );
+	$.print( " Name: " + obj.name );
+	$.print( " Hits: " + obj.hits );
+	$.print( " Level: " + obj.level );
+	$.print( " Exp: " + obj.exp );
+	$.print( " Is Monster: " + ( obj.isMonster === true ) );
+	$.print( " Is Projectile: " + ( obj.isProjectile === true ) );
+	$.print( " Is Flame: " + ( obj.isFlame === true ) );
+	$.print( " Lose Items: " + ( obj.loseItems === true ) );
+	$.print( " Wooden Ship: " + ( obj.woodenShip === true ) );
+	$.print( " Flying Ship: " + ( obj.flyingShip === true ) );
+	$.print( " Metal Ship: " + ( obj.metalShip === true ) );
+	$.print( " Search Find Gold/Item Drop Chance: " + obj.dropChance );
+	$.print( " Is Chest: " + ( obj.isChest === true ) );
+	$.print( " Is Door: " + ( obj.isDoor === true ) );
+	$.print( " Is Movable: " + ( obj.isMovable === true ) );
 }
 
 async function editObject( data ) {
@@ -565,6 +573,10 @@ async function editObject( data ) {
 	$.print( " 10. Flying Ship: " + ( obj.flyingShip === true ) );
 	$.print( " 11. Metal Ship: " + ( obj.metalShip === true ) );
 	$.print( " 12. Projectile: " );
+	$.print( " 13. Search Find Gold/Item Chance: " + obj.dropChance );
+	$.print( " 14. Is Chest: " + ( obj.isChest === true ) );
+	$.print( " 15. Is Door: " + ( obj.isDoor === true ) );
+	$.print( " 16. Is Movable: " + ( obj.isMovable === true ) );
 	if( obj.projectile ) {
 		let image = Util.ConvertPutStringToData(
 			data.images[ data.objects[ obj.projectile ].imageId ]
@@ -572,11 +584,11 @@ async function editObject( data ) {
 		$.put( image, 40, 120 );
 	}
 	$.print( "\n" );
-	$.print( " 13. Done" );
+	$.print( " 17. Done" );
 	let choice = -1;
-	while( choice < 1 || choice > 13 ) {
+	while( choice < 1 || choice > 17 ) {
 		choice = await $.input( " Enter selection: ", null, true, true, false );
-		if( choice < 1 || choice > 13 ) {
+		if( choice < 1 || choice > 17 ) {
 			$.print( " Invalid selection" );
 		}
 	}
@@ -620,6 +632,20 @@ async function editObject( data ) {
 		editProjectile( data );
 		return;
 	} else if( choice === 13 ) {
+		obj.dropChance = await $.input( "Enter chance: ", null, true, false, false );
+	} else if( choice === 14 ) {
+		obj.isChest = (
+			await $.input( "Is Chest (y/n): ", null )
+		).toLowerCase().charAt( 0 ) === "y";
+	} else if( choice === 15 ) {
+		obj.isDoor = (
+			await $.input( "Is Door (y/n): ", null )
+		).toLowerCase().charAt( 0 ) === "y";
+	} else if( choice === 16 ) {
+		obj.isMovable = (
+			await $.input( "Is Movable (y/n): ", null )
+		).toLowerCase().charAt( 0 ) === "y";
+	} else if( choice === 17 ) {
 		editObjects( data, true );
 		return;
 	}
@@ -797,7 +823,9 @@ function setTrap( data ) {
 
 	// Draw Images
 	BuilderTools.drawImages( data, 8, 2, () => {
-		room.traps[ data.temp.selectedTrap ].imageId = data.temp.selectedImage;
+		if( room.traps[ data.temp.selectedTrap ] ) {
+			room.traps[ data.temp.selectedTrap ].imageId = data.temp.selectedImage;
+		}
 		setTrap( data );
 	} );
 	y = 180;
