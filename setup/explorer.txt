@@ -1,0 +1,244 @@
+                     Welcome to Dungeon Explorer.
+======================================================================
+
+Dungeon Explorer is a graphical role playing game. You create a
+character, buy equipment and explore a dungeon or ruin. You must
+defeat whatever monsters you encounter to gain experience and wealth,
+causing your character to become more powerful and stronger.
+
+But unlike most RPGs, Dungeon Explorer allows you to play a variety of
+different adventures using the same game. Each adventure is stored
+separately and as time passes, more adventures can be added and
+played without having to upgrade the basic program. Dungeon Explorer
+comes with a mini-adventure called Dungeon of the Beast which contains
+64 rooms to explore (full adventures have 128 rooms). You may copy
+it freely and are encouraged to give copies away. In this way you can
+try out Dungeon Explorer for free and if you enjoy the game, you can
+order some of the other full size adventures.
+
+You begin the game by selecting the desired adventure from the ones
+available to you. Then you must select the character to play. To
+create a new character, you merely supply the name of one that does
+not exist. The game will create the character and play will begin.
+
+Once you have a character, the first order of business is to equip the
+character with armor, weapons and other handy items. Since your
+starting funds are limited, you must begin the adventure to find
+gold and gain experience fighting monsters. With additional funds you
+can buy healing and better weapons, which allow you to explore further
+and further. As you progress you will find a number of puzzles and
+devious traps. Not to fear. You may save your character to disk at
+any time and in case of an untimely death, you can restart your
+character where he was last saved.
+
+Overall, the purpose of this game is to have fun. The game plays in
+either 4 color CGA or 16 color EGA graphics and there are plenty of puzzles
+to keep you busy. And or course, a variety of colorful monsters to hack and
+slash. The only real goal of the game is to explore every room of the
+adventure and return alive.
+
+Rules
+====================
+
+In Dungeon Explorer, all characters start the same. You have a certain
+number of hit points (Hits) that represent your life energy. When these
+reach zero, your character is dead and you must restart him where he
+was last saved.
+
+All transactions take place at the Shops. There are six shops which
+are grouped together and can be found in a variety of places. Each
+shop is represented by a picture of the item it sells. To buy or trade
+items at a shop, stand on the picture and press 'B' for buy, 'T' for
+trade ins. Prices for items vary, but as a rule you get what you pay
+for. The more it costs, the more powerful it is. Trade-ins allow you
+to sell an item back to the shop for half of what you paid for it
+(The market for used item is limited). In this way, as you gain more
+wealth, you can upgrade you current items cheaply.
+
+The shops are:
+
+Weapons - Here are sold all available weapons. Since weapons cannot be
+          found in the dungeon, you must buy them here. You will find
+          a variety of normal and magic weapons (marked with a +).
+          Any Magical weapon is better than the best non-magic weapon.
+
+Armor   - Here are sold all the available armor for your character.
+          Like weapons, magic armor is marked with a + and is always
+          superior to normal armor.
+
+Keys    - All doors in the adventure are locked. Each key will open
+          only one door, so always stock up on keys. Never leave the
+          shop with less than 10 keys. If you run out, you could
+          become trapped in the dungeon. Keys cost 2 gold pieces.
+
+Wands   - Wands are magic items that show you the location of most of the
+          traps in a room. Like keys, each wand can only be used once,
+          so always keep a bunch on hand. When a wand is used, roughly
+          85% of the traps in the current room will be displayed.
+          Using more wands will reveal more traps. A trap is displayed
+          by highlighting the section of floor that will trigger the
+          trap. It is up to you to figure out how to avoid it (if you can).
+          You can buy wands for 5 gold pieces.
+
+Potions - Potions are expensive items that will heal your hit points
+          wherever you are. It is cheaper to heal yourself at the
+          shops, but it is always good to carry a few potions for
+          emergencies. Potions cost 50 gold pieces.
+
+Healing - Healing is a shop that allows you to "buy" hit points.
+          Unlike many games, you have an unlimited maximum of hits. If
+          you have the money, you can buy 5000 hit points. (Though
+          this is unlikely). The price is 1 gold piece per hit point.
+
+Commands
+====================
+
+Use the arrow keys to move your character around.
+
+To execute a command, you merely press a single key. Some commands
+need you to supply the direction of the action (like Jump). On the
+bottom right of your screen you will see a directional indicator. When
+a direction is needed, the word 'Dir ?' will appear in red. Just press
+the arrow key of the desired direction.
+
+For convenience, certain commonly used instructions (Kill Monster, Get
+Chest, Open Door, Push Block) are arranged to work with a single key.
+To attack a monster, just walk into him. The same applies to getting a
+chest, pushing a block or opening a door. Just walk into it. (But
+remember you need a key to open a door).
+
+Finally, note that at any point in the game, you can get a list of the
+commands by hitting the H key (for Help).
+
+Available commands :
+
+A (Armor)  - This key will cycle through all the armor you possess.
+             Press A until the armor you want to wear is displayed on
+             the screen.
+
+W (Weapon) - Like Armor, this key will select the weapon you wish to
+             use.
+
+E (Enter)  - This allows you to enter any vessels you find (Ships and
+             Boats). You must enter a ship before you can use it.
+
+X (eXit)   - This allows you to exit any vessels you are riding in.
+
+K (Kill)   - This lets you attack monsters. This is the same as
+             walking into them, but also works with long range weapons
+             (like Bows).
+
+F (Fire)   - This fires a ship's cannon. All vessels have cannons which
+             are a powerful weapon against monsters.
+
+J (Jump)   - The command allows you to jump over one square. Great for
+             avoiding traps or crossing water. Also can be used to
+             outrun monsters.
+
+L (Look)   - This lets you identify an object. Sometimes this can
+             provide useful information.
+
+C (Climb)  - This command lets you climb up or down stairs.
+
+S (Search) - This allows you to search special items for treasure. The
+             only items that can be searched are Bones, Bodies and
+             Coffins. Use the look command to identify which is which.
+
+R (Reveal) - This command uses a wand to reveal most of the traps in
+             the current room.
+
+D (Drink) - This lets you drink a healing potion.
+
+Z (Zave)  - This saves you character. It is good practice to save your
+            character frequently since the dungeons are usually
+            pretty dangerous.
+
+Q (Quit)  - This ends your current session with Dungeon Explorer. Note:
+            This DOES NOT save your character. You must use the Zave
+            command to do that. So be careful to save your character
+            before you Quit or all your latest actions will be lost.
+
+! (Ahh!)  - This is a special emergency escape key. If you have become
+            trapped in the dungeon (maybe you ran out of keys) you can
+            teleport back to the first room with this key. However, the
+            price is high. If you use this, ALL monsters in the entire
+            dungeon will reset and will have to be re-killed to get back
+            where you were. So use only in emergencies. (Unless you really
+            love to hack-and-slash).
+
+Various Objects
+====================
+
+You will find a variety of objects as you travel through the dungeon.
+Here is a list of more common ones:
+
+Force Field - This is normally an impassable wall, but there are
+              ways of getting through it.
+
+Void        - This is a bottomless pit. If the distance is small, you
+              might Jump over it.
+
+Lava        - This is nasty stuff. To step on lava means instant
+              death.
+
+Ship        - One of a variety of vessels, it will enable you to cross
+              large bodies of water.
+
+Bones       - The remains of previous adventurers. Sometimes hold gold
+              and items.
+
+Bodies      - Like bones only not so old.
+
+Coffins     - Stone boxes with the remains of ancient warriors.
+              Sometimes contain gold.
+
+Chests      - Containers of gold. Usually guarded by monsters or
+              traps.
+
+Blocks      - These blue blocks are made of light sandstone and can be
+              pushed. Be careful ! These are often arranged in clever
+              puzzles which can trap you !
+
+Glass Walls - These devious objects appear invisible and can often be
+              used to trap or mislead.
+
+Statues     - Man shaped works of art that will often shoot missiles
+              or flames.
+
+Altars      - Usually bad news. These will often shoot flames or
+              fireballs.
+
+Secret Door - Watch for that which looks like a wall but isn't.
+              Usually leads to treasure and valuable items.
+
+Windows 3.0 Users
+====================
+
+Dungeon Explorer is not written for Windows 3.0, but it can be played from
+it (as a DOS program). For this purpose I have included an icon you can
+use to represent the game. To use this icon instead of the DOS icon,
+go to the Program Manager, pull down the File menu and select the
+Properties item. Click on Change Icon and type EXPLORER.ICO in the
+box. Include the path name if necessary. (C:\EXPLORER\EXPLORER.ICO
+if the icon is in a directory called C:\EXPLORER for example).
+
+Order Information
+====================
+
+If you have tried out the mini-adventure and have enjoyed it, you can
+order another in the series. Each adventure costs $10.00 and can be
+mailed to you First Class or perhaps sent to you electronically. In
+addition to your order, you will automatically receive any upgrades
+to the basic program free of charge.
+
+Currently there are two adventures in the series :
+
+The Dark Pyramid
+The City of the Dead (available March 1, 1991)
+
+The Dungeon Explorer series is available only for IBM PCs or
+compatibles. They require 128K of memory and an CGA or EGA graphics
+adapter.
+
+Please specify which adventure you would like and type of disk (if
+applicable) you would like the adventure to be on (5.25 or 3.5 floppies).

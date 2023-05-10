@@ -1,28 +1,6 @@
 "use strict";
 
 ( function () {
-	// Add event listeners to the document for drag and drop
-	document.addEventListener( "dragenter", function( event ) {
-		event.preventDefault();
-	} );
-
-	document.addEventListener( "dragover", function( event ) {
-		event.preventDefault();
-	} );
-
-	document.addEventListener( "drop", handleJSONFileDrop );
-
-	// Define FOS API
-	window.BuilderTools = {
-		"drawImages": drawImages,
-		"drawBigImage": drawBigImage,
-		"drawColors": drawColors,
-		"button": button,
-		"drawTiles": drawTiles,
-		"drawObjects": drawObjects,
-		"drawRoomSelectors": drawRoomSelectors,
-		"drawRoom": drawRoom
-	};
 
 	function drawImages( data, x, y, callback ) {
 		for( let i = 0; i < data.images.length; i++ ) {
@@ -180,6 +158,7 @@
 	}
 
 	function drawTiles( data, x, y, callback ) {
+		let startX = x;
 		for( let i = 0; i < data.tiles.length; i++ ) {
 			let image = Util.ConvertPutStringToData( data.images[ data.tiles[ i ].imageId ] );
 			let hitBox = {
@@ -202,13 +181,14 @@
 			}, false, hitBox, i );
 			x += 18
 			if( x > 628 ) {
-				x = 2;
+				x = startX;
 				y += 18;
 			}
 		}
 	}
 
 	function drawObjects( data, x, y, isProjectile, isForRoom, callback ) {
+		let startX = x;
 		if( isForRoom ) {
 			let hitBox = {
 				"x": x,
@@ -259,7 +239,7 @@
 			}, false, hitBox, i );
 			x += 18
 			if( x > 628 ) {
-				x = 2;
+				x = startX;
 				y += 18;
 			}
 		}
@@ -350,13 +330,38 @@
 			$.clearEvents();
 			$.cancelInput();
 			$.cls();
-			let answer = await $.input( "Do you wish to load the dungeon \"" + data.name + "\" (y/n)? " );
+			let answer = await $.input(
+				"Do you wish to load the dungeon \"" + data.name + "\" (y/n)? "
+			);
 			if( answer.charAt( 0 ).toLowerCase() === "y" ) {
-				loadDungeon( data );
+				Start.loadDungeon( data );
 			}
 		};
 		
 		reader.readAsText( file );
 	}
+
+	// Add event listeners to the document for drag and drop
+	document.addEventListener( "dragenter", function( event ) {
+		event.preventDefault();
+	} );
+
+	document.addEventListener( "dragover", function( event ) {
+		event.preventDefault();
+	} );
+
+	document.addEventListener( "drop", handleJSONFileDrop );
+
+	// Define Builder Tools API
+	window.BuilderTools = {
+		"drawImages": drawImages,
+		"drawBigImage": drawBigImage,
+		"drawColors": drawColors,
+		"button": button,
+		"drawTiles": drawTiles,
+		"drawObjects": drawObjects,
+		"drawRoomSelectors": drawRoomSelectors,
+		"drawRoom": drawRoom
+	};
 
 } )();

@@ -8,6 +8,7 @@
 		"Delay": Delay,
 		"LoadAllImages": LoadAllImages,
 		"LoadAllJson": LoadAllJson,
+		"LoadAllText": LoadAllText,
 		"SaveAsJson": SaveAsJson,
 		"ConvertImagesToPutString32": ConvertImagesToPutString32,
 		"ConvertPutStringToData": ConvertPutStringToData,
@@ -65,6 +66,29 @@
 			xhr.onreadystatechange = function() {
 				if( xhr.readyState === 4 && xhr.status === 200 ) {
 					results[ index ] = JSON.parse( xhr.responseText );
+					count++;
+					if( count === files.length ) {
+						callback( results.length === 1 ? results[ 0 ] : results );
+					}
+				}
+			};
+			xhr.send(null);
+		} );
+	}
+
+	function LoadAllText( files, callback ) {
+		if( typeof files === "string" ) {
+			files = [ files ];
+		}
+		const results = [];
+		let count = 0;
+
+		files.forEach( function( filepath, index ) {
+			const xhr = new XMLHttpRequest();
+			xhr.open( "GET", filepath, true );
+			xhr.onreadystatechange = function() {
+				if( xhr.readyState === 4 && xhr.status === 200 ) {
+					results[ index ] = xhr.responseText;
 					count++;
 					if( count === files.length ) {
 						callback( results.length === 1 ? results[ 0 ] : results );
