@@ -1,5 +1,7 @@
 {
 	"name": "Dungeon",
+	"title": "Dungeon of the Beast",
+	"story": "In the recent past an evil creature crossed the wide desert and entered your pleasant land. With the stones of the earth this beast built a mighty dungeon and filled it with twisting mazes and deadly creatures. Your task is to enter this dungeon, slay the horrible beast and bring peace to your land.\n\nThe entrance to the dungeon lies in a ruined city on a small island in the middle of a poisoned lake. You must use all your skills to reach the lowest level of the dungeon where the Lord Beast awaits.",
 	"tiles": [
 	  {
 		"imageId": 0,
@@ -17,7 +19,8 @@
 	  },
 	  {
 		"imageId": 3,
-		"description": "some vegetation"
+		"description": "some vegetation",
+		"floor": 1
 	  },
 	  {
 		"imageId": 4,
@@ -30,7 +33,8 @@
 	  },
 	  {
 		"imageId": 14,
-		"description": "a ship"
+		"description": "a ship",
+		"floor": 1
 	  },
 	  {
 		"imageId": 18,
@@ -62,7 +66,8 @@
 	  },
 	  {
 		"imageId": 34,
-		"description": "a glass wall"
+		"description": "a glass wall",
+		"floor": 1
 	  },
 	  {
 		"imageId": 35,
@@ -97,11 +102,13 @@
 	  },
 	  {
 		"imageId": 45,
-		"description": "a secret door"
+		"description": "a secret door",
+		"floor": 1
 	  },
 	  {
 		"imageId": 48,
-		"description": "some grass"
+		"description": "some grass",
+		"floor": 1
 	  },
 	  {
 		"imageId": 50,
@@ -109,7 +116,8 @@
 	  },
 	  {
 		"imageId": 51,
-		"description": "a small city"
+		"description": "a small city",
+		"floor": 1
 	  },
 	  {
 		"imageId": 52,
@@ -122,7 +130,8 @@
 	  },
 	  {
 		"imageId": 55,
-		"description": "an odd design"
+		"description": "an odd design",
+		"floor": 1
 	  },
 	  {
 		"imageId": 56,
@@ -142,15 +151,18 @@
 	  },
 	  {
 		"imageId": 60,
-		"description": "some stones"
+		"description": "some stones",
+		"floor": 1
 	  },
 	  {
 		"imageId": 61,
-		"description": "a stick"
+		"description": "a stick",
+		"floor": 1
 	  },
 	  {
 		"imageId": 62,
-		"description": "a stone"
+		"description": "a stone",
+		"floor": 1
 	  },
 	  {
 		"imageId": 76,
@@ -158,11 +170,13 @@
 	  },
 	  {
 		"imageId": 77,
-		"description": "a tile floor"
+		"description": "a tile floor",
+		"floor": 1
 	  },
 	  {
 		"imageId": 78,
-		"description": "a wooden floor"
+		"description": "a wooden floor",
+		"floor": 1
 	  },
 	  {
 		"imageId": 80,
@@ -171,32 +185,38 @@
 	  {
 		"imageId": 28,
 		"description": "a wand shop",
-		"special": "wand shop"
+		"special": "wand shop",
+		"floor": 1
 	  },
 	  {
 		"imageId": 38,
 		"description": "a potion shop",
-		"special": "potion shop"
+		"special": "potion shop",
+		"floor": 1
 	  },
 	  {
 		"imageId": 26,
 		"description": "a key shop",
-		"special": "key shop"
+		"special": "key shop",
+		"floor": 1
 	  },
 	  {
 		"imageId": 24,
 		"description": "a weapon shop",
-		"special": "weapon shop"
+		"special": "weapon shop",
+		"floor": 1
 	  },
 	  {
 		"imageId": 25,
 		"description": "an armor shop",
-		"special": "armor shop"
+		"special": "armor shop",
+		"floor": 1
 	  },
 	  {
 		"imageId": 27,
 		"description": "an healing shop",
-		"special": "healing shop"
+		"special": "healing shop",
+		"floor": 1
 	  }
 	],
 	"colors": [
@@ -223,11 +243,19 @@
 	  "gold": 200,
 	  "hits": 300,
 	  "level": 1,
-	  "potion": 0,
+	  "potions": 0,
+	  "wands": 0,
 	  "keys": 0,
+	  "exp": 0,
+	  "next": 50,
+	  "nextIncrease": 2,
 	  "weaponId": 0,
 	  "armorId": 0,
-	  "imageId": 23
+	  "imageId": 23,
+	  "pos": [
+		9,
+		3
+	  ]
 	},
 	"weapons": [
 	  {

@@ -2,101 +2,129 @@
 
 ( function () {
 
-	function editDungeon( data ) {
+	function editDungeon( dungeon ) {
 		$.removeAllScreens();
-		$.setDefaultPal( data.colors );
+		$.setDefaultPal( dungeon.colors );
 		$.screen( { "aspect": "640x400", "willReadFrequently": true } );
 		$.setColor( "white" );
-		data.temp = {};
-		showMenu( data );
+		dungeon.temp = {};
+		showMenu( dungeon );
 	}
 
-	async function showMenu( data ) {
+	async function showMenu( dungeon ) {
 		$.clearEvents();
 		$.cls();
-		$.print( "Name: " + data.name );
-		$.print( "Colors: " + data.colors.length );
-		$.print( "Images: " + data.images.length );
-		$.print( "Tiles: " + data.tiles.length );
-		$.print( "Rooms: " + data.rooms.length );
-		$.print( "Objects: " + data.objects.length );
-		$.print( "Weapons: " + data.weapons.length );
-		$.print( "Armors: " + data.armors.length );
+		$.setColor( "white" );
+		$.print( "Main Menu\n\n" );
+		$.setColor( "grey" );
+		$.print( " Name: " + dungeon.name );
+		$.print( " Colors: " + dungeon.colors.length );
+		$.print( " Images: " + dungeon.images.length );
+		$.print( " Tiles: " + dungeon.tiles.length );
+		$.print( " Rooms: " + dungeon.rooms.length );
+		$.print( " Objects: " + dungeon.objects.length );
+		$.print( " Weapons: " + dungeon.weapons.length );
+		$.print( " Armors: " + dungeon.armors.length );
 		$.print( "" );
-		$.print( "1. Edit Images" );
-		$.print( "2. Edit Tiles" );
-		$.print( "3. Edit Character" );
-		$.print( "4. Edit Objects/Monsters" );
-		$.print( "5. Edit Rooms" );
-		$.print( "6. Edit Weapons" );
-		$.print( "7. Edit Armors" );
-		$.print( "8. Edit Paths/Map" );
-		$.print( "9. Reset Dungeon" );
-		$.print( "10. Download Dungeon" );
-		$.print( "11. Done Building" );
+		$.print( " 1. Edit Name" );
+		$.print( " 2. Edit Images" );
+		$.print( " 3. Edit Tiles" );
+		$.print( " 4. Edit Character" );
+		$.print( " 5. Edit Objects/Monsters" );
+		$.print( " 6. Edit Rooms" );
+		$.print( " 7. Edit Weapons" );
+		$.print( " 8. Edit Armors" );
+		$.print( " 9. Edit Paths" );
+		$.print( " 10. Edit Map" );
+		$.print( " 11. Reset Dungeon" );
+		$.print( " 12. Download Dungeon" );
+		$.print( " 13. Delete Dungeon" );
+		$.print( " 14. Done Building" );
 
 		let choice = -1;
-		while( choice < 1 || choice > 11 ) {
-			choice = await $.input( "Enter selection: ", null, true, true, false );
-			if( choice < 1 || choice > 11 ) {
+		while( choice < 1 || choice > 14 ) {
+			choice = await $.input( " Enter selection: ", null, true, true, false );
+			if( choice < 1 || choice > 14 ) {
 				$.print( "Invalid selection" );
 			}
 		}
 
 		if( choice === 1 ) {
-			data.temp.selectedImage = 0;
-			data.temp.selectedColor = 0;
-			editImages( data, true );
+			dungeon.name = await $.input( " Enter name: " );
+			window.Start.saveDungeon( dungeon );
+			return showMenu( dungeon );
 		} else if( choice === 2 ) {
-			data.temp.selectedImage = 0;
-			data.temp.selectedTile = 0;
-			editTiles( data, true );
+			dungeon.temp.selectedImage = 0;
+			dungeon.temp.selectedColor = 0;
+			editImages( dungeon, true );
+			window.Start.saveDungeon( dungeon );
 		} else if( choice === 3 ) {
-			data.temp.selectedImage = data.character.imageId;
-			editCharacter( data, true );
+			dungeon.temp.selectedImage = 0;
+			dungeon.temp.selectedTile = 0;
+			editTiles( dungeon, true );
+			window.Start.saveDungeon( dungeon );
 		} else if( choice === 4 ) {
-			data.temp.selectedObject = 0;
-			data.temp.selectedImage = data.objects[ data.temp.selectedObject ].imageId;
-			editObjects( data, true );
+			dungeon.temp.selectedImage = dungeon.character.imageId;
+			editCharacter( dungeon, true );
+			window.Start.saveDungeon( dungeon );
 		} else if( choice === 5 ) {
-			data.temp.selectedTile = 0;
-			data.temp.selectedObject = -1;
-			data.temp.setTrapStep = -1;
-			data.temp.selectedRoom = 0;
-			editRooms( data, true );
+			dungeon.temp.selectedObject = 0;
+			dungeon.temp.selectedImage = dungeon.objects[ dungeon.temp.selectedObject ].imageId;
+			editObjects( dungeon, true );
+			window.Start.saveDungeon( dungeon );
 		} else if( choice === 6 ) {
-			data.temp.selectedWeapon = 0;
-			editWeapons( data );
+			dungeon.temp.selectedTile = 0;
+			dungeon.temp.selectedObject = -1;
+			dungeon.temp.setTrapStep = -1;
+			dungeon.temp.selectedRoom = 0;
+			editRooms( dungeon, true );
+			window.Start.saveDungeon( dungeon );
 		} else if( choice === 7 ) {
-			data.temp.selectedArmor = 0;
-			editArmors( data );
+			dungeon.temp.selectedWeapon = 0;
+			editWeapons( dungeon );
+			window.Start.saveDungeon( dungeon );
 		} else if( choice === 8 ) {
-			data.temp.selectedRoom = 0;
-			editPaths( data );
+			dungeon.temp.selectedArmor = 0;
+			editArmors( dungeon );
+			window.Start.saveDungeon( dungeon );
 		} else if( choice === 9 ) {
-			resetData( data );
-			showMenu( data );
+			dungeon.temp.selectedRoom = 0;
+			dungeon.temp.selectedMapLevel = 0;
+			dungeon.temp.selectedQuad = [ 0, 0 ];
+			editPaths( dungeon );
+			window.Start.saveDungeon( dungeon );
 		} else if( choice === 10 ) {
-			let temp = data.temp;
-			delete data.temp;
-			Util.SaveAsJson( data, "dungeon.json" );
-			data.temp = temp;
-			showMenu( data );
+			dungeon.temp.selectedMapLevel = 0;
+			dungeon.temp.selectedQuad = [ 0, 0 ];
+			editMaps( dungeon );
+			window.Start.saveDungeon( dungeon );
 		} else if( choice === 11 ) {
-			window.Start.init();
+			resetData( dungeon );
+			window.Start.saveDungeon( dungeon );
+			showMenu( dungeon );
+		} else if( choice === 12 ) {
+			let temp = dungeon.temp;
+			delete dungeon.temp;
+			Util.SaveAsJson( dungeon, "dungeon.json" );
+			dungeon.temp = temp;
+			return showMenu( dungeon );
+		} else if( choice === 13 ) {
+			return window.Start.deleteDungeon();
+		} else if( choice === 14 ) {
+			return window.Start.init();
 		}
 	}
 
-	function resetData( data ) {
-		data.name = "Dungeon";
-		data.rooms = [];
-		data.tiles =  [
+	function resetData( dungeon ) {
+		dungeon.name = "New Dungeon";
+		dungeon.rooms = [];
+		dungeon.tiles =  [
 			{
 				"imageId":  0,
 				"description": "the floor"
 			}
 		];
-		data.colors = [
+		dungeon.colors = [
 			"rgba(0,0,0,0)",
 			"rgba(85,85,85,1)",
 			"rgba(170,170,170,1)",
@@ -115,7 +143,7 @@
 			"rgba(0,170,170,1)",
 			"rgba(255,85,255,1)"
 		];
-		data.character = {
+		dungeon.character = {
 			"name": "ROCON",
 			"gold": 200,
 			"hits": 300,
@@ -126,23 +154,23 @@
 			"armorId": 0,
 			"imageId": 0
 		};
-		data.weapons = [
+		dungeon.weapons = [
 			{
 				"name": "Hands",
 				"damage": 1,
 				"hit": 0.9
 			}
 		];
-		data.armors = [
+		dungeon.armors = [
 			{
 				"name": "Skin",
 				"protection": 0,
 				"dodge": 1
 			}
 		];
-		data.objects = [ createObject() ];
-		data.rooms = [ createRoom() ];
-		data.images =  [
+		dungeon.objects = [ createObject() ];
+		dungeon.rooms = [ createRoom() ];
+		dungeon.images =  [
 			[
 				"000000000000000",
 				"000000000000000",
@@ -194,27 +222,27 @@
 		};
 	}
 
-	function editImages( data ) {
+	function editImages( dungeon ) {
 		$.cls();
 		$.clearEvents();
-		BuilderTools.drawImages( data, 8, 2, editImages );
-		BuilderTools.drawBigImage( data, 8, 216 );
-		BuilderTools.drawColors( data, 2, 200, editImages );
+		BuilderTools.drawImages( dungeon, 8, 2, editImages );
+		BuilderTools.drawBigImage( dungeon, 8, 216 );
+		BuilderTools.drawColors( dungeon, 2, 200, editImages );
 
 		$.setPosPx( 198, 216 );
 		$.setColor( "white" );
 		$.print( "Editing Images" );
 
 		// Menu Button
-		BuilderTools.button( "Menu", 198, 232, () => { showMenu( data ); } );
+		BuilderTools.button( "Menu", 198, 232, () => { showMenu( dungeon ); } );
 
-		if( data.images.length > 153 ) {
+		if( dungeon.images.length > 153 ) {
 			return;
 		}
 
 		// Add New Button
 		BuilderTools.button( "Add New", 265, 232, () => {
-			data.images.push( [
+			dungeon.images.push( [
 				"000000000000000",
 				"000000000000000",
 				"000000000000000",
@@ -231,15 +259,15 @@
 				"000000000000000",
 				"000000000000000"
 			] );
-			editImages( data );
+			editImages( dungeon );
 		} );
 	}
 
-	function editTiles( data ) {
+	function editTiles( dungeon ) {
 		$.cls();
 		$.clearEvents();
-		data.tiles[ data.temp.selectedTile ].imageId = data.temp.selectedImage;
-		BuilderTools.drawImages( data, 8, 2, editTiles );
+		dungeon.tiles[ dungeon.temp.selectedTile ].imageId = dungeon.temp.selectedImage;
+		BuilderTools.drawImages( dungeon, 8, 2, editTiles );
 
 		let x = 2;
 		let y = 200;
@@ -249,15 +277,15 @@
 		$.print( "Editing Tiles" );
 
 		// Menu Button
-		BuilderTools.button( "Menu", 2, y + 10, () => { showMenu( data ); } );
+		BuilderTools.button( "Menu", 2, y + 10, () => { showMenu( dungeon ); } );
 
 		// Add Button
 		BuilderTools.button( "Add", 70, y + 10, () => {
-			data.tiles.push( {
+			dungeon.tiles.push( {
 				"imageId": 0,
 				"description": ""
 			} );
-			editTiles( data );
+			editTiles( dungeon );
 		} );
 
 		// Edit Button
@@ -267,53 +295,53 @@
 			let pos = $.getPos();
 			$.setPos( pos );
 			$.input( " Description: ", function ( txt ) {
-				data.tiles[ data.temp.selectedTile ].description = txt;
-				editTiles( data, true );
+				dungeon.tiles[ dungeon.temp.selectedTile ].description = txt;
+				editTiles( dungeon, true );
 			} );
 		} );
 
 		// Special Button
 		BuilderTools.button( "Special", 206, y + 10, () => {
-			setSpecialTile( data );
+			setSpecialTile( dungeon );
 		} );
 
 		$.setColor( "white" );
 		$.setPosPx( 0, y + 88 );
-		$.print( " Tile: " + Util.GetTileId( data.temp.selectedTile ) );
+		$.print( " Tile: " + Util.GetTileId( dungeon.temp.selectedTile ) );
 		$.setPosPx( 0, y + 99 );
-		$.print( " Image Id: " + data.tiles[ data.temp.selectedTile ].imageId );
+		$.print( " Image Id: " + dungeon.tiles[ dungeon.temp.selectedTile ].imageId );
 
 		$.setPosPx( 120, y + 88 );
-		if( data.tiles[ data.temp.selectedTile ].special ) {
-			$.print( " Special: " +  data.tiles[ data.temp.selectedTile ].special );
+		if( dungeon.tiles[ dungeon.temp.selectedTile ].special ) {
+			$.print( " Special: " +  dungeon.tiles[ dungeon.temp.selectedTile ].special );
 		} else {
 			$.print( " Special: " );
 		}
 
 		$.setPosPx( 120, y + 99 );
-		if( data.tiles[ data.temp.selectedTile ].floor ) {
-			$.print( " Floor: " +  data.tiles[ data.temp.selectedTile ].floor );
+		if( dungeon.tiles[ dungeon.temp.selectedTile ].floor ) {
+			$.print( " Floor: " +  dungeon.tiles[ dungeon.temp.selectedTile ].floor );
 		} else {
 			$.print( " Floor: 0" );
 		}
 
 		$.setPosPx( 300, y + 88 );
-		if( data.tiles[ data.temp.selectedTile ].water ) {
-			$.print( " Water: " +  data.tiles[ data.temp.selectedTile ].water );
+		if( dungeon.tiles[ dungeon.temp.selectedTile ].water ) {
+			$.print( " Water: " +  dungeon.tiles[ dungeon.temp.selectedTile ].water );
 		} else {
 			$.print( " Water: 0" );
 		}
 
 		$.setPosPx( 300, y + 99 );
-		if( data.tiles[ data.temp.selectedTile ].lava ) {
-			$.print( " Lava: " +  data.tiles[ data.temp.selectedTile ].lava );
+		if( dungeon.tiles[ dungeon.temp.selectedTile ].lava ) {
+			$.print( " Lava: " +  dungeon.tiles[ dungeon.temp.selectedTile ].lava );
 		} else {
 			$.print( " Lava: 0" );
 		}
 
 		$.setPosPx( 420, y + 88 );
-		if( data.tiles[ data.temp.selectedTile ].void ) {
-			$.print( " Void: " +  data.tiles[ data.temp.selectedTile ].void );
+		if( dungeon.tiles[ dungeon.temp.selectedTile ].void ) {
+			$.print( " Void: " +  dungeon.tiles[ dungeon.temp.selectedTile ].void );
 		} else {
 			$.print( " Void: 0" );
 		}
@@ -321,16 +349,16 @@
 		$.setPosPx( 0, y + 120 );
 		let pos = $.getPos();
 		$.setPos( pos );
-		$.print( " Description: " + data.tiles[ data.temp.selectedTile ].description );
+		$.print( " Description: " + dungeon.tiles[ dungeon.temp.selectedTile ].description );
 
-		BuilderTools.drawTiles( data, x, y + 30, editTiles );
+		BuilderTools.drawTiles( dungeon, x, y + 30, editTiles );
 	}
 
-	async function setSpecialTile( data ) {
+	async function setSpecialTile( dungeon ) {
 		$.cls();
 		$.clearEvents();
-		let tile = data.tiles[ data.temp.selectedTile ];
-		let image = Util.ConvertPutStringToData( data.images[ tile.imageId ] );
+		let tile = dungeon.tiles[ dungeon.temp.selectedTile ];
+		let image = Util.ConvertPutStringToData( dungeon.images[ tile.imageId ] );
 		$.put( image, 2, 2 );
 		$.setPos( 0, 3 );
 		if( tile.special ) {
@@ -351,8 +379,7 @@
 		$.print( " 11. Lava Tile" );
 		$.print( " 12. Void Tile" );
 		$.print( " 13. Reset - Normal Tile" );
-		$.print( " 14. Shop Level" );
-		$.print( " 15. Cancel - Go back" );
+		$.print( " 14. Cancel - Go back" );
 
 		let choice = -1;
 		while( choice < 1 || choice > 14 ) {
@@ -396,27 +423,27 @@
 			delete tile.lava;
 			delete tile.void;
 		}
-		editTiles( data, true );
+		editTiles( dungeon, true );
 	}
 
-	async function editCharacter( data ) {
+	async function editCharacter( dungeon ) {
 		$.cls();
 		$.clearEvents();
 
 		$.print( "Edit Character" );
-		$.print( "1. Name: " + data.character.name );
-		$.print( "2. Gold: " + data.character.gold );
-		$.print( "3. Hits: " + data.character.hits );
-		$.print( "4. Level: " + data.character.level );
-		$.print( "5. Potion: " + data.character.potion );
-		$.print( "6. Keys: " + data.character.keys );
-		$.print( "7. Weapon: " + data.weapons[ data.character.weaponId ].name );
-		$.print( "8. Armor: " + data.armors[ data.character.armorId ].name );
+		$.print( "1. Name: " + dungeon.character.name );
+		$.print( "2. Gold: " + dungeon.character.gold );
+		$.print( "3. Hits: " + dungeon.character.hits );
+		$.print( "4. Level: " + dungeon.character.level );
+		$.print( "5. Potion: " + dungeon.character.potion );
+		$.print( "6. Keys: " + dungeon.character.keys );
+		$.print( "7. Weapon: " + dungeon.weapons[ dungeon.character.weaponId ].name );
+		$.print( "8. Armor: " + dungeon.armors[ dungeon.character.armorId ].name );
 		$.print( "9. Image: " );
 		$.print( "\n" );
 		$.print( "10. Go back to menu" );
 
-		let image = Util.ConvertPutStringToData( data.images[ data.character.imageId ] );
+		let image = Util.ConvertPutStringToData( dungeon.images[ dungeon.character.imageId ] );
 		$.put( image, 55, 78 );
 
 		let choice = -1;
@@ -428,80 +455,80 @@
 		}
 
 		if( choice === 1 ) {
-			data.character.name = await $.input( "Enter name: ", null );
+			dungeon.character.name = await $.input( "Enter name: ", null );
 		} else if( choice === 2 ) {
-			data.character.gold = await $.input( "Enter gold: ", null, true, true, false );
+			dungeon.character.gold = await $.input( "Enter gold: ", null, true, true, false );
 		} else if( choice === 3 ) {
-			data.character.hits = await $.input( "Enter hits: ", null, true, true, false );
+			dungeon.character.hits = await $.input( "Enter hits: ", null, true, true, false );
 		} else if( choice === 4 ) {
-			data.character.level = await $.input( "Enter level: ", null, true, true, false );
+			dungeon.character.level = await $.input( "Enter level: ", null, true, true, false );
 		} else if( choice === 5 ) {
-			data.character.potion = await $.input( "Enter potion: ", null, true, true, false );
+			dungeon.character.potion = await $.input( "Enter potion: ", null, true, true, false );
 		} else if( choice === 6 ) {
-			data.character.keys = await $.input( "Enter keys: ", null, true, true, false );
+			dungeon.character.keys = await $.input( "Enter keys: ", null, true, true, false );
 		} else if( choice === 7 ) {
 			$.print( "\nWeapons:" );
-			for( let i = 0; i < data.weapons.length; i++ ) {
+			for( let i = 0; i < dungeon.weapons.length; i++ ) {
 				$.print(
 					( i + 1 ) + ". " +
-					data.weapons[ i ].name + " " +
-					data.weapons[ i ].damage + " " +
-					data.weapons[ i ].hit
+					dungeon.weapons[ i ].name + " " +
+					dungeon.weapons[ i ].damage + " " +
+					dungeon.weapons[ i ].hit
 				);
 			}
 			let weaponChoice = -1;
-			while( weaponChoice < 1 || weaponChoice > data.weapons.length ) {
+			while( weaponChoice < 1 || weaponChoice > dungeon.weapons.length ) {
 				weaponChoice = await $.input( "Enter selection: ", null, true, true, false );
-				if( weaponChoice < 1 || weaponChoice > data.weapons.length ) {
+				if( weaponChoice < 1 || weaponChoice > dungeon.weapons.length ) {
 					$.print( "Invalid selection" );
 				}
 			}
-			data.character.weaponId = weaponChoice - 1;
+			dungeon.character.weaponId = weaponChoice - 1;
 		} else if( choice === 8 ) {
 			$.print( "\nArmors:" );
-			for( let i = 0; i < data.armors.length; i++ ) {
+			for( let i = 0; i < dungeon.armors.length; i++ ) {
 				$.print(
 					( i + 1 ) + ". " +
-					data.armors[ i ].name + " " +
-					data.armors[ i ].protection + " " +
-					data.armors[ i ].dodge
+					dungeon.armors[ i ].name + " " +
+					dungeon.armors[ i ].protection + " " +
+					dungeon.armors[ i ].dodge
 				);
 			}
 			let armorChoice = -1;
-			while( armorChoice < 1 || armorChoice > data.armors.length ) {
+			while( armorChoice < 1 || armorChoice > dungeon.armors.length ) {
 				armorChoice = await $.input( "Enter selection: ", null, true, true, false );
-				if( armorChoice < 1 || armorChoice > data.armors.length ) {
+				if( armorChoice < 1 || armorChoice > dungeon.armors.length ) {
 					$.print( "Invalid selection" );
 				}
 			}
-			data.character.armorId = armorChoice - 1;
+			dungeon.character.armorId = armorChoice - 1;
 		} else if( choice === 9 ) {
-			data.temp.selectedImage = data.character.imageId;
+			dungeon.temp.selectedImage = dungeon.character.imageId;
 			$.cls();
 			$.clearEvents();
-			BuilderTools.drawImages( data, 2, 8, () => {
-				data.character.imageId = data.temp.selectedImage;
-				editCharacter( data );
+			BuilderTools.drawImages( dungeon, 2, 8, () => {
+				dungeon.character.imageId = dungeon.temp.selectedImage;
+				editCharacter( dungeon );
 			} );
 			$.setPos( 2, 25 );
 			$.setColor( "white" );
 			$.print( "Use the mouse to select an image from up above." );
 			return;
 		} else if( choice === 10 ) {
-			showMenu( data );
+			showMenu( dungeon );
 			return;
 		}
 
-		editCharacter( data );
+		editCharacter( dungeon );
 	}
 
-	function editObjects( data ) {
+	function editObjects( dungeon ) {
 		$.cls();
 		$.clearEvents();
 
-		BuilderTools.drawImages( data, 2, 8, () => {
-			data.objects[ data.temp.selectedObject ].imageId = data.temp.selectedImage;
-			editObjects( data );
+		BuilderTools.drawImages( dungeon, 2, 8, () => {
+			dungeon.objects[ dungeon.temp.selectedObject ].imageId = dungeon.temp.selectedImage;
+			editObjects( dungeon );
 		} );
 
 		let x = 2;
@@ -512,32 +539,32 @@
 		$.print( "Editing Objects/Monsters" );
 
 		// Menu Button
-		BuilderTools.button( "Menu", 2, y + 12, () => { showMenu( data ); } );
+		BuilderTools.button( "Menu", 2, y + 12, () => { showMenu( dungeon ); } );
 
 		// Add Button
 		BuilderTools.button( "Add", 70, y + 12, () => {
-			data.objects.push( createObject() );
-			editObjects( data );
+			dungeon.objects.push( createObject() );
+			editObjects( dungeon );
 		} );
 
 		// Edit Button
 		BuilderTools.button( "Edit", 138, y + 12, () => {
-			editObject( data );
+			editObject( dungeon );
 		} );
 
 		// Draw Objects
 		y += 31;
-		BuilderTools.drawObjects( data, x, y, false, false, editObjects );
+		BuilderTools.drawObjects( dungeon, x, y, false, false, editObjects );
 
 		$.setColor( "white" );
 		$.setPosPx( 0, y + 25 );
 		let pos = $.getPos();
-		let obj = data.objects[ data.temp.selectedObject ];
+		let obj = dungeon.objects[ dungeon.temp.selectedObject ];
 		if( obj.dropChance === undefined ) {
 			obj.dropChance = 0;
 		}
 		$.setPos( pos );
-		$.print( " Object: " + Util.GetTileId( data.temp.selectedObject ) );
+		$.print( " Object: " + Util.GetTileId( dungeon.temp.selectedObject ) );
 		$.print( " Image Id: " + obj.imageId );
 		$.print( " Name: " + obj.name );
 		$.print( " Hits: " + obj.hits );
@@ -556,12 +583,12 @@
 		$.print( " Is Movable: " + ( obj.isMovable === true ) );
 	}
 
-	async function editObject( data ) {
+	async function editObject( dungeon ) {
 		$.cls();
 		$.clearEvents();
 
-		let obj = data.objects[ data.temp.selectedObject ];
-		let image = Util.ConvertPutStringToData( data.images[ obj.imageId ] );
+		let obj = dungeon.objects[ dungeon.temp.selectedObject ];
+		let image = Util.ConvertPutStringToData( dungeon.images[ obj.imageId ] );
 		$.put( image, 2, 2 );
 		$.print( "\n\n" );
 		$.print( " 1. Name: " + obj.name );
@@ -582,7 +609,7 @@
 		$.print( " 16. Is Movable: " + ( obj.isMovable === true ) );
 		if( obj.projectile ) {
 			let image = Util.ConvertPutStringToData(
-				data.images[ data.objects[ obj.projectile ].imageId ]
+				dungeon.images[ dungeon.objects[ obj.projectile ].imageId ]
 			);
 			$.put( image, 40, 120 );
 		}
@@ -632,7 +659,7 @@
 				await $.input( "Metal Ship (y/n): ", null )
 			).toLowerCase().charAt( 0 ) === "y";
 		} else if( choice === 12 ) {
-			editProjectile( data );
+			editProjectile( dungeon );
 			return;
 		} else if( choice === 13 ) {
 			obj.dropChance = await $.input( "Enter chance: ", null, true, false, false );
@@ -649,43 +676,43 @@
 				await $.input( "Is Movable (y/n): ", null )
 			).toLowerCase().charAt( 0 ) === "y";
 		} else if( choice === 17 ) {
-			editObjects( data, true );
+			editObjects( dungeon, true );
 			return;
 		}
 
-		editObject( data );
+		editObject( dungeon );
 	}
 
-	function editProjectile( data ) {
+	function editProjectile( dungeon ) {
 		$.clearEvents();
 		$.cls();
 		$.setColor( "white" );
 		$.print( "Select projectile" );
 		let x = 2;
 		let y = 16;
-		let selectedObject = data.objects[ data.temp.selectedObject ];
+		let selectedObject = dungeon.objects[ dungeon.temp.selectedObject ];
 		if( selectedObject.projectile ) {
 			let image = Util.ConvertPutStringToData(
-				data.images[ data.objects[ selectedObject.projectile ].imageId ]
+				dungeon.images[ dungeon.objects[ selectedObject.projectile ].imageId ]
 			);
 			$.put( image, x, y );
 		}
 
 		// Draw Objects
 		y += 31;
-		BuilderTools.drawObjects( data, x, y, true, false, () => {
-			selectedObject.projectile = data.temp.selectedObject;
-			data.temp.selectedObject = data.objects.indexOf( selectedObject );
-			editProjectile( data );
+		BuilderTools.drawObjects( dungeon, x, y, true, false, () => {
+			selectedObject.projectile = dungeon.temp.selectedObject;
+			dungeon.temp.selectedObject = dungeon.objects.indexOf( selectedObject );
+			editProjectile( dungeon );
 		} );
 
 		// Add Button
 		BuilderTools.button( "Done", 2, 100, () => {
-			editObject( data );
+			editObject( dungeon );
 		} );
 	}
 
-	function editRooms( data ) {
+	function editRooms( dungeon ) {
 		$.cls();
 		$.clearEvents();
 
@@ -693,17 +720,17 @@
 		let y = 2;
 
 		// Draw Tiles
-		BuilderTools.drawTiles( data, x, y, () => {
-			data.temp.selectedObject = -1;
-			editRooms( data );
+		BuilderTools.drawTiles( dungeon, x, y, () => {
+			dungeon.temp.selectedObject = -1;
+			editRooms( dungeon );
 		} );
 
 		// Draw Objects
 		x = 2;
 		y = 60;
-		BuilderTools.drawObjects( data, x, y, false, true, () => {
-			data.temp.selectedTile = -1;
-			editRooms( data );
+		BuilderTools.drawObjects( dungeon, x, y, false, true, () => {
+			dungeon.temp.selectedTile = -1;
+			editRooms( dungeon );
 		} );
 
 		$.setPosPx( 2, y + 20 );
@@ -711,85 +738,85 @@
 		$.print( "Editing Rooms" );
 
 		// Menu Button
-		BuilderTools.button( "Menu", 2, y + 31, () => { showMenu( data ); } );
+		BuilderTools.button( "Menu", 2, y + 31, () => { showMenu( dungeon ); } );
 
 		// Add Button
 		BuilderTools.button( "Add", 70, y + 31, () => {
-			data.rooms.push( createRoom() );
-			editRooms( data );
+			dungeon.rooms.push( createRoom() );
+			editRooms( dungeon );
 		} );
 
 		// Edit Button
 		BuilderTools.button( "Edit Name", 138, y + 31, async () => {
 			$.cls();
 			$.setColor( "white" );
-			$.print( " Old name: " + data.rooms[ data.temp.selectedRoom ].name );
-			data.rooms[ data.temp.selectedRoom ].name = await $.input( " Enter name: ", null );
-			editRooms( data );
+			$.print( " Old name: " + dungeon.rooms[ dungeon.temp.selectedRoom ].name );
+			dungeon.rooms[ dungeon.temp.selectedRoom ].name = await $.input( " Enter name: ", null );
+			editRooms( dungeon );
 		} );
 
 		// Set Trap Button
 		BuilderTools.button( "Set Trap", 206, y + 31, async () => {
-			data.temp.setTrapStep = 0;
-			setTrap( data );
+			dungeon.temp.setTrapStep = 0;
+			setTrap( dungeon );
 		} );
 
 		// Replace All Button
 		BuilderTools.button( "Set All", 274, y + 31, async () => {
-			if( data.temp.selectedTile > -1 ) {
-				let room = data.rooms[ data.temp.selectedRoom ];
-				let tileId = Util.GetTileId( data.temp.selectedTile );
+			if( dungeon.temp.selectedTile > -1 ) {
+				let room = dungeon.rooms[ dungeon.temp.selectedRoom ];
+				let tileId = Util.GetTileId( dungeon.temp.selectedTile );
 				for( let col = 0; col < room.data.length; col++ ) {
 					room.data[ col ] = tileId.padStart( room.data[ col ].length, tileId );
 				}
 			}
-			editRooms( data );
+			editRooms( dungeon );
 		} );
 
 		// Clear Objects
 		BuilderTools.button( "Clear Obj", 342, y + 31, () => {
-			let room = data.rooms[ data.temp.selectedRoom ];
+			let room = dungeon.rooms[ dungeon.temp.selectedRoom ];
 			room.objects = [];
-			editRooms( data );
+			editRooms( dungeon );
 		} );
 
 		// Edit Paths
 		BuilderTools.button( "Edit Paths", 410, y + 31, () => {
-			editPaths( data );
+			editPaths( dungeon );
 		} );
 
 		// Draw Room Selectors
 		x = 2;
 		y += 50;
-		BuilderTools.drawRoomSelectors( data, x, y, () => {
-			editRooms( data );
+		BuilderTools.drawRoomSelectors( dungeon, x, y, () => {
+			editRooms( dungeon );
 		} );
 
 		$.setColor( "white" );
 		$.setPosPx( 0, y + 20 );
 		let pos = $.getPos();
 		$.setPos( pos );
-		$.print( " Room: " + Util.GetTileId( data.temp.selectedRoom ) );
-		$.print( " Name: " + data.rooms[ data.temp.selectedRoom ].name );
-		$.print( " Objects: " + data.rooms[ data.temp.selectedRoom ].objects.length );
-		$.print( " Traps: " + data.rooms[ data.temp.selectedRoom ].traps.length );
+		$.print( " Room: " + Util.GetTileId( dungeon.temp.selectedRoom ) );
+		$.print( " Name: " + dungeon.rooms[ dungeon.temp.selectedRoom ].name );
+		$.print( " Objects: " + dungeon.rooms[ dungeon.temp.selectedRoom ].objects.length );
+		$.print( " Traps: " + dungeon.rooms[ dungeon.temp.selectedRoom ].traps.length );
 
 		x = 6;
 		y = $.getPosPx().y + 6;
-		BuilderTools.drawRoom( data, x, y, ( pos ) => {
-			if( data.temp.selectedTile !== -1 ) {
-				let room = data.rooms[ data.temp.selectedRoom ];
+		BuilderTools.drawRoom( dungeon, x, y, ( pos ) => {
+			if( dungeon.temp.selectedTile !== -1 ) {
+				let room = dungeon.rooms[ dungeon.temp.selectedRoom ];
 				let line = room.data[ pos.y ];
 				room.data[ pos.y ] = line.substring( 0, pos.x ) +
-					Util.GetTileId( data.temp.selectedTile ) +
+					Util.GetTileId( dungeon.temp.selectedTile ) +
 					line.substring( pos.x + 1 );
-			} else if( data.temp.selectedObject > -1 ) {
-				let room = data.rooms[ data.temp.selectedRoom ];
-				if( data.temp.selectedObject < data.objects.length ) {
+			} else if( dungeon.temp.selectedObject > -1 ) {
+				let room = dungeon.rooms[ dungeon.temp.selectedRoom ];
+				if( dungeon.temp.selectedObject < dungeon.objects.length ) {
 					room.objects.push( {
 						"x": pos.x,
 						"y": pos.y,
-						"id": Util.GetTileId( data.temp.selectedObject )
+						"id": Util.GetTileId( dungeon.temp.selectedObject )
 					} );
 				} else {
 					for( let i = 0; i < room.objects.length; i++ ) {
@@ -802,34 +829,34 @@
 					}
 				}
 			}
-			editRooms( data );
+			editRooms( dungeon );
 		} );
 	}
 
-	function setTrap( data ) {
+	function setTrap( dungeon ) {
 		$.cls();
 		$.clearEvents();
-		let room =  data.rooms[ data.temp.selectedRoom ];
+		let room =  dungeon.rooms[ dungeon.temp.selectedRoom ];
 		let x = 2;
 		let y = 2;
 
-		if( ! data.temp.setTrapStep ) {
-			data.temp.setTrapStep = 0;
+		if( ! dungeon.temp.setTrapStep ) {
+			dungeon.temp.setTrapStep = 0;
 		}
 
-		let trap = room.traps[ data.temp.selectedTrap ];
+		let trap = room.traps[ dungeon.temp.selectedTrap ];
 
 		if( trap ) {
-			data.temp.selectedImage = trap.imageId;
-			data.temp.selectedObject = trap.object;
+			dungeon.temp.selectedImage = trap.imageId;
+			dungeon.temp.selectedObject = trap.object;
 		}
 
 		// Draw Images
-		BuilderTools.drawImages( data, 8, 2, () => {
-			if( room.traps[ data.temp.selectedTrap ] ) {
-				room.traps[ data.temp.selectedTrap ].imageId = data.temp.selectedImage;
+		BuilderTools.drawImages( dungeon, 8, 2, () => {
+			if( room.traps[ dungeon.temp.selectedTrap ] ) {
+				room.traps[ dungeon.temp.selectedTrap ].imageId = dungeon.temp.selectedImage;
 			}
-			setTrap( data );
+			setTrap( dungeon );
 		} );
 		y = 180;
 
@@ -842,7 +869,7 @@
 
 		// Back Button
 		BuilderTools.button( "Back", 2, y + 5, () => {
-			editRooms( data );
+			editRooms( dungeon );
 		} );
 
 		// Add Button
@@ -854,36 +881,36 @@
 				"dir": { "x": 0, "y": 0 },
 				"object": 0
 			} );
-			data.temp.selectedTrap = room.traps.length - 1;
-			setTrap( data );
+			dungeon.temp.selectedTrap = room.traps.length - 1;
+			setTrap( dungeon );
 		} );
 
 		// Set Pos Button
 		BuilderTools.button( "Set Pos", 138, y + 5, () => {
-			data.temp.setTrapStep = 0;
-			data.temp.selectedTrap = room.traps.length - 1;
-			setTrap( data );
-		}, data.temp.setTrapStep === 0 );
+			dungeon.temp.setTrapStep = 0;
+			dungeon.temp.selectedTrap = room.traps.length - 1;
+			setTrap( dungeon );
+		}, dungeon.temp.setTrapStep === 0 );
 
 		// Set Spawn Button
 		BuilderTools.button( "Set Spawn", 206, y + 5, () => {
-			data.temp.setTrapStep = 1;
-			data.temp.selectedTrap = room.traps.length - 1;
-			setTrap( data );
-		}, data.temp.setTrapStep === 1 );
+			dungeon.temp.setTrapStep = 1;
+			dungeon.temp.selectedTrap = room.traps.length - 1;
+			setTrap( dungeon );
+		}, dungeon.temp.setTrapStep === 1 );
 
 		// Set Direction Button
 		BuilderTools.button( "Direction", 275, y + 5, () => {
-			data.temp.setTrapStep = 2;
-			setTrap( data );
-		}, data.temp.setTrapStep === 2 );
+			dungeon.temp.setTrapStep = 2;
+			setTrap( dungeon );
+		}, dungeon.temp.setTrapStep === 2 );
 
 		x = 2;
 		y += 25;
 
 		// Draw Traps
 		for( let i = 0; i < room.traps.length; i++ ) {
-			let image = Util.ConvertPutStringToData( data.images[ room.traps[ i ].imageId ] );
+			let image = Util.ConvertPutStringToData( dungeon.images[ room.traps[ i ].imageId ] );
 			let hitBox = {
 				"x": x,
 				"y": y,
@@ -891,7 +918,7 @@
 				"height": 15
 			};
 			$.put( image, x, y );
-			if( i === data.temp.selectedTrap ) {
+			if( i === dungeon.temp.selectedTrap ) {
 				$.setColor( "white" );
 				$.rect( x + 1, y + 1, 13, 13 );
 			}
@@ -899,8 +926,8 @@
 			$.rect( hitBox );
 
 			$.onclick( function ( mouse, selectedTrap ) {
-				data.temp.selectedTrap = selectedTrap;
-				setTrap( data );
+				dungeon.temp.selectedTrap = selectedTrap;
+				setTrap( dungeon );
 			}, false, hitBox, i );
 
 			x += 18
@@ -914,31 +941,31 @@
 		y += 18;
 
 		// Draw the map
-		BuilderTools.drawRoom( data, x, y, ( pos ) => {
-			if( data.temp.selectedObject > -1 ) {
-				let trap = room.traps[ data.temp.selectedTrap ];
-				if( trap && data.temp.setTrapStep === 0 ) {
+		BuilderTools.drawRoom( dungeon, x, y, ( pos ) => {
+			if( dungeon.temp.selectedObject > -1 ) {
+				let trap = room.traps[ dungeon.temp.selectedTrap ];
+				if( trap && dungeon.temp.setTrapStep === 0 ) {
 					trap.pos.x = pos.x;
 					trap.pos.y = pos.y;
 				}
-				if( trap && data.temp.setTrapStep === 1 ) {
+				if( trap && dungeon.temp.setTrapStep === 1 ) {
 					trap.spawn.x = pos.x;
 					trap.spawn.y = pos.y;
 				}
-				if( trap && data.temp.setTrapStep === 2 ) {
+				if( trap && dungeon.temp.setTrapStep === 2 ) {
 					trap.dir.x = pos.x;
 					trap.dir.y = pos.y;
 				}
-				setTrap( data );
+				setTrap( dungeon );
 			}
-			setTrap( data );
+			setTrap( dungeon );
 		} );
 		let startX = x;
 		let startY = y;
 
 		// Draw Trap
 		if( trap ) {
-			let image = Util.ConvertPutStringToData( data.images[ trap.imageId ] );
+			let image = Util.ConvertPutStringToData( dungeon.images[ trap.imageId ] );
 			$.put( image, ( trap.pos.x * 15 ) + startX, ( trap.pos.y * 15 ) + startY );
 
 			// Draw Spawn Point
@@ -962,35 +989,95 @@
 		$.setPosPx( x, y - 12 );
 		$.print( "Select Object/Projectile", true );
 		
-		BuilderTools.drawObjects( data, x, y, false, false, () => {
-			let trap = room.traps[ data.temp.selectedTrap ];
+		BuilderTools.drawObjects( dungeon, x, y, false, false, () => {
+			let trap = room.traps[ dungeon.temp.selectedTrap ];
 			if( trap ) {
-				trap.object = data.temp.selectedObject;
+				trap.object = dungeon.temp.selectedObject;
 			}
-			setTrap( data );
+			setTrap( dungeon );
 		} );
 	}
 
-	function editPaths( data ) {
-		let room = data.rooms[ data.temp.selectedRoom ];
+	function editPaths( dungeon ) {
+		$.cls();
+		$.clearEvents();
+		$.clearKeys();
+		$.setPos( 1, 2 );
+		$.setColor( "white" );
+		$.print( "Editing Paths - Room " + Util.GetTileId( dungeon.temp.selectedRoom ) );
+
+		let x = 2;
+		let y = 28;
+
+		// Get the map data
+		let map = dungeon.maps[ dungeon.temp.selectedMapLevel ];
+
+		BuilderTools.button( "Menu", x, y, () => { showMenu( dungeon ); } );
+		BuilderTools.button( "West/Left", x + 70, y, () => { showMenu( dungeon ); } );
+		BuilderTools.button( "North/Up", x + 140, y, () => { showMenu( dungeon ); } );
+		BuilderTools.button( "East/Right", x + 210, y, () => { showMenu( dungeon ); } );
+		BuilderTools.button( "South/Down", x + 280, y, () => { showMenu( dungeon ); } );
+
+		y += 24;
+
+		// Draw Map
+		$.setColor( "white" );
+		$.setPosPx( x, y );
+		$.print( "Select Map Location", true );
+		y += 10;
+		for( let my = 0; my < map.length; my++ ) {
+			for( let mx = 0; mx < map[ my ].length; mx++ ) {
+				let rect = {
+					"x": mx * 15 + 2,
+					"y": my * 15 + y + 2,
+					"width": 15,
+					"height": 15
+				};
+				if(
+					mx === dungeon.temp.selectedQuad[ 0 ] &&
+					my === dungeon.temp.selectedQuad[ 1 ]
+				) {
+					$.setColor( "white" );
+				} else {
+					$.setColor( "grey" );
+				}
+				let roomId = map[ my ].charAt( mx );
+				if( roomId !== "." ) {
+					$.rect( rect );
+					$.setPosPx( rect.x + 3, rect.y + 3 );
+					$.print( map[ my ].charAt( mx ) );
+				} else {
+					$.rect( rect );
+				}
+				$.onclick( function ( mouse, pos ) {
+					dungeon.temp.selectedQuad[ 0 ] = pos.x;
+					dungeon.temp.selectedQuad[ 1 ] = pos.y;
+					editPaths( dungeon );
+				}, false, rect, { "x": mx, "y": my } );
+			}
+		}
+	}
+
+	function editPaths2( dungeon ) {
+		let room = dungeon.rooms[ dungeon.temp.selectedRoom ];
 		$.cls();
 		$.clearEvents();
 		$.setPos( 1, 2 );
 		$.setColor( "white" );
-		$.print( "Editing Paths - Room " + Util.GetTileId( data.temp.selectedRoom ) );
+		$.print( "Editing Paths - Room " + Util.GetTileId( dungeon.temp.selectedRoom ) );
 		
 		let x = 2;
 		let y = 28;
 
-		BuilderTools.button( "Menu", 2, y, () => { showMenu( data ); } );
+		BuilderTools.button( "Menu", 2, y, () => { showMenu( dungeon ); } );
 
 		y += 18;
-		BuilderTools.drawRoomSelectors( data, x, y, () => {
-			editPaths( data );
+		BuilderTools.drawRoomSelectors( dungeon, x, y, () => {
+			editPaths( dungeon );
 		} );
 
 		y += 18;
-		BuilderTools.drawRoom( data, x, y, ( pos ) => {} );
+		BuilderTools.drawRoom( dungeon, x, y, ( pos ) => {} );
 
 		y += 132;
 		[
@@ -1005,26 +1092,26 @@
 			$.setColor( "white" );
 			$.print( msg );
 			y += 10;
-			let tempRoom = data.temp.selectedRoom;
+			let tempRoom = dungeon.temp.selectedRoom;
 
-			data.temp.selectedRoom = Util.GetTileIndex( room.paths.charAt( i ) );
-			BuilderTools.drawRoomSelectors( data, x, y, () => {
+			dungeon.temp.selectedRoom = Util.GetTileIndex( room.paths.charAt( i ) );
+			BuilderTools.drawRoomSelectors( dungeon, x, y, () => {
 				let roomId = "";
-				if( data.temp.selectedRoom === -1 ) {
+				if( dungeon.temp.selectedRoom === -1 ) {
 					roomId = " ";
 				} else {
-					roomId = Util.GetTileId( data.temp.selectedRoom );
+					roomId = Util.GetTileId( dungeon.temp.selectedRoom );
 				}
 				room.paths = room.paths.substring( 0, i ) + roomId + room.paths.substring( i + 1 );
-				data.temp.selectedRoom = data.rooms.indexOf( room );
-				editPaths( data );
+				dungeon.temp.selectedRoom = dungeon.rooms.indexOf( room );
+				editPaths( dungeon );
 			}, true );
-			data.temp.selectedRoom = tempRoom;
+			dungeon.temp.selectedRoom = tempRoom;
 			y += 22;
 		} );
 	}
 
-	function editWeapons( data ) {
+	function editWeapons( dungeon ) {
 		$.cls();
 		$.clearEvents();
 
@@ -1037,30 +1124,30 @@
 
 		// Menu Button
 		BuilderTools.button( "Menu", 2, y + 12, () => {
-			showMenu( data );
+			showMenu( dungeon );
 		} );
 
 		// Add Button
 		BuilderTools.button( "Add", 70, y + 12, () => {
-			data.weapons.push( {
+			dungeon.weapons.push( {
 				"name": "Dagger",
 				"damage": 2,
 				"hit": 0.8,
 				"cost": 5,
 				"store": 1
 			} );
-			data.temp.selectedWeapon = data.weapons.length - 1;
-			editWeapons( data );
+			dungeon.temp.selectedWeapon = dungeon.weapons.length - 1;
+			editWeapons( dungeon );
 		} );
 
 		// Edit Button
 		BuilderTools.button( "Edit", 138, y + 12, () => {
-			editWeapon( data );
+			editWeapon( dungeon );
 		} );
 
 		// Draw Weapons
 		y += 31;
-		for( let i = 0; i < data.weapons.length; i++ ) {
+		for( let i = 0; i < dungeon.weapons.length; i++ ) {
 			let hitBox4 = {
 				"x": x,
 				"y": y,
@@ -1069,15 +1156,15 @@
 			};
 			$.setPosPx( x + 3, y + 3 );
 			$.print( Util.GetTileId( i ) );
-			if( i === data.temp.selectedWeapon ) {
+			if( i === dungeon.temp.selectedWeapon ) {
 				$.setColor( "white" );
 				$.rect( x + 1, y + 1, 13, 13 );
 			}
 			$.setColor( "gray" );
 			$.rect( hitBox4 );
 			$.onclick( function ( mouse, selectedWeapon ) {
-				data.temp.selectedWeapon = selectedWeapon;
-				editWeapons( data );
+				dungeon.temp.selectedWeapon = selectedWeapon;
+				editWeapons( dungeon );
 			}, false, hitBox4, i );
 
 			x += 18
@@ -1091,24 +1178,24 @@
 		$.setPosPx( 0, y + 25 );
 		let pos = $.getPos();
 		$.setPos( pos );
-		$.print( " Weapon: " + Util.GetTileId( data.temp.selectedWeapon ) );
-		$.print( " Name: " + data.weapons[ data.temp.selectedWeapon ].name );
-		$.print( " Damage: " + data.weapons[ data.temp.selectedWeapon ].damage );
-		$.print( " Hit Pct: " + data.weapons[ data.temp.selectedWeapon ].hit );
-		$.print( " Cost: " + data.weapons[ data.temp.selectedWeapon ].cost );
-		$.print( " Store: " + data.weapons[ data.temp.selectedWeapon ].store );
+		$.print( " Weapon: " + Util.GetTileId( dungeon.temp.selectedWeapon ) );
+		$.print( " Name: " + dungeon.weapons[ dungeon.temp.selectedWeapon ].name );
+		$.print( " Damage: " + dungeon.weapons[ dungeon.temp.selectedWeapon ].damage );
+		$.print( " Hit Pct: " + dungeon.weapons[ dungeon.temp.selectedWeapon ].hit );
+		$.print( " Cost: " + dungeon.weapons[ dungeon.temp.selectedWeapon ].cost );
+		$.print( " Store: " + dungeon.weapons[ dungeon.temp.selectedWeapon ].store );
 	}
 
-	async function editWeapon( data ) {
+	async function editWeapon( dungeon ) {
 		$.clearEvents();
 		$.cls();
 		$.setColor( "white" );
-		$.print( " Edit Weapon: " + Util.GetTileId( data.temp.selectedWeapon ) );
-		$.print( " 1. Name: " + data.weapons[ data.temp.selectedWeapon ].name );
-		$.print( " 2. Damage: " + data.weapons[ data.temp.selectedWeapon ].damage );
-		$.print( " 3. Hit Pct: " + data.weapons[ data.temp.selectedWeapon ].hit );
-		$.print( " 4. Cost: " + data.weapons[ data.temp.selectedWeapon ].cost );
-		$.print( " 5. Store: " + data.weapons[ data.temp.selectedWeapon ].store );
+		$.print( " Edit Weapon: " + Util.GetTileId( dungeon.temp.selectedWeapon ) );
+		$.print( " 1. Name: " + dungeon.weapons[ dungeon.temp.selectedWeapon ].name );
+		$.print( " 2. Damage: " + dungeon.weapons[ dungeon.temp.selectedWeapon ].damage );
+		$.print( " 3. Hit Pct: " + dungeon.weapons[ dungeon.temp.selectedWeapon ].hit );
+		$.print( " 4. Cost: " + dungeon.weapons[ dungeon.temp.selectedWeapon ].cost );
+		$.print( " 5. Store: " + dungeon.weapons[ dungeon.temp.selectedWeapon ].store );
 		$.print( " 6. Done" );
 
 		let choice = -1;
@@ -1119,7 +1206,7 @@
 			}
 		}
 
-		let weapon = data.weapons[ data.temp.selectedWeapon ];
+		let weapon = dungeon.weapons[ dungeon.temp.selectedWeapon ];
 		if( choice === 1 ) {
 			weapon.name = await $.input( "Enter name: ", null );
 		} else if( choice === 2 ) {
@@ -1134,14 +1221,14 @@
 		} else if( choice === 5 ) {
 			weapon.store = await $.input( "Enter store: ", null, true, true, false );
 		} else if( choice === 6 ) {
-			editWeapons( data, true );
+			editWeapons( dungeon, true );
 			return;
 		}
 
-		editWeapon( data );
+		editWeapon( dungeon );
 	}
 
-	function editArmors( data ) {
+	function editArmors( dungeon ) {
 		$.cls();
 		$.clearEvents();
 
@@ -1154,30 +1241,30 @@
 
 		// Menu Button
 		BuilderTools.button( "Menu", 2, y + 12, () => {
-			showMenu( data );
+			showMenu( dungeon );
 		} );
 
 		// Add Button
 		BuilderTools.button( "Add", 70, y + 12, () => {
-			data.armors.push( {
+			dungeon.armors.push( {
 				"name": "Cloth",
 				"protection": 1,
 				"dodge": 0.9,
 				"cost": 20,
 				"store": 1
 			} );
-			data.temp.selectedArmor = data.armors.length - 1;
-			editArmors( data );
+			dungeon.temp.selectedArmor = dungeon.armors.length - 1;
+			editArmors( dungeon );
 		} );
 
 		// Edit Button
 		BuilderTools.button( "Edit", 138, y + 12, () => {
-			editArmor( data );
+			editArmor( dungeon );
 		} );
 
 		// Draw Armors
 		y += 31;
-		for( let i = 0; i < data.armors.length; i++ ) {
+		for( let i = 0; i < dungeon.armors.length; i++ ) {
 			let hitBox4 = {
 				"x": x,
 				"y": y,
@@ -1186,15 +1273,15 @@
 			};
 			$.setPosPx( x + 3, y + 3 );
 			$.print( Util.GetTileId( i ) );
-			if( i === data.temp.selectedArmor ) {
+			if( i === dungeon.temp.selectedArmor ) {
 				$.setColor( "white" );
 				$.rect( x + 1, y + 1, 13, 13 );
 			}
 			$.setColor( "gray" );
 			$.rect( hitBox4 );
 			$.onclick( function ( mouse, selectedArmor ) {
-				data.temp.selectedArmor = selectedArmor;
-				editArmors( data );
+				dungeon.temp.selectedArmor = selectedArmor;
+				editArmors( dungeon );
 			}, false, hitBox4, i );
 
 			x += 18
@@ -1208,24 +1295,24 @@
 		$.setPosPx( 0, y + 25 );
 		let pos = $.getPos();
 		$.setPos( pos );
-		$.print( " Armor: " + Util.GetTileId( data.temp.selectedArmor ) );
-		$.print( " Name: " + data.armors[ data.temp.selectedArmor ].name );
-		$.print( " Damage: " + data.armors[ data.temp.selectedArmor ].protection );
-		$.print( " Hit Pct: " + data.armors[ data.temp.selectedArmor ].dodge );
-		$.print( " Cost: " + data.armors[ data.temp.selectedArmor ].cost );
-		$.print( " Store: " + data.armors[ data.temp.selectedArmor ].store );
+		$.print( " Armor: " + Util.GetTileId( dungeon.temp.selectedArmor ) );
+		$.print( " Name: " + dungeon.armors[ dungeon.temp.selectedArmor ].name );
+		$.print( " Damage: " + dungeon.armors[ dungeon.temp.selectedArmor ].protection );
+		$.print( " Hit Pct: " + dungeon.armors[ dungeon.temp.selectedArmor ].dodge );
+		$.print( " Cost: " + dungeon.armors[ dungeon.temp.selectedArmor ].cost );
+		$.print( " Store: " + dungeon.armors[ dungeon.temp.selectedArmor ].store );
 	}
 
-	async function editArmor( data ) {
+	async function editArmor( dungeon ) {
 		$.cls();
 		$.clearEvents();
 		$.setColor( "white" );
-		$.print( " Edit Armor: " + Util.GetTileId( data.temp.selectedArmor ) );
-		$.print( " 1. Name: " + data.armors[ data.temp.selectedArmor ].name );
-		$.print( " 2. Protection: " + data.armors[ data.temp.selectedArmor ].protection );
-		$.print( " 3. Dodge Pct: " + data.armors[ data.temp.selectedArmor ].dodge );
-		$.print( " 4. Cost: " + data.armors[ data.temp.selectedArmor ].cost );
-		$.print( " 5. Store: " + data.armors[ data.temp.selectedArmor ].store );
+		$.print( " Edit Armor: " + Util.GetTileId( dungeon.temp.selectedArmor ) );
+		$.print( " 1. Name: " + dungeon.armors[ dungeon.temp.selectedArmor ].name );
+		$.print( " 2. Protection: " + dungeon.armors[ dungeon.temp.selectedArmor ].protection );
+		$.print( " 3. Dodge Pct: " + dungeon.armors[ dungeon.temp.selectedArmor ].dodge );
+		$.print( " 4. Cost: " + dungeon.armors[ dungeon.temp.selectedArmor ].cost );
+		$.print( " 5. Store: " + dungeon.armors[ dungeon.temp.selectedArmor ].store );
 		$.print( " 6. Done" );
 
 		let choice = -1;
@@ -1236,7 +1323,7 @@
 			}
 		}
 
-		let armor = data.armors[ data.temp.selectedArmor ];
+		let armor = dungeon.armors[ dungeon.temp.selectedArmor ];
 		if( choice === 1 ) {
 			armor.name = await $.input( "Enter name: ", null );
 		} else if( choice === 2 ) {
@@ -1251,14 +1338,14 @@
 		} else if( choice === 5 ) {
 			armor.store = await $.input( "Enter store: ", null, true, true, false );
 		} else if( choice === 6 ) {
-			editArmors( data );
+			editArmors( dungeon );
 			return;
 		}
 
-		editArmor( data );
+		editArmor( dungeon );
 	}
 
-	function editMaps( data ) {
+	function editMaps( dungeon ) {
 		$.cls();
 		$.clearEvents();
 
@@ -1270,40 +1357,40 @@
 
 		// Menu Button
 		BuilderTools.button( "Menu", 2, y + 8, () => {
-			showMenu( data );
+			showMenu( dungeon );
 		} );
 
 		// Up Level
 		BuilderTools.button( "Up", 70, y + 8, () => {
-			data.temp.selectedMapLevel -= 1;
-			if( data.temp.selectedMapLevel < 0 ) {
-				data.maps.unshift( [ "" ] );
-				data.temp.selectedMapLevel = 0;
+			dungeon.temp.selectedMapLevel -= 1;
+			if( dungeon.temp.selectedMapLevel < 0 ) {
+				dungeon.maps.unshift( [ "" ] );
+				dungeon.temp.selectedMapLevel = 0;
 			}
-			editMaps( data );
+			editMaps( dungeon );
 		} );
 
 		// Down Level
 		BuilderTools.button( "Down", 138, y + 8, () => {
-			data.temp.selectedMapLevel += 1;
-			if( data.temp.selectedMapLevel >= data.maps.length ) {
-				data.maps.push( [ "" ] );
+			dungeon.temp.selectedMapLevel += 1;
+			if( dungeon.temp.selectedMapLevel >= dungeon.maps.length ) {
+				dungeon.maps.push( [ "" ] );
 			}
-			editMaps( data );
+			editMaps( dungeon );
 		} );
 
 		// Clear
 		BuilderTools.button( "Clear", 206, y + 8, () => {
-			data.maps[ data.temp.selectedMapLevel ] = [ "" ];
-			editMaps( data );
+			dungeon.maps[ dungeon.temp.selectedMapLevel ] = [ "" ];
+			editMaps( dungeon );
 		} );
 
 		// Draw Room Selectors
 		x = 2;
 		y += 28;
-		for( let i = -1; i < data.rooms.length; i++ ) {
+		for( let i = -1; i < dungeon.rooms.length; i++ ) {
 			$.setPosPx( x + 2, y + 2 );
-			if( i === data.temp.selectedRoom ) {
+			if( i === dungeon.temp.selectedRoom ) {
 				$.setColor( "white" );
 			} else {
 				$.setColor( "gray" );
@@ -1321,8 +1408,8 @@
 			};
 			$.rect( hitBox );
 				$.onclick( function ( mouse, selectedRoom ) {
-					data.temp.selectedRoom = selectedRoom;
-					editMaps( data );
+					dungeon.temp.selectedRoom = selectedRoom;
+					editMaps( dungeon );
 				}, false, hitBox, i );
 			x += 18;
 			if( x > 628 ) {
@@ -1335,13 +1422,13 @@
 		y += 18;
 
 		// Draw Selected Room
-		let room = data.rooms[ data.temp.selectedRoom ];
+		let room = dungeon.rooms[ dungeon.temp.selectedRoom ];
 		let startX = x;
 		if( room ) {
 			for( let col = 0; col < room.data.length; col++ ) {
 				for( let row = 0; row < room.data[ col ].length; row += 1 ) {
-					let tile = data.tiles[ Util.GetTileIndex( room.data[ col ].charAt( row ) ) ];
-					let image = Util.ConvertPutStringToData( data.images[ tile.imageId ] );
+					let tile = dungeon.tiles[ Util.GetTileIndex( room.data[ col ].charAt( row ) ) ];
+					let image = Util.ConvertPutStringToData( dungeon.images[ tile.imageId ] );
 					$.put( image, x, y );
 					let hitBoxRoom = {
 						"x": x,
@@ -1363,11 +1450,11 @@
 		y += 2;
 
 		// Get the map data
-		let map = data.maps[ data.temp.selectedMapLevel ];
+		let map = dungeon.maps[ dungeon.temp.selectedMapLevel ];
 
 		if( map.length === 0 ) {
 			map = [ "." ];
-			data.maps[ data.temp.selectedMapLevel ] = map;
+			dungeon.maps[ dungeon.temp.selectedMapLevel ] = map;
 		} else {
 			// Is top empty
 			let emptyRow = false;
@@ -1439,32 +1526,39 @@
 		// Draw Map
 		for( let my = 0; my < map.length; my++ ) {
 			for( let mx = 0; mx < map[ my ].length; mx++ ) {
-				rect = {
+				let rect = {
 					"x": mx * 15 + 2,
 					"y": my * 15 + y + 2,
 					"width": 15,
 					"height": 15
 				};
+				if(
+					mx === dungeon.temp.selectedQuad[ 0 ] &&
+					my === dungeon.temp.selectedQuad[ 1 ]
+				) {
+					$.setColor( "white" );
+				} else {
+					$.setColor( "grey" );
+				}
 				let roomId = map[ my ].charAt( mx );
 				if( roomId !== "." ) {
-					$.setColor( "white" );
 					$.rect( rect );
 					$.setPosPx( rect.x + 3, rect.y + 3 );
 					$.print( map[ my ].charAt( mx ) );
 				} else {
-					$.setColor( "grey" );
 					$.rect( rect );
 				}
 				$.onclick( function ( mouse, pos ) {
 					let line = map[ pos.y ];
 					map[ pos.y ] = line.substring( 0, pos.x ) +
-						Util.GetTileId( data.temp.selectedRoom ) +
+						Util.GetTileId( dungeon.temp.selectedRoom ) +
 						line.substring( pos.x + 1 );
-					editMaps( data );
+					dungeon.temp.selectedQuad[ 0 ] = pos.x;
+					dungeon.temp.selectedQuad[ 1 ] = pos.y;
+					editMaps( dungeon );
 				}, false, rect, { "x": mx, "y": my } );
 			}
 		}
-
 	}
 
 	// Define Builder API

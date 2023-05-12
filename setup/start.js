@@ -17,18 +17,28 @@
 	function loadDungeon( dungeonData ) {
 		if( dungeonData ) {
 			g_dungeon = dungeonData;
+			g_dungeons.push( g_dungeon );
 		} else {
-			Util.LoadAllJson( "../dungeon.json", function ( data ) {
-				g_dungeon = data;
-			} );
+			let data = localStorage.getItem( "dungeons" );
+			if( ! data || data === "[]" ) {
+				g_dungeons = [];
+				Util.LoadAllJson( "../dungeon.json", function ( jsonData ) {
+					g_dungeon = jsonData;
+					g_dungeons.push( g_dungeon );
+					saveDungeons();
+				} );
+			} else {
+				g_dungeons = JSON.parse( data );
+			}
 		}
+		init();
 	}
 
 	function introduction() {
 		$.cls();
 		$.clearKeys();
 		$.setColor( 7 );
-		printBorder( 0, 0, $.getCols(), $.getRows() );
+		Util.PrintBorder( $, 0, 0, $.getCols(), $.getRows() );
 		$.setPos( 0, 4 );
 		$.print( "DUNGEON EXPLORER", true, true );
 		$.setPos( 0, 6 );
@@ -38,8 +48,8 @@
 		$.setPos( 0, 9 );
 		$.print( "Pi.js Port by", true, true );
 		$.setPos( 0, 10 );
-		$.print( "Andy's Code Vault (2023)", true, true );
-		printBorder( 30, 13, 19, 6 );
+		$.print( "Andy Stubbs (2023)", true, true );
+		Util.PrintBorder( $, 30, 13, 19, 6 );
 
 		// Instructions
 		$.setPos( 32, 14 );
@@ -77,11 +87,15 @@
 		$.onkey( "i", "down", printInstructions );
 		$.onkey( "b", "down", () => {
 			$.clearKeys();
-			window.Builder.editDungeon( g_dungeon );
+			selectDungeon( () => {
+				window.Builder.editDungeon( g_dungeon );
+			}, true );
 		} );
 		$.onkey( "s", "down", () => {
 			$.clearKeys();
-			window.Explorer.start( g_dungeon );
+			selectDungeon( () => {
+				return selectCharacter( g_dungeon );
+			} );
 		} );
 		$.onkey( "e", "down", () => {
 			$.clearKeys();
@@ -127,9 +141,10 @@
 		$.print( "  applys to getting a chest, pushing a block or opening a door.\n" );
 
 		$.setColor( 15 );
-		$.print( "  Page # 1 of 2 - Press Any Key to Continue" );
+		$.setPos( 2, $.getRows() - 2 );
+		$.print( "Page # 1 of 2 - Press Any Key to Continue" );
 		$.setColor( 7 );
-		printBorder( 0, 0, $.getCols(), $.getRows() );
+		Util.PrintBorder( $, 0, 0, $.getCols(), $.getRows() );
 
 		$.onkey( "any", "down", printInstructions2, true );
 	}
@@ -149,10 +164,11 @@
 		$.print( "  website\n" );
 
 		$.setColor( 15 );
-		$.print( "  Page # 2 of 2 - Press Any Key to Continue", true, true );
+		$.setPos( 2, $.getRows() - 2 );
+		$.print( "Page # 2 of 2 - Press Any Key to Continue" );
 
 		$.setColor( 7 );
-		printBorder( 0, 0, $.getCols(), $.getRows() );
+		Util.PrintBorder( $, 0, 0, $.getCols(), $.getRows() );
 		$.onkey( "any", "down", function ( key ) {
 			$.clearKeys();
 			introduction();
@@ -169,6 +185,7 @@
 		}
 		$.setColor( 15 );
 		$.print( "\n" );
+		$.setPos( 0, $.getRows() - 1 );
 		$.print( "Page # " + page + " of 10 - Press any key to continue" );
 		$.onkey( "any", "down", function () {
 			$.clearKeys();
@@ -180,32 +197,204 @@
 		} );
 	}
 
-	function printBorder( row, col, width, height ) {
-		$.setPos( row, col );
-		let topLine = String.fromCharCode( 201 ).padEnd( width - 2, String.fromCharCode( 205 ) ) +
-			String.fromCharCode( 187 );
-		$.print( topLine, true );
-		for( let i = 0; i < height - 2; i++ ) {
-			$.setPos( row, col + i + 1 );
-			$.print(
-				String.fromCharCode( 186 ).padEnd( width - 2 , " " ) + String.fromCharCode( 186 ),
-				true
-			);
+	async function selectDungeon( callback, isBuild ) {
+		let maxChoice = g_dungeons.length;
+		if( isBuild ) {
+			maxChoice += 1;
 		}
-		let bottomLine = String.fromCharCode( 200 ).padEnd( width - 2, String.fromCharCode( 205 ) ) +
-			String.fromCharCode( 188 );
-		$.setPos( row, col + height - 1 );
-		$.print( bottomLine, true );
+		if( maxChoice === 1 ) {
+			g_dungeon = g_dungeons[ 0 ];
+			return callback( g_dungeon );
+		}
+		$.cls();
+		$.setColor( 7 );
+		$.print( "Please select from the following dungeons.\n" );
+		$.print( "=".padEnd( $.getCols() - 1, "=" ) );
+		for( let i = 0; i < g_dungeons.length; i++ ) {
+			$.print( ( i + 1 ) + ": " + g_dungeons[ i ].name );
+		}
+		if( isBuild ) {
+			$.print( ( g_dungeons.length + 1 ) + ": Create new dungeon" );
+		}
+		$.print( "=".padEnd( $.getCols() - 1, "=" ) );
+		let choice = -1;
+		while( choice < 1 || choice > maxChoice ) {
+			choice = await $.input( "Enter selection: ", null, true, true, false );
+			if( choice < 1 || choice > maxChoice ) {
+				$.print( "Invalid selection" );
+			}
+		}
+		if( choice === g_dungeons.length + 1 ) {
+			Util.LoadAllJson( "../dungeon.json", function ( jsonData ) {
+				g_dungeon = jsonData;
+				g_dungeon.name = "New Dungeon";
+				g_dungeons.push( g_dungeon );
+				saveDungeons();
+				callback( g_dungeon );
+			} );
+		} else {
+			g_dungeon = g_dungeons[ choice - 1 ];
+			callback( g_dungeon );
+		}
 	}
 
-	let g_dungeon;
+	async function selectCharacter( dungeon ) {
+		if( !dungeon.games ) {
+			dungeon.games = [ createNewGame( dungeon ) ];
+		}
+		let maxChoice = dungeon.games.length + 1;
+		$.cls();
+		$.setColor( 7 );
+		$.print( "Please select from the following dungeons.\n" );
+		$.print( "=".padEnd( $.getCols() - 1, "=" ) );
+		for( let i = 0; i < dungeon.games.length; i++ ) {
+			$.print( ( i + 1 ) + ": " + dungeon.games[ i ].character.name );
+		}
+		$.print( ( dungeon.games.length + 1 ) + ": Create new character" );
+		$.print( "=".padEnd( $.getCols() - 1, "=" ) );
+		let choice = -1;
+		while( choice < 1 || choice > maxChoice ) {
+			choice = await $.input( "Enter selection: ", null, true, true, false );
+			if( choice < 1 || choice > maxChoice ) {
+				$.print( "Invalid selection" );
+			}
+		}
+		if( choice === dungeon.games.length + 1 ) {
+			let newGame = createNewGame( dungeon );
+			dungeon.games.push( newGame );
+			dungeon.gameId = dungeon.games.length - 1;
+			newGame.character.name = await $.input( "Enter name: " );
+		} else {
+			dungeon.gameId = ( choice - 1 );
+		}
+		saveDungeons();
+		return printStory( dungeon );
+	}
 
-	loadDungeon();
+	function createNewGame( dungeon ) {
+		return {
+			"character": createNewCharacter( dungeon ),
+			"room": 0
+		};
+	}
+
+	function createNewCharacter( dungeon ) {
+		return {
+			"name": dungeon.character.name,
+			"gold": dungeon.character.gold,
+			"hits": dungeon.character.hits,
+			"level": dungeon.character.level,
+			"potions": dungeon.character.potions,
+			"wands": dungeon.character.wands,
+			"keys": dungeon.character.keys,
+			"weaponId": dungeon.character.weaponId,
+			"armorId": dungeon.character.armorId,
+			"imageId": dungeon.character.imageId,
+			"exp": dungeon.character.exp,
+			"next": dungeon.character.next,
+			"nextIncrease": dungeon.character.nextIncrease,
+			"weapons": [ 0 ],
+			"armors": [ 0 ],
+			"pos": [ dungeon.character.pos[ 0 ], dungeon.character.pos[ 1 ] ]
+		};
+	}
+
+	function deleteDungeon() {
+		let index = g_dungeons.indexOf( g_dungeon );
+		g_dungeons.splice( index, 1 );
+		saveDungeons();
+		if( g_dungeons.length === 0 ) {
+			loadDungeon();
+		} else {
+			g_dungeon = g_dungeons[ 0 ];
+			init();
+		}
+	}
+
+	function saveDungeons( dungeon ) {
+		let temp;
+		if( dungeon ) {
+			temp = dungeon.temp;
+			delete dungeon.temp;
+		}
+		localStorage.setItem( "dungeons", JSON.stringify( g_dungeons ) );
+		if( temp ) {
+			dungeon.temp = temp;
+		}
+	}
+
+	function printStory( dungeon ) {
+		function printPage( pageNumber ) {
+			$.cls();
+			$.clearKeys();
+			$.setColor( 7 );
+			$.setPos( 0, 2 );
+			for( let line = 0; line < story[ pageNumber ].length; line += 1 ) {
+				$.setPos( 0, line + 2 );
+				$.print( "  " + story[ pageNumber ][ line ], true );
+			}
+			$.setColor( 15 );
+			$.setPos( 2, $.getRows() - 2 );
+			$.print(
+				"Page # " + ( pageNumber + 1 ) + " of " + story.length +
+				" - Press Any Key to Continue"
+			);
+			$.setColor( 7 );
+			Util.PrintBorder( $, 0, 0, $.getCols(), $.getRows() );
+			$.onkey( "any", "down", function () {
+				$.clearKeys();
+				if( pageNumber + 1 >= story.length ) {
+					return window.Explorer.start( dungeon );
+				} else {
+					printPage( pageNumber + 1 );
+				}
+			} );
+		}
+
+		let bigLines = dungeon.story.split( "\n" );
+		let allLines = [];
+		let maxCols = $.getCols() - 5;
+		for( let i = 0; i < bigLines.length; i++ ) {
+			let wordStart = 0;
+			let lineStart = 0;
+			for( let j = 0; j < bigLines[ i ].length; j += 1 ) {
+				if( bigLines[ i ].charAt( j ) === " " ) {
+					wordStart = j;
+				}
+				if( j - lineStart >= maxCols ) {
+					allLines.push( bigLines[ i ].substring( lineStart, wordStart ).trim() );
+					lineStart = wordStart;
+					j = wordStart;
+				}
+			}
+			if( wordStart < bigLines.length ) {
+				allLines.push( bigLines[ i ].substring( lineStart, wordStart ).trim() );
+			}
+		}
+
+		let story = [];
+		let maxRows = $.getRows() - 6;
+		let pageNumber = -1;
+		for( let i = 0; i < allLines.length; i += 1 ) {
+			if( i % maxRows === 0 ) {
+				pageNumber += 1;
+				story.push( [ [] ] );
+			}
+			story[ pageNumber ].push( allLines[ i ] );
+		}
+		printPage( 0 );
+	}
+
+	let g_dungeons = [];
+	let g_dungeon;
 
 	window.Start = {
 		"init": init,
-		"loadDungeon": loadDungeon
+		"loadDungeon": loadDungeon,
+		"deleteDungeon": deleteDungeon,
+		"saveDungeon": saveDungeons
 	};
 
-	init();
+	loadDungeon();
+
 } )();

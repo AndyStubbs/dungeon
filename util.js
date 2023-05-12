@@ -9,6 +9,7 @@
 		"LoadAllImages": LoadAllImages,
 		"LoadAllJson": LoadAllJson,
 		"LoadAllText": LoadAllText,
+		"PrintBorder": PrintBorder,
 		"SaveAsJson": SaveAsJson,
 		"ConvertImagesToPutString32": ConvertImagesToPutString32,
 		"ConvertPutStringToData": ConvertPutStringToData,
@@ -225,6 +226,24 @@
 		};
 		
 		reader.readAsText( file );
+	}
+
+	function PrintBorder( $, row, col, width, height ) {
+		$.setPos( row, col );
+		let topLine = String.fromCharCode( 201 ).padEnd( width - 2, String.fromCharCode( 205 ) ) +
+			String.fromCharCode( 187 );
+		$.print( topLine, true );
+		for( let i = 0; i < height - 2; i++ ) {
+			$.setPos( row, col + i + 1 );
+			$.print(
+				String.fromCharCode( 186 ).padEnd( width - 2 , " " ) + String.fromCharCode( 186 ),
+				true
+			);
+		}
+		let bottomLine = String.fromCharCode( 200 ).padEnd( width - 2, String.fromCharCode( 205 ) ) +
+			String.fromCharCode( 188 );
+		$.setPos( row, col + height - 1 );
+		$.print( bottomLine, true );
 	}
 
 	// Add event listeners to the document for drag and drop
