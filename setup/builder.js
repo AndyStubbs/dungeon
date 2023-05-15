@@ -13,6 +13,7 @@
 
 	async function showMenu( dungeon ) {
 		$.clearEvents();
+		$.clearKeys();
 		$.cls();
 		$.setColor( "white" );
 		$.print( "Main Menu\n\n" );
@@ -91,11 +92,15 @@
 			dungeon.temp.selectedRoom = 0;
 			dungeon.temp.selectedMapLevel = 0;
 			dungeon.temp.selectedQuad = [ 0, 0 ];
+			dungeon.temp.selectedDirection = 0;
+			dungeon.temp.selectedPathMapLevel = 0;
 			editPaths( dungeon );
 			window.Start.saveDungeon( dungeon );
 		} else if( choice === 10 ) {
 			dungeon.temp.selectedMapLevel = 0;
 			dungeon.temp.selectedQuad = [ 0, 0 ];
+			dungeon.temp.selectedDirection = 0;
+			dungeon.temp.selectedPathMapLevel = 0;
 			editMaps( dungeon );
 			window.Start.saveDungeon( dungeon );
 		} else if( choice === 11 ) {
@@ -124,6 +129,8 @@
 				"description": "the floor"
 			}
 		];
+		dungeon.maps = [];
+		dungeon.paths = [];
 		dungeon.colors = [
 			"rgba(0,0,0,0)",
 			"rgba(85,85,85,1)",
@@ -1002,29 +1009,71 @@
 		$.cls();
 		$.clearEvents();
 		$.clearKeys();
-		$.setPos( 1, 2 );
+		$.setPos( 1, 1 );
 		$.setColor( "white" );
 		$.print( "Editing Paths - Room " + Util.GetTileId( dungeon.temp.selectedRoom ) );
 
 		let x = 2;
-		let y = 28;
+		let y = 18;
 
 		// Get the map data
 		let map = dungeon.maps[ dungeon.temp.selectedMapLevel ];
 
 		BuilderTools.button( "Menu", x, y, () => { showMenu( dungeon ); } );
-		BuilderTools.button( "West/Left", x + 70, y, () => { showMenu( dungeon ); } );
-		BuilderTools.button( "North/Up", x + 140, y, () => { showMenu( dungeon ); } );
-		BuilderTools.button( "East/Right", x + 210, y, () => { showMenu( dungeon ); } );
-		BuilderTools.button( "South/Down", x + 280, y, () => { showMenu( dungeon ); } );
+		BuilderTools.button( "Edit Map", x + 70, y, () => { editMaps( dungeon ); } );
+
+		BuilderTools.button( "West/Left", x + 140, y, () => {
+			dungeon.temp.selectedDirection = 0;
+			editPaths( dungeon );
+		}, dungeon.temp.selectedDirection === 0 );
+		BuilderTools.button( "North/Up", x + 210, y, () => {
+			dungeon.temp.selectedDirection = 1;
+			editPaths( dungeon );
+		}, dungeon.temp.selectedDirection === 1 );
+		BuilderTools.button( "East/Right", x + 280, y, () => {
+			dungeon.temp.selectedDirection = 2;
+			editPaths( dungeon );
+		}, dungeon.temp.selectedDirection === 2 );
+		BuilderTools.button( "South/Down", x + 350, y, () => {
+			dungeon.temp.selectedDirection = 3;
+			editPaths( dungeon );
+		}, dungeon.temp.selectedDirection === 3 );
+		BuilderTools.button( "Stairs/Up", x + 420, y, () => {
+			dungeon.temp.selectedDirection = 4;
+			editPaths( dungeon );
+		}, dungeon.temp.selectedDirection === 4 );
+		BuilderTools.button( "Stairs/Down", x + 490, y, () => {
+			dungeon.temp.selectedDirection = 5;
+			editPaths( dungeon );
+		}, dungeon.temp.selectedDirection === 5 );
+		BuilderTools.button( "Clear", x + 560, y, () => {
+			dungeon.paths = [];
+			editPaths( dungeon );
+		}, dungeon.temp.selectedDirection === 5 );
 
 		y += 24;
 
-		// Draw Map
+		// Draw Map 1
 		$.setColor( "white" );
 		$.setPosPx( x, y );
 		$.print( "Select Map Location", true );
-		y += 10;
+		BuilderTools.button( "Up", x + 130, y, () => {
+			if( dungeon.maps[ dungeon.temp.selectedMapLevel - 1 ] ) {
+				dungeon.temp.selectedMapLevel -= 1;
+			}
+			editPaths( dungeon );
+		} );
+		BuilderTools.button( "Down", x + 200, y, () => {
+			if( dungeon.maps[ dungeon.temp.selectedMapLevel + 1 ] ) {
+				dungeon.temp.selectedMapLevel += 1;
+			}
+			editPaths( dungeon );
+		} );
+		$.setColor( "white" );
+		$.setPosPx( x, y + 12 );
+		$.print( "Level: " + dungeon.temp.selectedMapLevel, true );
+
+		y += 22;
 		for( let my = 0; my < map.length; my++ ) {
 			for( let mx = 0; mx < map[ my ].length; mx++ ) {
 				let rect = {
@@ -1052,6 +1101,117 @@
 				$.onclick( function ( mouse, pos ) {
 					dungeon.temp.selectedQuad[ 0 ] = pos.x;
 					dungeon.temp.selectedQuad[ 1 ] = pos.y;
+					editPaths( dungeon );
+				}, false, rect, { "x": mx, "y": my } );
+			}
+		}
+
+		y -= 22;
+		x += 300;
+		// Draw Map 2
+		// dungeon.temp.selectedDirection = 0;
+		// dungeon.temp.selectedPathMapLevel = 0;
+		/*
+		 {
+		"level": 0,
+		"x": 1,
+		"y": 3,
+		"dir": 5,
+		"dest": {
+		  "level": 0,
+		  "x": 1,
+		  "y": 4
+		}
+	  },
+		*/
+
+		// Find all the paths for the selected area
+		let selectedPath = null;
+		for( let i = 0; i < dungeon.paths.length; i++ ) {
+			let path = dungeon.paths[ i ];
+			if(
+				path.level === dungeon.temp.selectedMapLevel &&
+				path.x === dungeon.temp.selectedQuad[ 0 ] &&
+				path.y === dungeon.temp.selectedQuad[ 1 ] &&
+				path.dir === dungeon.temp.selectedDirection
+			) {
+				selectedPath = path;
+			}
+		}
+
+		// Get map 2
+		let map2 = dungeon.maps[ dungeon.temp.selectedPathMapLevel ];
+		$.setColor( "white" );
+		$.setPosPx( x, y );
+		$.print( "Select Path Destination", true );
+		BuilderTools.button( "Up", x + 140, y, () => {
+			if( dungeon.maps[ dungeon.temp.selectedPathMapLevel - 1 ] ) {
+				dungeon.temp.selectedPathMapLevel -= 1;
+			}
+			editPaths( dungeon );
+		} );
+		BuilderTools.button( "Down", x + 210, y, () => {
+			if( dungeon.maps[ dungeon.temp.selectedPathMapLevel + 1 ] ) {
+				dungeon.temp.selectedPathMapLevel += 1;
+			}
+			editPaths( dungeon );
+		} );
+		$.setColor( "white" );
+		$.setPosPx( x, y + 12 );
+		if( selectedPath ) {
+			$.print(
+				"Level: " + dungeon.temp.selectedPathMapLevel + " - " + selectedPath.dest.level,
+				true
+			);
+		} else {
+			$.print( "Level: " + dungeon.temp.selectedPathMapLevel, true );
+		}
+
+		y += 22;
+		for( let my = 0; my < map2.length; my++ ) {
+			for( let mx = 0; mx < map2[ my ].length; mx++ ) {
+				let rect = {
+					"x": mx * 15 + x + 2,
+					"y": my * 15 + y + 2,
+					"width": 15,
+					"height": 15
+				};
+				if(
+					selectedPath &&
+					mx === selectedPath.dest.x &&
+					my === selectedPath.dest.y &&
+					dungeon.temp.selectedPathMapLevel === selectedPath.dest.level
+				) {
+					$.setColor( "white" );
+				} else {
+					$.setColor( "grey" );
+				}
+				let roomId = map2[ my ].charAt( mx );
+				if( roomId !== "." ) {
+					$.rect( rect );
+					$.setPosPx( rect.x + 3, rect.y + 3 );
+					$.print( map2[ my ].charAt( mx ) );
+				} else {
+					$.rect( rect );
+				}
+				$.onclick( function ( mouse, pos ) {
+					if( selectedPath ) {
+						selectedPath.dest.x = mx;
+						selectedPath.dest.y = my;
+						selectedPath.dest.level = dungeon.temp.selectedPathMapLevel
+					} else {
+						dungeon.paths.push( {
+							"level": dungeon.temp.selectedMapLevel,
+							"x": dungeon.temp.selectedQuad[ 0 ],
+							"y": dungeon.temp.selectedQuad[ 1 ],
+							"dir": dungeon.temp.selectedDirection,
+							"dest": {
+							  "level": dungeon.temp.selectedPathMapLevel,
+							  "x": mx,
+							  "y": my
+							}
+						} );
+					}
 					editPaths( dungeon );
 				}, false, rect, { "x": mx, "y": my } );
 			}
@@ -1360,8 +1520,13 @@
 			showMenu( dungeon );
 		} );
 
+		// Edit Paths
+		BuilderTools.button( "Edit Paths", 72, y + 8, () => {
+			editPaths( dungeon );
+		} );
+
 		// Up Level
-		BuilderTools.button( "Up", 70, y + 8, () => {
+		BuilderTools.button( "Up", 140, y + 8, () => {
 			dungeon.temp.selectedMapLevel -= 1;
 			if( dungeon.temp.selectedMapLevel < 0 ) {
 				dungeon.maps.unshift( [ "" ] );
@@ -1371,7 +1536,7 @@
 		} );
 
 		// Down Level
-		BuilderTools.button( "Down", 138, y + 8, () => {
+		BuilderTools.button( "Down", 210, y + 8, () => {
 			dungeon.temp.selectedMapLevel += 1;
 			if( dungeon.temp.selectedMapLevel >= dungeon.maps.length ) {
 				dungeon.maps.push( [ "" ] );
@@ -1380,7 +1545,7 @@
 		} );
 
 		// Clear
-		BuilderTools.button( "Clear", 206, y + 8, () => {
+		BuilderTools.button( "Clear", 280, y + 8, () => {
 			dungeon.maps[ dungeon.temp.selectedMapLevel ] = [ "" ];
 			editMaps( dungeon );
 		} );
