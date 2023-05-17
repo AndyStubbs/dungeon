@@ -1049,7 +1049,7 @@
 		BuilderTools.button( "Clear", x + 560, y, () => {
 			dungeon.paths = [];
 			editPaths( dungeon );
-		}, dungeon.temp.selectedDirection === 5 );
+		}, false );
 
 		y += 24;
 
@@ -1160,7 +1160,8 @@
 		$.setPosPx( x, y + 12 );
 		if( selectedPath ) {
 			$.print(
-				"Level: " + dungeon.temp.selectedPathMapLevel + " - " + selectedPath.dest.level,
+				"Level: " + dungeon.temp.selectedPathMapLevel + " - (" + selectedPath.dest.level +
+				", " + selectedPath.dest.x + ", " + selectedPath.dest.y + ")",
 				true
 			);
 		} else {
@@ -1196,10 +1197,15 @@
 				}
 				$.onclick( function ( mouse, pos ) {
 					if( selectedPath ) {
-						selectedPath.dest.x = mx;
-						selectedPath.dest.y = my;
-						selectedPath.dest.level = dungeon.temp.selectedPathMapLevel
-					} else {
+						if( roomId === "." ) {
+							let pathIndex = dungeon.paths.indexOf( selectedPath );
+							dungeon.paths.splice( pathIndex, 1 );
+						} else {
+							selectedPath.dest.x = pos.x;
+							selectedPath.dest.y = pos.y;
+							selectedPath.dest.level = dungeon.temp.selectedPathMapLevel;
+						}
+					} else if( roomId !== "." ) {
 						dungeon.paths.push( {
 							"level": dungeon.temp.selectedMapLevel,
 							"x": dungeon.temp.selectedQuad[ 0 ],
@@ -1207,13 +1213,13 @@
 							"dir": dungeon.temp.selectedDirection,
 							"dest": {
 							  "level": dungeon.temp.selectedPathMapLevel,
-							  "x": mx,
-							  "y": my
+							  "x": pos.x,
+							  "y": pos.y
 							}
 						} );
 					}
 					editPaths( dungeon );
-				}, false, rect, { "x": mx, "y": my } );
+				}, false, rect, { "x": mx, "y": my, "roomId": roomId } );
 			}
 		}
 	}
