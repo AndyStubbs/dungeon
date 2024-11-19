@@ -51,6 +51,11 @@ I was inspired to write this game after watching this youtube video: [Dungeon Ex
 ## Development Status
 - Gameplay: ~50% completed.
 - Level Editor: Fully functional.
+- It's been awhile since I worked on this last, but from what I can recall I was modifying the
+way navigation was handled room-to-room. I added a pathing tool to map rooms. I think I initially
+had navigation on a grid, but when playing to original game I noticde the grid navigation didn't work.
+So I add a specific pathing system to link rooms. I didn't complete the implementation hince why
+you get stuck in the first room.
 
 ## Contribution
 Contributions are welcome! To contribute:  
